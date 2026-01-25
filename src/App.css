@@ -1,6 +1,68 @@
+/* App-specific styles */
 #root {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
+    min-height: 100vh;
+}
+
+/* Responsive Grid Utilities */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.creator-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+/* Mobile Responsive Overrides */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .two-column-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .creator-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Hide elements on mobile */
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Trading panel responsive */
+@media (max-width: 768px) {
+    .trading-layout {
+        flex-direction: column !important;
+    }
+    
+    .trading-layout > div {
+        min-width: 100% !important;
+    }
 }

@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
+
+// Landing page components (your friend's work)
 import InteractiveGrid from './components/InteractiveGrid';
 import InfiniteTicker from './components/InfiniteTicker';
 import Header from './components/Header';
 
-function App() {
-    const [tickerVisible, setTickerVisible] = useState(false);
+// App components
+import { AppLayout } from './components/layout';
+import { Dashboard, Explore, Portfolio, Leaderboard, AuthCallback, CreatorProfile, History } from './pages';
 
-    useEffect(() => {
+
+
+// Landing Page Component
+const LandingPage: React.FC = () => {
+    const [tickerVisible, setTickerVisible] = React.useState(false);
+
+    React.useEffect(() => {
         const handleInteraction = () => {
             setTickerVisible(true);
-            // Remove listeners once activated
             window.removeEventListener('scroll', handleInteraction);
             window.removeEventListener('click', handleInteraction);
             window.removeEventListener('mousemove', handleInteraction);
@@ -40,25 +49,63 @@ function App() {
                 fadeEffect={true}
             />
 
-            <main style={{ position: 'relative', zIndex: 1, height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                {/* Text Removed as requested */}
+            <main style={{
+                position: 'relative',
+                zIndex: 1,
+                height: '100vh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pointerEvents: 'none'
+            }}>
+                {/* Your friend's landing page content goes here */}
             </main>
 
             <InfiniteTicker
                 items={[
-                    { symbol: "NVDA", price: "$186.23", change: "-0.82", pctChange: "-0.44%" },
-                    { symbol: "AAPL", price: "$175.40", change: "+1.20", pctChange: "+0.69%" },
-                    { symbol: "TSLA", price: "$240.50", change: "-5.10", pctChange: "-2.08%" },
-                    { symbol: "GOOGL", price: "$135.80", change: "+0.90", pctChange: "+0.67%" },
-                    { symbol: "AMZN", price: "$128.90", change: "+0.45", pctChange: "+0.35%" },
-                    { symbol: "MSFT", price: "$330.10", change: "-1.50", pctChange: "-0.45%" },
-                    { symbol: "BTC", price: "$42,500", change: "+1200", pctChange: "+2.50%" },
-                    { symbol: "ETH", price: "$2,250", change: "+80", pctChange: "+3.10%" },
+                    { symbol: "PEWDS", price: "$0.0094", change: "+0.82", pctChange: "+9.5%" },
+                    { symbol: "BEAST", price: "$0.0106", change: "+1.20", pctChange: "+12.8%" },
+                    { symbol: "MARK", price: "$0.0072", change: "-0.10", pctChange: "-1.4%" },
+                    { symbol: "JACK", price: "$0.0064", change: "+0.45", pctChange: "+7.5%" },
+                    { symbol: "VERIT", price: "$0.0047", change: "+0.12", pctChange: "+2.6%" },
+                    { symbol: "WEEKND", price: "$0.0080", change: "+2.10", pctChange: "+35.4%" },
+                    { symbol: "TSERIES", price: "$0.0102", change: "-0.05", pctChange: "-0.5%" },
+                    { symbol: "ASMR", price: "$0.0031", change: "+0.08", pctChange: "+2.6%" },
                 ]}
                 speed={60}
                 visible={tickerVisible}
             />
         </>
+    );
+};
+
+function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* Landing Page */}
+                <Route path="/" element={<LandingPage />} />
+
+                {/* Auth Callback */}
+                <Route path="/auth/callback" element={<AuthCallback />} />
+
+                {/* Protected App Routes */}
+                <Route element={<AppLayout />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/explore" element={<Explore />} />
+                    <Route path="/portfolio" element={<Portfolio />} />
+                    <Route path="/leaderboard" element={<Leaderboard />} />
+                    <Route path="/history" element={<History />} />
+
+                    <Route path="/creator/:id" element={<CreatorProfile />} />
+
+                </Route>
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </BrowserRouter>
     );
 }
 

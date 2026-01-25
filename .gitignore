@@ -12,6 +12,13 @@ node_modules
 .pnp
 .pnp.js
 
+# Python
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Production
 dist
 dist-ssr
