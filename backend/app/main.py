@@ -15,7 +15,21 @@ app = FastAPI(
 )
 
 # CORS Configuration
-origins = [origin.strip() for origin in settings.cors_origins.split(",")]
+# CORS Configuration
+raw_origins = settings.cors_origins.split(",")
+origins = []
+for origin in raw_origins:
+    origin = origin.strip()
+    # Remove quotes if user added them
+    origin = origin.replace('"', '').replace("'", "")
+    # Remove trailing slash if present
+    if origin.endswith("/"):
+        origin = origin[:-1]
+    origins.append(origin)
+
+# If wildcard is present, simplify
+if "*" in origins:
+    origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
