@@ -34,7 +34,7 @@ export const AuthCallback: React.FC = () => {
 
                 // Register with backend (fire and forget)
                 const deviceFingerprint = `${navigator.userAgent}-${screen.width}x${screen.height}`;
-                api.authCallback(activeSession.access_token, deviceFingerprint).catch(() => {});
+                api.authCallback(activeSession.access_token, deviceFingerprint).catch(() => { });
 
                 // Try to get user from backend, fallback to Supabase data
                 let userData;
@@ -54,6 +54,7 @@ export const AuthCallback: React.FC = () => {
                         roi_pct: 0,
                         rank: null,
                         faucet_claimed: false,
+                        is_admin: false,
                         holdings: [],
                     };
                 }
