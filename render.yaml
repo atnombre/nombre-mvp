@@ -19,7 +19,7 @@ services:
       - key: DEBUG
         value: "false"
       - key: CRON_SECRET
-        value: "harsh-ki-mkc-2006"
+        sync: false
       - key: FAUCET_AMOUNT
         value: "10000.0"
       - key: PROTOCOL_FEE_PCT
