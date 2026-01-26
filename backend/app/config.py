@@ -10,18 +10,18 @@ class Settings(BaseSettings):
     supabase_service_key: str = ""
     
     # YouTube API
-    youtube_api_key: str = "AIzaSyDnQyZF4ztPgJZt3oAJohqM1zLcvHE01SE"
+    youtube_api_key: str = ""
     
     # CORS
-    cors_origins: str = "http://localhost:5173"
+    cors_origins: str = ""
     
     # App Settings
-    debug: bool = True
+    debug: bool = False
     faucet_amount: float = 10000.0
     protocol_fee_pct: float = 1.0
     
     # Security
-    cron_secret: str = "nombre-cron-secret"
+    cron_secret: str = ""
     
     class Config:
         env_file = ".env"
