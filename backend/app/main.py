@@ -31,6 +31,12 @@ for origin in raw_origins:
 if "*" in origins:
     origins = ["*"]
 
+# Hardcode Vercel URL as a specific fallback
+origins.append("https://nombre-mvp.vercel.app")
+
+print(f"DEBUG ROW CORS_ORIGINS: '{settings.cors_origins}'")
+print(f"DEBUG FINAL ORIGINS: {origins}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
