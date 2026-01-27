@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Trophy, Crown, Sparkles, Medal, Award, Users, ChevronRight } from 'lucide-react';
+import { Trophy, Crown, Sparkles, Medal, Award, Users } from 'lucide-react';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { useAuthStore } from '../stores/authStore';
 import { Avatar } from '../components/ui';

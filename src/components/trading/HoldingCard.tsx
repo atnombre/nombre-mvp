@@ -28,14 +28,10 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({
     name,
     symbol,
     avatarUrl,
-    quantity,
-    currentPrice,
     currentValue,
-    pnl,
     pnlPercent,
 }) => {
     const navigate = useNavigate();
-    const isProfit = pnl >= 0;
 
     return (
         <div
