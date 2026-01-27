@@ -1,28 +1,49 @@
-import React from 'react';
-import { Trophy, Crown, Sparkles, Medal, Award, Users } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Trophy, Crown, Sparkles, Medal, Award, Users, ChevronRight } from 'lucide-react';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { useAuthStore } from '../stores/authStore';
 import { Avatar } from '../components/ui';
 import { PriceDisplay, formatCurrency } from '../components/trading';
 
+// Custom hook for responsive breakpoint
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+};
+
 export const Leaderboard: React.FC = () => {
   const { user } = useAuthStore();
   const { leaderboard, myRank, totalUsers, isLoading, error } = useLeaderboard();
+  const isMobile = useIsMobile();
 
-  // Find current user's entry to get their portfolio value
   const myEntry = leaderboard.find(entry => entry.user_id === user?.id);
 
-  const getRankBadge = (rank: number) => {
+  const getRankBadge = (rank: number, size: 'sm' | 'md' = 'md') => {
+    const baseSize = size === 'sm' ? 24 : 32;
+    const iconSize = size === 'sm' ? 12 : 16;
+    const fontSize = size === 'sm' ? '0.65rem' : '0.8125rem';
+
     const baseStyle: React.CSSProperties = {
-      width: 32,
-      height: 32,
+      width: baseSize,
+      height: baseSize,
       borderRadius: 'var(--radius-full)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontWeight: 700,
-      fontSize: '0.8125rem',
+      fontSize,
       fontFamily: 'var(--font-mono)',
+      flexShrink: 0,
     };
 
     switch (rank) {
@@ -34,7 +55,7 @@ export const Leaderboard: React.FC = () => {
             color: '#000',
             boxShadow: '0 2px 8px rgba(255, 215, 0, 0.4)',
           }}>
-            <Crown size={16} />
+            <Crown size={iconSize} />
           </div>
         );
       case 2:
@@ -44,7 +65,7 @@ export const Leaderboard: React.FC = () => {
             background: 'linear-gradient(135deg, #C0C0C0 0%, #A0A0A0 100%)',
             color: '#333',
           }}>
-            <Medal size={14} />
+            <Medal size={iconSize - 2} />
           </div>
         );
       case 3:
@@ -54,7 +75,7 @@ export const Leaderboard: React.FC = () => {
             background: 'linear-gradient(135deg, #CD7F32 0%, #A0522D 100%)',
             color: '#fff',
           }}>
-            <Award size={14} />
+            <Award size={iconSize - 2} />
           </div>
         );
       default:
@@ -70,6 +91,260 @@ export const Leaderboard: React.FC = () => {
     }
   };
 
+  // Mobile Layout
+  if (isMobile) {
+    return (
+      <div>
+        {/* Header */}
+        <div style={{ marginBottom: '16px' }}>
+          <h1 style={{
+            margin: 0,
+            fontSize: '1.25rem',
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+            letterSpacing: '-0.02em',
+          }}>
+            Leaderboard
+          </h1>
+        </div>
+
+        {/* Stats Chips */}
+        <div style={{
+          display: 'flex',
+          gap: '10px',
+          marginBottom: '16px',
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 12px',
+            backgroundColor: 'rgba(20, 20, 20, 0.6)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}>
+            <Users size={12} style={{ color: 'var(--text-muted)' }} />
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              {totalUsers} traders
+            </span>
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '8px 12px',
+            backgroundColor: 'rgba(20, 20, 20, 0.6)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderRadius: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}>
+            <div style={{
+              width: 6,
+              height: 6,
+              borderRadius: 'var(--radius-full)',
+              backgroundColor: 'var(--color-positive)',
+              animation: 'pulse 2s infinite',
+            }} />
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+              Live
+            </span>
+          </div>
+        </div>
+
+        {/* Your Rank Card - Compact */}
+        {myRank && (
+          <div style={{
+            marginBottom: '16px',
+            padding: '16px',
+            borderRadius: '14px',
+            background: 'linear-gradient(135deg, var(--color-accent-bg) 0%, rgba(20, 20, 20, 0.8) 100%)',
+            border: '1px solid var(--color-accent-border)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+              <div style={{ position: 'relative' }}>
+                <Avatar src={user?.avatar_url} alt={user?.display_name} fallback={user?.display_name} size="md" />
+                {myRank <= 10 && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: -2,
+                    right: -2,
+                    width: 18,
+                    height: 18,
+                    borderRadius: 'var(--radius-full)',
+                    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid var(--bg-primary)',
+                  }}>
+                    <Sparkles size={8} color="#000" />
+                  </div>
+                )}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  fontSize: '0.65rem',
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '2px',
+                }}>
+                  Your Rank
+                </div>
+                <div style={{
+                  fontSize: '1.5rem',
+                  fontWeight: 700,
+                  color: 'var(--color-accent)',
+                  fontFamily: 'var(--font-mono)',
+                  lineHeight: 1,
+                }}>
+                  #{myRank}
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{
+                  fontSize: '0.65rem',
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  marginBottom: '2px',
+                }}>
+                  Value
+                </div>
+                <span style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  color: 'var(--color-accent)',
+                }}>
+                  {formatCurrency(myEntry?.total_valuation || 0)}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Leaderboard Cards */}
+        {isLoading ? (
+          <div className="mobile-card-grid">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="skeleton" style={{ height: 72, borderRadius: 14 }} />
+            ))}
+          </div>
+        ) : error ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '48px 24px',
+            background: 'rgba(20, 20, 20, 0.6)',
+            backdropFilter: 'blur(16px)',
+            borderRadius: '14px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}>
+            <Trophy size={32} style={{ color: 'var(--color-negative)', marginBottom: '12px' }} />
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+              Error loading leaderboard
+            </p>
+          </div>
+        ) : leaderboard.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '48px 24px',
+            background: 'rgba(20, 20, 20, 0.6)',
+            backdropFilter: 'blur(16px)',
+            borderRadius: '14px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}>
+            <Trophy size={32} style={{ color: 'var(--text-muted)', marginBottom: '12px' }} />
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+              No traders yet
+            </p>
+          </div>
+        ) : (
+          <div className="mobile-card-grid">
+            {leaderboard.map((entry) => {
+              const isCurrentUser = user?.id === entry.user_id;
+
+              return (
+                <div
+                  key={entry.user_id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '14px 16px',
+                    background: isCurrentUser
+                      ? 'linear-gradient(135deg, var(--color-accent-bg) 0%, rgba(20, 20, 20, 0.6) 100%)'
+                      : 'rgba(20, 20, 20, 0.6)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    borderRadius: '14px',
+                    border: `1px solid ${isCurrentUser ? 'var(--color-accent-border)' : 'rgba(255, 255, 255, 0.08)'}`,
+                    minHeight: '72px',
+                  }}
+                >
+                  {getRankBadge(entry.rank, 'sm')}
+                  <Avatar src={entry.avatar_url} alt={entry.display_name} fallback={entry.display_name} size="sm" />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      marginBottom: '2px',
+                    }}>
+                      <span style={{
+                        fontWeight: 600,
+                        color: isCurrentUser ? 'var(--color-accent)' : 'var(--text-primary)',
+                        fontSize: '0.875rem',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {entry.display_name.split(' ')[0]}
+                      </span>
+                      {isCurrentUser && (
+                        <span style={{
+                          fontSize: '0.5rem',
+                          padding: '2px 5px',
+                          backgroundColor: 'var(--color-accent)',
+                          borderRadius: 'var(--radius-sm)',
+                          color: '#000',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                        }}>
+                          You
+                        </span>
+                      )}
+                    </div>
+                    <span style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.75rem',
+                      color: 'var(--text-muted)',
+                    }}>
+                      {formatCurrency(entry.total_valuation)}
+                    </span>
+                  </div>
+                  <PriceDisplay value={entry.roi_pct} format="percent" variant="badge" size="sm" />
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Pulse animation */}
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Desktop Layout - Original
   return (
     <div>
       {/* Header */}
@@ -312,9 +587,7 @@ export const Leaderboard: React.FC = () => {
                     padding: '14px 16px',
                     alignItems: 'center',
                     borderBottom: '1px solid var(--border-color)',
-                    backgroundColor: isCurrentUser
-                      ? 'var(--color-accent-bg)'
-                      : 'transparent',
+                    backgroundColor: isCurrentUser ? 'var(--color-accent-bg)' : 'transparent',
                     transition: 'var(--transition-fast)',
                     cursor: 'default',
                   }}

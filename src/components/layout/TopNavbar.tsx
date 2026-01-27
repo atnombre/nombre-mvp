@@ -8,7 +8,6 @@ import {
   History,
   LogOut,
   Zap,
-
   ChevronDown,
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
@@ -35,8 +34,11 @@ export const TopNavbar: React.FC = () => {
         left: 0,
         right: 0,
         height: 'var(--nav-height)',
-        backgroundColor: 'var(--bg-secondary)',
-        borderBottom: '1px solid var(--border-color)',
+        // Glass navbar
+        background: 'rgba(10, 10, 10, 0.8)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
         display: 'flex',
         alignItems: 'center',
         padding: '0 24px',
@@ -58,11 +60,12 @@ export const TopNavbar: React.FC = () => {
           style={{
             width: '32px',
             height: '32px',
-            borderRadius: 'var(--radius-md)',
-            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%)',
+            borderRadius: '10px',
+            background: 'linear-gradient(135deg, #EA9999 0%, #d88888 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(234, 153, 153, 0.3)',
           }}
         >
           <Zap size={18} color="#000" fill="#000" />
@@ -71,7 +74,7 @@ export const TopNavbar: React.FC = () => {
           style={{
             fontSize: '1.125rem',
             fontWeight: 700,
-            color: 'var(--text-primary)',
+            color: 'rgba(255, 255, 255, 1)',
             letterSpacing: '-0.02em',
           }}
         >
@@ -100,28 +103,31 @@ export const TopNavbar: React.FC = () => {
                 alignItems: 'center',
                 gap: '6px',
                 padding: '8px 14px',
-                borderRadius: 'var(--radius-md)',
+                borderRadius: '10px',
                 textDecoration: 'none',
-                color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
-                backgroundColor: isActive ? 'var(--color-accent-bg)' : 'transparent',
+                color: isActive ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)',
+                backgroundColor: isActive ? 'rgba(234, 153, 153, 0.15)' : 'transparent',
                 fontSize: '0.8125rem',
                 fontWeight: isActive ? 600 : 500,
-                transition: 'var(--transition-fast)',
+                transition: 'all 0.15s ease',
+                position: 'relative',
+                // Pink glow for active
+                boxShadow: isActive ? '0 0 20px rgba(234, 153, 153, 0.15)' : 'none',
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
-                  e.currentTarget.style.color = 'var(--text-secondary)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive) {
                   e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = 'var(--text-muted)';
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
                 }
               }}
             >
-              <Icon size={16} />
+              <Icon size={16} style={{ color: isActive ? '#EA9999' : 'inherit' }} />
               {label}
             </NavLink>
           );
@@ -136,35 +142,37 @@ export const TopNavbar: React.FC = () => {
           gap: '16px',
         }}
       >
-        {/* Balance */}
+        {/* Balance - Glass pill */}
         {user && (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              padding: '6px 12px',
-              backgroundColor: 'var(--color-accent-bg)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-accent-border)',
+              padding: '8px 14px',
+              background: 'rgba(234, 153, 153, 0.1)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              borderRadius: '12px',
+              border: '1px solid rgba(234, 153, 153, 0.2)',
             }}
           >
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Balance</span>
+            <span style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>Balance</span>
             <span
               style={{
                 fontSize: '0.875rem',
                 fontWeight: 700,
-                color: 'var(--color-accent)',
+                color: '#EA9999',
                 fontFamily: 'var(--font-mono)',
               }}
             >
               {formatNumber(user.nmbr_balance)}
             </span>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>NMBR</span>
+            <span style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.4)' }}>NMBR</span>
           </div>
         )}
 
-        {/* User Menu */}
+        {/* User Menu - Glass button */}
         {user && (
           <div style={{ position: 'relative' }}>
             <button
@@ -173,20 +181,22 @@ export const TopNavbar: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                padding: '4px 8px 4px 4px',
-                backgroundColor: 'transparent',
-                border: '1px solid var(--border-color)',
-                borderRadius: 'var(--radius-md)',
+                padding: '4px 10px 4px 4px',
+                background: 'rgba(255, 255, 255, 0.04)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '10px',
                 cursor: 'pointer',
-                transition: 'var(--transition-fast)',
+                transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
-                e.currentTarget.style.borderColor = 'var(--border-hover)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.borderColor = 'var(--border-color)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
               }}
             >
               <img
@@ -195,14 +205,14 @@ export const TopNavbar: React.FC = () => {
                 style={{
                   width: '28px',
                   height: '28px',
-                  borderRadius: 'var(--radius-sm)',
+                  borderRadius: '8px',
                   objectFit: 'cover',
                 }}
               />
               <span
                 style={{
                   fontSize: '0.8125rem',
-                  color: 'var(--text-secondary)',
+                  color: 'rgba(255, 255, 255, 0.8)',
                   maxWidth: '100px',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -214,14 +224,14 @@ export const TopNavbar: React.FC = () => {
               <ChevronDown
                 size={14}
                 style={{
-                  color: 'var(--text-muted)',
+                  color: 'rgba(255, 255, 255, 0.5)',
                   transform: showUserMenu ? 'rotate(180deg)' : 'rotate(0)',
-                  transition: 'var(--transition-fast)',
+                  transition: 'transform 0.15s ease',
                 }}
               />
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Dropdown Menu - Glass */}
             {showUserMenu && (
               <>
                 <div
@@ -237,26 +247,29 @@ export const TopNavbar: React.FC = () => {
                     position: 'absolute',
                     top: 'calc(100% + 8px)',
                     right: 0,
-                    width: '200px',
-                    backgroundColor: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 'var(--radius-lg)',
+                    width: '220px',
+                    background: 'rgba(17, 17, 17, 0.95)',
+                    backdropFilter: 'blur(24px)',
+                    WebkitBackdropFilter: 'blur(24px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '14px',
                     padding: '8px',
                     zIndex: 100,
-                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                    boxShadow: '0 16px 48px rgba(0, 0, 0, 0.5)',
+                    animation: 'slideDown 0.15s ease',
                   }}
                 >
                   <div
                     style={{
                       padding: '12px',
-                      borderBottom: '1px solid var(--border-color)',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
                       marginBottom: '8px',
                     }}
                   >
-                    <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255, 255, 255, 1)' }}>
                       {user.display_name}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginTop: '2px' }}>
                       {user.email}
                     </div>
                   </div>
@@ -273,15 +286,15 @@ export const TopNavbar: React.FC = () => {
                       padding: '10px 12px',
                       backgroundColor: 'transparent',
                       border: 'none',
-                      borderRadius: 'var(--radius-md)',
-                      color: 'var(--color-negative)',
+                      borderRadius: '10px',
+                      color: '#FF5252',
                       fontSize: '0.8125rem',
                       fontWeight: 500,
                       cursor: 'pointer',
-                      transition: 'var(--transition-fast)',
+                      transition: 'all 0.15s ease',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'var(--color-negative-bg)';
+                      e.currentTarget.style.backgroundColor = 'rgba(255, 82, 82, 0.1)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = 'transparent';

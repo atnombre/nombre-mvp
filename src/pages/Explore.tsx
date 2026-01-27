@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, TrendingUp, BarChart3, DollarSign, Users, Plus, ChevronRight } from 'lucide-react';
 import { useCreators } from '../hooks/useCreators';
@@ -7,6 +7,22 @@ import { AddCreatorModal } from '../components/AddCreatorModal';
 import { Avatar } from '../components/ui';
 import { PriceDisplay, formatNumber, formatPrice, DataTable } from '../components/trading';
 import { useAuthStore } from '../stores/authStore';
+
+// Custom hook for responsive breakpoint
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+};
 
 type SortOption = 'volume_24h' | 'price_change_24h' | 'market_cap' | 'cpi_score';
 
@@ -23,6 +39,7 @@ export const Explore: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('volume_24h');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   // Real-time price updates map
   const [realtimeUpdates, setRealtimeUpdates] = useState<Record<string, PoolPriceUpdate>>({});
@@ -73,7 +90,7 @@ export const Explore: React.FC = () => {
     refresh();
   };
 
-  // Table columns configuration
+  // Table columns configuration (Desktop)
   const tableColumns = [
     {
       key: 'name',
@@ -165,6 +182,85 @@ export const Explore: React.FC = () => {
     },
   ];
 
+  // Mobile Creator Card
+  const CreatorCard: React.FC<{ creator: any }> = ({ creator }) => {
+    const price = getCreatorPrice(creator);
+    const change = getCreatorPriceChange(creator);
+
+    return (
+      <div
+        onClick={() => navigate(`/creator/${creator.id}`)}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          padding: '16px',
+          background: 'rgba(20, 20, 20, 0.6)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderRadius: '14px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          cursor: 'pointer',
+          minHeight: '72px',
+        }}
+      >
+        <Avatar src={creator.avatar_url} alt={creator.display_name} fallback={creator.display_name} size="md" />
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span style={{
+              fontWeight: 600,
+              fontSize: '0.9375rem',
+              color: 'rgba(255, 255, 255, 1)',
+            }}>
+              {creator.token_symbol}
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              color: 'rgba(255, 255, 255, 0.45)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}>
+              {creator.display_name}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{
+              fontSize: '0.75rem',
+              color: 'rgba(255, 255, 255, 0.5)',
+            }}>
+              Vol: {formatNumber(creator.volume_24h)}
+            </span>
+            <span style={{ color: 'rgba(255, 255, 255, 0.3)', fontSize: '0.75rem' }}>•</span>
+            <span style={{
+              fontSize: '0.75rem',
+              color: 'rgba(255, 255, 255, 0.5)',
+            }}>
+              <Users size={10} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+              {formatNumber(creator.subscriber_count)}
+            </span>
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+          <div style={{
+            fontFamily: 'var(--font-mono)',
+            fontWeight: 600,
+            fontSize: '0.9375rem',
+            color: 'rgba(255, 255, 255, 1)',
+            marginBottom: '4px',
+          }}>
+            {formatPrice(price)}
+          </div>
+          <PriceDisplay value={change} format="percent" variant="badge" size="sm" />
+        </div>
+
+        <ChevronRight size={18} style={{ color: 'rgba(255, 255, 255, 0.3)', flexShrink: 0 }} />
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* Add Creator Modal */}
@@ -179,26 +275,28 @@ export const Explore: React.FC = () => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: '24px',
+        marginBottom: isMobile ? '16px' : '24px',
         gap: '16px',
       }}>
         <div>
           <h1 style={{
             margin: 0,
-            fontSize: '1.5rem',
+            fontSize: isMobile ? '1.25rem' : '1.5rem',
             fontWeight: 600,
             color: 'var(--text-primary)',
             letterSpacing: '-0.02em',
           }}>
-            Explore Creators
+            Explore
           </h1>
-          <p style={{
-            margin: '4px 0 0',
-            color: 'var(--text-muted)',
-            fontSize: '0.8125rem',
-          }}>
-            Discover and invest in your favorite creators
-          </p>
+          {!isMobile && (
+            <p style={{
+              margin: '4px 0 0',
+              color: 'var(--text-muted)',
+              fontSize: '0.8125rem',
+            }}>
+              Discover and invest in your favorite creators
+            </p>
+          )}
         </div>
         {user?.is_admin && (
           <button
@@ -207,7 +305,7 @@ export const Explore: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '10px 18px',
+              padding: isMobile ? '10px 14px' : '10px 18px',
               background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%)',
               border: 'none',
               borderRadius: '10px',
@@ -215,21 +313,11 @@ export const Explore: React.FC = () => {
               fontWeight: 600,
               fontSize: '0.8125rem',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-              position: 'relative',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)';
-              e.currentTarget.style.transform = 'translateY(0)';
+              minHeight: '44px',
             }}
           >
             <Plus size={16} />
-            Add Creator
+            {!isMobile && 'Add Creator'}
           </button>
         )}
       </div>
@@ -237,27 +325,28 @@ export const Explore: React.FC = () => {
       {/* Search and Filters */}
       <div style={{
         display: 'flex',
-        gap: '12px',
-        marginBottom: '20px',
+        gap: isMobile ? '8px' : '12px',
+        marginBottom: isMobile ? '16px' : '20px',
+        flexDirection: isMobile ? 'column' : 'row',
         flexWrap: 'wrap',
-        alignItems: 'center',
+        alignItems: isMobile ? 'stretch' : 'center',
       }}>
         {/* Search Input */}
-        <div style={{ flex: '1', minWidth: '280px', maxWidth: '400px' }}>
+        <div style={{ flex: isMobile ? undefined : '1', minWidth: isMobile ? undefined : '280px', maxWidth: isMobile ? undefined : '400px' }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
-            padding: '10px 14px',
+            padding: '12px 14px',
             backgroundColor: 'var(--bg-tertiary)',
             border: '1px solid var(--border-color)',
             borderRadius: 'var(--radius-md)',
-            transition: 'var(--transition-fast)',
+            minHeight: '44px',
           }}>
             <Search size={16} style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
-              placeholder="Search by name or username..."
+              placeholder="Search creators..."
               value={searchQuery}
               onChange={handleSearch}
               style={{
@@ -266,14 +355,21 @@ export const Explore: React.FC = () => {
                 border: 'none',
                 outline: 'none',
                 color: 'var(--text-primary)',
-                fontSize: '0.8125rem',
+                fontSize: '16px', // Prevent iOS zoom
               }}
             />
           </div>
         </div>
 
-        {/* Sort Buttons */}
-        <div style={{ display: 'flex', gap: '8px' }}>
+        {/* Sort Buttons - Horizontal scroll on mobile */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          overflowX: isMobile ? 'auto' : undefined,
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        }}>
           {sortOptions.map((option) => (
             <button
               key={option.value}
@@ -290,7 +386,8 @@ export const Explore: React.FC = () => {
                 cursor: 'pointer',
                 fontSize: '0.8125rem',
                 fontWeight: 500,
-                transition: 'var(--transition-fast)',
+                minHeight: '44px',
+                flexShrink: 0,
               }}
             >
               {option.icon}
@@ -300,114 +397,180 @@ export const Explore: React.FC = () => {
         </div>
 
         {/* Results Count */}
+        {!isMobile && (
+          <div style={{
+            marginLeft: 'auto',
+            fontSize: '0.8125rem',
+            color: 'var(--text-muted)',
+          }}>
+            {isLoading ? 'Loading...' : `${total} creator${total !== 1 ? 's' : ''}`}
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Results Count */}
+      {isMobile && (
         <div style={{
-          marginLeft: 'auto',
-          fontSize: '0.8125rem',
+          fontSize: '0.75rem',
           color: 'var(--text-muted)',
+          marginBottom: '12px',
         }}>
           {isLoading ? 'Loading...' : `${total} creator${total !== 1 ? 's' : ''}`}
         </div>
-      </div>
+      )}
 
-      {/* Creators Table - Glassmorphic Container */}
-      <div style={{
-        background: 'var(--glass-bg)',
-        backdropFilter: 'blur(var(--glass-blur))',
-        WebkitBackdropFilter: 'blur(var(--glass-blur))',
-        borderRadius: '16px',
-        border: '1px solid var(--glass-border)',
-        boxShadow: 'var(--glass-shadow)',
-        overflow: 'hidden',
-      }}>
-        {isLoading ? (
-          <div style={{ padding: '20px' }}>
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} style={{
+      {/* Creators List - Card view on mobile, Table on desktop */}
+      {isMobile ? (
+        // Mobile Card View
+        <div>
+          {isLoading ? (
+            <div className="mobile-card-grid">
+              {[1, 2, 3, 4, 5].map(i => (
+                <div key={i} style={{
+                  padding: '16px',
+                  background: 'rgba(20, 20, 20, 0.6)',
+                  borderRadius: '14px',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div className="skeleton" style={{ width: 44, height: 44, borderRadius: '12px' }} />
+                    <div style={{ flex: 1 }}>
+                      <div className="skeleton" style={{ width: '60%', height: 14, borderRadius: 4, marginBottom: 8 }} />
+                      <div className="skeleton" style={{ width: '40%', height: 12, borderRadius: 4 }} />
+                    </div>
+                    <div>
+                      <div className="skeleton" style={{ width: 60, height: 14, borderRadius: 4, marginBottom: 6 }} />
+                      <div className="skeleton" style={{ width: 50, height: 20, borderRadius: 4 }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : creators.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '48px 24px',
+              background: 'rgba(20, 20, 20, 0.6)',
+              backdropFilter: 'blur(16px)',
+              borderRadius: '14px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+            }}>
+              <Users size={40} style={{ color: 'var(--text-muted)', marginBottom: '16px' }} />
+              <h3 style={{ margin: '0 0 8px', color: 'var(--text-secondary)', fontSize: '0.9375rem', fontWeight: 600 }}>
+                No creators found
+              </h3>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+                Try adjusting your search
+              </p>
+            </div>
+          ) : (
+            <div className="mobile-card-grid">
+              {creators.map((creator) => (
+                <CreatorCard key={creator.id} creator={creator} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        // Desktop Table View
+        <div style={{
+          background: 'var(--glass-bg)',
+          backdropFilter: 'blur(var(--glass-blur))',
+          WebkitBackdropFilter: 'blur(var(--glass-blur))',
+          borderRadius: '16px',
+          border: '1px solid var(--glass-border)',
+          boxShadow: 'var(--glass-shadow)',
+          overflow: 'hidden',
+        }}>
+          {isLoading ? (
+            <div style={{ padding: '20px' }}>
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '16px',
+                  padding: '14px 16px',
+                  borderBottom: '1px solid var(--border-color)',
+                }}>
+                  <div className="skeleton" style={{ width: 36, height: 36, borderRadius: 'var(--radius-md)' }} />
+                  <div style={{ flex: 1 }}>
+                    <div className="skeleton" style={{ width: 80, height: 14, borderRadius: 4, marginBottom: 6 }} />
+                    <div className="skeleton" style={{ width: 120, height: 10, borderRadius: 4 }} />
+                  </div>
+                  <div className="skeleton" style={{ width: 60, height: 14, borderRadius: 4 }} />
+                  <div className="skeleton" style={{ width: 60, height: 24, borderRadius: 4 }} />
+                  <div className="skeleton" style={{ width: 70, height: 14, borderRadius: 4 }} />
+                  <div className="skeleton" style={{ width: 70, height: 14, borderRadius: 4 }} />
+                </div>
+              ))}
+            </div>
+          ) : creators.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '64px 24px',
+            }}>
+              <div style={{
+                width: 64,
+                height: 64,
+                margin: '0 auto 20px',
+                borderRadius: 'var(--radius-lg)',
+                backgroundColor: 'var(--bg-hover)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '16px',
-                padding: '14px 16px',
-                borderBottom: '1px solid var(--border-color)',
+                justifyContent: 'center',
               }}>
-                <div className="skeleton" style={{ width: 36, height: 36, borderRadius: 'var(--radius-md)' }} />
-                <div style={{ flex: 1 }}>
-                  <div className="skeleton" style={{ width: 80, height: 14, borderRadius: 4, marginBottom: 6 }} />
-                  <div className="skeleton" style={{ width: 120, height: 10, borderRadius: 4 }} />
-                </div>
-                <div className="skeleton" style={{ width: 60, height: 14, borderRadius: 4 }} />
-                <div className="skeleton" style={{ width: 60, height: 24, borderRadius: 4 }} />
-                <div className="skeleton" style={{ width: 70, height: 14, borderRadius: 4 }} />
-                <div className="skeleton" style={{ width: 70, height: 14, borderRadius: 4 }} />
+                <Users size={32} style={{ color: 'var(--text-muted)' }} />
               </div>
-            ))}
-          </div>
-        ) : creators.length === 0 ? (
-          <div style={{
-            textAlign: 'center',
-            padding: '64px 24px',
-          }}>
-            <div style={{
-              width: 64,
-              height: 64,
-              margin: '0 auto 20px',
-              borderRadius: 'var(--radius-lg)',
-              backgroundColor: 'var(--bg-hover)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Users size={32} style={{ color: 'var(--text-muted)' }} />
+              <h3 style={{
+                margin: '0 0 8px',
+                color: 'var(--text-secondary)',
+                fontSize: '1rem',
+                fontWeight: 600,
+              }}>
+                No creators found
+              </h3>
+              <p style={{
+                margin: '0 0 24px',
+                color: 'var(--text-muted)',
+                fontSize: '0.8125rem',
+              }}>
+                Try adjusting your search or filters
+              </p>
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setParams({ search: undefined });
+                  }}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: 'transparent',
+                    border: '1px solid var(--border-hover)',
+                    borderRadius: 'var(--radius-md)',
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                    fontSize: '0.8125rem',
+                    fontWeight: 500,
+                  }}
+                >
+                  Clear search
+                </button>
+              )}
             </div>
-            <h3 style={{
-              margin: '0 0 8px',
-              color: 'var(--text-secondary)',
-              fontSize: '1rem',
-              fontWeight: 600,
-            }}>
-              No creators found
-            </h3>
-            <p style={{
-              margin: '0 0 24px',
-              color: 'var(--text-muted)',
-              fontSize: '0.8125rem',
-            }}>
-              Try adjusting your search or filters
-            </p>
-            {searchQuery && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setParams({ search: undefined });
-                }}
-                style={{
-                  padding: '10px 20px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid var(--border-hover)',
-                  borderRadius: 'var(--radius-md)',
-                  color: 'var(--text-primary)',
-                  cursor: 'pointer',
-                  fontSize: '0.8125rem',
-                  fontWeight: 500,
-                  transition: 'var(--transition-fast)',
-                }}
-              >
-                Clear search
-              </button>
-            )}
-          </div>
-        ) : (
-          <DataTable
-            columns={tableColumns}
-            data={creators}
-            keyExtractor={(creator) => creator.id}
-            onRowClick={(creator) => navigate(`/creator/${creator.id}`)}
-            sortKey={sortBy}
-            sortOrder="desc"
-            onSort={(key) => handleSortChange(key as SortOption)}
-            compact
-          />
-        )}
-      </div>
+          ) : (
+            <DataTable
+              columns={tableColumns}
+              data={creators}
+              keyExtractor={(creator) => creator.id}
+              onRowClick={(creator) => navigate(`/creator/${creator.id}`)}
+              sortKey={sortBy}
+              sortOrder="desc"
+              onSort={(key) => handleSortChange(key as SortOption)}
+              compact
+            />
+          )}
+        </div>
+      )}
 
       {/* Load More */}
       {!isLoading && creators.length < total && (
@@ -423,17 +586,7 @@ export const Explore: React.FC = () => {
               cursor: 'pointer',
               fontSize: '0.8125rem',
               fontWeight: 500,
-              transition: 'var(--transition-normal)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--bg-hover)';
-              e.currentTarget.style.borderColor = 'var(--color-accent-border)';
-              e.currentTarget.style.color = 'var(--color-accent)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.borderColor = 'var(--border-hover)';
-              e.currentTarget.style.color = 'var(--text-primary)';
+              minHeight: '44px',
             }}
           >
             Load More

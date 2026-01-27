@@ -25,9 +25,12 @@ export const MobileNav: React.FC = () => {
             bottom: 0,
             left: 0,
             right: 0,
-            height: '64px',
-            backgroundColor: '#0a0a0a',
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+            height: '70px',
+            // Glass bottom navigation
+            background: 'rgba(10, 10, 10, 0.85)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.06)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-around',
@@ -47,20 +50,29 @@ export const MobileNav: React.FC = () => {
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
-                            gap: '0.25rem',
-                            padding: '0.5rem 0.75rem',
-                            borderRadius: '8px',
+                            gap: '0.3rem',
+                            padding: '0.6rem 0.85rem',
+                            borderRadius: '12px',
                             textDecoration: 'none',
                             color: isActive ? '#EA9999' : 'rgba(255, 255, 255, 0.4)',
-                            transition: 'color 0.15s ease',
+                            backgroundColor: isActive ? 'rgba(234, 153, 153, 0.1)' : 'transparent',
+                            transition: 'all 0.15s ease',
                             minWidth: '60px',
+                            // Pink glow for active
+                            boxShadow: isActive ? '0 0 20px rgba(234, 153, 153, 0.15)' : 'none',
                         }}
                     >
-                        <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                        <Icon
+                            size={22}
+                            strokeWidth={isActive ? 2.5 : 2}
+                            style={{
+                                filter: isActive ? 'drop-shadow(0 0 6px rgba(234, 153, 153, 0.5))' : 'none',
+                            }}
+                        />
                         <span style={{
                             fontSize: '0.65rem',
                             fontWeight: isActive ? 600 : 400,
-                            letterSpacing: '0.01em',
+                            letterSpacing: '0.02em',
                         }}>
                             {label}
                         </span>

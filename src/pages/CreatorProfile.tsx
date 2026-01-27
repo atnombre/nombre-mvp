@@ -21,12 +21,29 @@ import { PriceChart } from '../components/trading/PriceChart';
 import { formatNumber, formatPrice } from '../components/trading';
 import { api } from '../services/api';
 
+// Custom hook for responsive breakpoint
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+};
+
 export const CreatorProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, refreshUser } = useAuthStore();
   const { creator, priceHistory, isLoading, fetchPriceHistory, refresh: refreshCreator } = useCreator(id);
   const [chartPeriod, setChartPeriod] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
+  const isMobile = useIsMobile();
 
   // Local state for real-time price updates
   const [realtimePrice, setRealtimePrice] = useState<number | null>(null);
@@ -134,6 +151,7 @@ export const CreatorProfile: React.FC = () => {
             cursor: 'pointer',
             fontSize: '0.875rem',
             fontWeight: 600,
+            minHeight: '44px',
           }}
         >
           Back to Explore
@@ -149,6 +167,205 @@ export const CreatorProfile: React.FC = () => {
   const volume24h = pool?.volume_24h || 0;
   const isPositive = priceChange >= 0;
 
+  // Mobile Layout
+  if (isMobile) {
+    return (
+      <div style={{ paddingBottom: '100px' }}> {/* Space for fixed bottom button */}
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            background: 'transparent',
+            border: 'none',
+            color: 'rgba(255, 255, 255, 0.4)',
+            cursor: 'pointer',
+            padding: '0',
+            marginBottom: '16px',
+            fontSize: '0.8rem',
+            fontWeight: 500,
+            minHeight: '44px',
+          }}
+        >
+          <ChevronLeft size={18} />
+          Back
+        </button>
+
+        {/* Creator Header - Compact Mobile */}
+        <div style={{ marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '12px' }}>
+            <Avatar src={creator.avatar_url} alt={creator.display_name} fallback={creator.display_name} size="lg" />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <h1 style={{
+                  margin: 0,
+                  fontSize: '1.25rem',
+                  fontWeight: 700,
+                  color: '#fff',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {creator.display_name}
+                </h1>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{
+                  padding: '3px 8px',
+                  background: 'rgba(234, 153, 153, 0.15)',
+                  border: '1px solid rgba(234, 153, 153, 0.25)',
+                  borderRadius: '6px',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  color: 'var(--color-accent)',
+                  fontFamily: 'var(--font-mono)',
+                }}>
+                  ${creator.token_symbol}
+                </span>
+                <a
+                  href={`https://youtube.com/${creator.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    color: 'rgba(255, 255, 255, 0.4)',
+                    fontSize: '0.7rem',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <Youtube size={12} />
+                  {creator.username?.replace(/^@/, '')}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Price - Large */}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '8px' }}>
+            <span style={{
+              fontSize: '2rem',
+              fontWeight: 700,
+              color: '#fff',
+              fontFamily: 'var(--font-mono)',
+            }}>
+              {formatPrice(currentPrice)}
+            </span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '4px 10px',
+              background: isPositive ? 'rgba(0, 200, 83, 0.1)' : 'rgba(255, 82, 82, 0.1)',
+              borderRadius: '6px',
+              color: isPositive ? '#00C853' : '#FF5252',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+            }}>
+              {isPositive ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+              {isPositive ? '+' : ''}{priceChange.toFixed(2)}%
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Row - Horizontal Scroll */}
+        <div style={{
+          display: 'flex',
+          gap: '12px',
+          marginBottom: '16px',
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          paddingBottom: '4px',
+        }}>
+          <MobileStat icon={<Coins size={12} />} label="Mkt Cap" value={formatNumber(marketCap)} />
+          <MobileStat icon={<BarChart3 size={12} />} label="24h Vol" value={formatNumber(volume24h)} />
+          <MobileStat icon={<Users size={12} />} label="Holders" value={(pool?.holder_count || 0).toString()} />
+          <MobileStat icon={<Users size={12} />} label="Subs" value={formatNumber(creator.subscriber_count)} />
+        </div>
+
+        {/* Chart */}
+        <div style={{
+          background: 'rgba(20, 20, 20, 0.6)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderRadius: '14px',
+          padding: '14px',
+          border: '1px solid rgba(255, 255, 255, 0.06)',
+          marginBottom: '16px',
+        }}>
+          {/* Period Selector */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginBottom: '12px',
+          }}>
+            <div style={{
+              display: 'flex',
+              gap: '4px',
+              padding: '3px',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '8px',
+            }}>
+              {(['1h', '24h', '7d', '30d'] as const).map((period) => (
+                <button
+                  key={period}
+                  onClick={() => {
+                    setChartPeriod(period);
+                    fetchPriceHistory(period);
+                  }}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: chartPeriod === period
+                      ? 'rgba(234, 153, 153, 0.15)'
+                      : 'transparent',
+                    color: chartPeriod === period ? 'var(--color-accent)' : 'rgba(255, 255, 255, 0.4)',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    minHeight: '32px',
+                  }}
+                >
+                  {period}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ height: '180px' }}>
+            <PriceChart
+              data={priceHistory?.prices || []}
+              period={chartPeriod}
+            />
+          </div>
+        </div>
+
+        {/* Buy/Sell Panel - Inline on Mobile */}
+        <BuySellPanel
+          creator={creator}
+          userBalance={user?.nmbr_balance || 0}
+          userHolding={userHolding}
+          onTradeComplete={handleTradeComplete}
+        />
+
+        {/* Animations */}
+        <style>{`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // Desktop Layout - Original
   return (
     <div>
       {/* Back Button - Minimal */}
@@ -291,9 +508,9 @@ export const CreatorProfile: React.FC = () => {
                 alignItems: 'center',
                 gap: '4px',
                 padding: '6px 12px',
-                background: isPositive ? 'rgba(74, 222, 128, 0.1)' : 'rgba(248, 113, 113, 0.1)',
+                background: isPositive ? 'rgba(0, 200, 83, 0.1)' : 'rgba(255, 82, 82, 0.1)',
                 borderRadius: '8px',
-                color: isPositive ? '#4ade80' : '#f87171',
+                color: isPositive ? '#00C853' : '#FF5252',
                 fontSize: '0.875rem',
                 fontWeight: 600,
               }}>
@@ -438,7 +655,47 @@ export const CreatorProfile: React.FC = () => {
   );
 };
 
-// De-boxed Stat Item Component
+// Mobile Stat Component
+const MobileStat: React.FC<{
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}> = ({ icon, label, value }) => (
+  <div style={{
+    flexShrink: 0,
+    padding: '12px 14px',
+    background: 'rgba(20, 20, 20, 0.6)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    borderRadius: '12px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    minWidth: '90px',
+  }}>
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px',
+      color: 'rgba(255, 255, 255, 0.4)',
+      fontSize: '0.65rem',
+      textTransform: 'uppercase',
+      letterSpacing: '0.05em',
+      marginBottom: '4px',
+    }}>
+      {icon}
+      {label}
+    </div>
+    <div style={{
+      fontSize: '0.9rem',
+      fontWeight: 600,
+      color: '#fff',
+      fontFamily: 'var(--font-mono)',
+    }}>
+      {value}
+    </div>
+  </div>
+);
+
+// De-boxed Stat Item Component (Desktop)
 const StatItem: React.FC<{
   icon: React.ReactNode;
   label: string;

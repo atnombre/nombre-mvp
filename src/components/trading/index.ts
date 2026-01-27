@@ -9,4 +9,6 @@ export { PriceDisplay, formatNumber, formatCurrency, formatPrice } from './Price
 export { DataTable, columnRenderers } from './DataTable';
 export { AllocationBar, PortfolioAllocation } from './AllocationBar';
 export { SummaryWidget, PnLWidget } from './SummaryWidget';
-export { HoldingRow, HoldingsTableHeader, HoldingsSummaryRow } from './HoldingsTable';
+export { HoldingRow, HoldingsTableHeader, HoldingsSummaryRow, HoldingsList, MobileHoldingsSummary } from './HoldingsTable';
+export { HoldingCard } from './HoldingCard';
+

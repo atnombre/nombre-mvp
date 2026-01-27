@@ -55,13 +55,11 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
         try {
             const result = await api.addCreatorFromYouTube(channel.channel_id);
             setSuccess(result.message);
-            
-            // Remove the added channel from results
+
             setSearchResults(prev => prev.filter(c => c.channel_id !== channel.channel_id));
-            
+
             onCreatorAdded?.();
-            
-            // Auto close after 2 seconds
+
             setTimeout(() => {
                 setSuccess(null);
             }, 3000);
@@ -90,12 +88,16 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                // Heavy blur backdrop
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 zIndex: 1000,
-                padding: '1rem',
+                padding: '1.5rem',
+                animation: 'fadeIn 0.2s ease',
             }}
             onClick={(e) => {
                 if (e.target === e.currentTarget) handleClose();
@@ -103,46 +105,52 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
         >
             <div
                 style={{
-                    backgroundColor: '#111',
-                    borderRadius: '16px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    // Glass modal
+                    background: 'rgba(17, 17, 17, 0.9)',
+                    backdropFilter: 'blur(24px)',
+                    WebkitBackdropFilter: 'blur(24px)',
+                    borderRadius: '18px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     width: '100%',
                     maxWidth: '600px',
                     maxHeight: '80vh',
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
+                    boxShadow: '0 24px 64px rgba(0, 0, 0, 0.5)',
+                    animation: 'scaleIn 0.2s ease',
                 }}
             >
                 {/* Header */}
                 <div
                     style={{
-                        padding: '1.25rem 1.5rem',
+                        padding: '1.5rem 1.75rem',
                         borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
                     }}
                 >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                         <div
                             style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '10px',
+                                width: '44px',
+                                height: '44px',
+                                borderRadius: '12px',
                                 background: 'linear-gradient(135deg, #FF0000 0%, #cc0000 100%)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                boxShadow: '0 4px 16px rgba(255, 0, 0, 0.25)',
                             }}
                         >
-                            <Youtube size={20} color="#fff" />
+                            <Youtube size={22} color="#fff" />
                         </div>
                         <div>
-                            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600, color: '#fff' }}>
+                            <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 600, color: 'rgba(255, 255, 255, 1)' }}>
                                 Add Creator
                             </h2>
-                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.45)' }}>
                                 Search YouTube to add a new creator
                             </p>
                         </div>
@@ -150,19 +158,30 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                     <button
                         onClick={handleClose}
                         style={{
-                            background: 'none',
-                            border: 'none',
-                            color: 'rgba(255, 255, 255, 0.4)',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderRadius: '10px',
+                            color: 'rgba(255, 255, 255, 0.5)',
                             cursor: 'pointer',
                             padding: '0.5rem',
+                            display: 'flex',
+                            transition: 'all 0.15s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.8)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
                         }}
                     >
-                        <X size={20} />
+                        <X size={18} />
                     </button>
                 </div>
 
                 {/* Search */}
-                <div style={{ padding: '1.25rem 1.5rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div style={{ padding: '1.25rem 1.75rem', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
                     <div style={{ display: 'flex', gap: '0.75rem' }}>
                         <div style={{ flex: 1 }}>
                             <Input
@@ -170,13 +189,15 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyPress={handleKeyPress}
-                                leftElement={<Search size={16} style={{ color: 'rgba(255, 255, 255, 0.3)' }} />}
+                                leftElement={<Search size={16} />}
+                                variant="glass"
                             />
                         </div>
                         <Button
                             onClick={handleSearch}
                             disabled={isSearching || !searchQuery.trim()}
                             isLoading={isSearching}
+                            glow
                         >
                             Search
                         </Button>
@@ -188,7 +209,7 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                     style={{
                         flex: 1,
                         overflow: 'auto',
-                        padding: '1rem 1.5rem',
+                        padding: '1.25rem 1.75rem',
                     }}
                 >
                     {success && (
@@ -198,13 +219,14 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                                 alignItems: 'center',
                                 gap: '0.75rem',
                                 padding: '1rem',
-                                backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                                borderRadius: '10px',
+                                background: 'rgba(0, 200, 83, 0.1)',
+                                border: '1px solid rgba(0, 200, 83, 0.2)',
+                                borderRadius: '12px',
                                 marginBottom: '1rem',
                             }}
                         >
-                            <CheckCircle size={20} color="#4ade80" />
-                            <span style={{ color: '#4ade80', fontSize: '0.9rem' }}>{success}</span>
+                            <CheckCircle size={20} color="#00C853" />
+                            <span style={{ color: '#00C853', fontSize: '0.9rem' }}>{success}</span>
                         </div>
                     )}
 
@@ -212,9 +234,10 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                         <div
                             style={{
                                 padding: '1rem',
-                                backgroundColor: 'rgba(248, 113, 113, 0.1)',
-                                borderRadius: '10px',
-                                color: '#f87171',
+                                background: 'rgba(255, 82, 82, 0.1)',
+                                border: '1px solid rgba(255, 82, 82, 0.2)',
+                                borderRadius: '12px',
+                                color: '#FF5252',
                                 fontSize: '0.9rem',
                                 marginBottom: '1rem',
                             }}
@@ -244,10 +267,22 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                                 alignItems: 'center',
                                 gap: '1rem',
                                 padding: '1rem',
-                                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                                borderRadius: '12px',
+                                // Glass result card
+                                background: 'rgba(255, 255, 255, 0.03)',
+                                backdropFilter: 'blur(10px)',
+                                WebkitBackdropFilter: 'blur(10px)',
+                                borderRadius: '14px',
                                 marginBottom: '0.75rem',
-                                border: '1px solid rgba(255, 255, 255, 0.04)',
+                                border: '1px solid rgba(255, 255, 255, 0.06)',
+                                transition: 'all 0.15s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
                             }}
                         >
                             <Avatar src={channel.avatar_url} alt={channel.display_name} fallback={channel.display_name} size="lg" />
@@ -255,7 +290,7 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                                 <div
                                     style={{
                                         fontWeight: 600,
-                                        color: '#fff',
+                                        color: 'rgba(255, 255, 255, 1)',
                                         fontSize: '0.95rem',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
@@ -266,7 +301,7 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                                 </div>
                                 <div
                                     style={{
-                                        color: 'rgba(255, 255, 255, 0.4)',
+                                        color: 'rgba(255, 255, 255, 0.45)',
                                         fontSize: '0.8rem',
                                         marginTop: '0.25rem',
                                     }}
@@ -276,7 +311,7 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                                 {channel.description && (
                                     <div
                                         style={{
-                                            color: 'rgba(255, 255, 255, 0.3)',
+                                            color: 'rgba(255, 255, 255, 0.35)',
                                             fontSize: '0.75rem',
                                             marginTop: '0.35rem',
                                             overflow: 'hidden',
@@ -292,8 +327,8 @@ export const AddCreatorModal: React.FC<AddCreatorModalProps> = ({
                                 onClick={() => handleAddCreator(channel)}
                                 disabled={isAdding === channel.channel_id}
                                 isLoading={isAdding === channel.channel_id}
+                                glow
                                 style={{
-                                    background: 'linear-gradient(135deg, #EA9999 0%, #d88888 100%)',
                                     whiteSpace: 'nowrap',
                                 }}
                             >
