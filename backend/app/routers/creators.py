@@ -51,58 +51,64 @@ async def list_creators(
     """
     List all creators with pagination and sorting.
     """
-    supabase = get_supabase()
-    
-    # Build query
-    query = supabase.table("creators").select(
-        "id, username, display_name, avatar_url, subscriber_count, token_symbol, "
-        "pools(current_price, price_change_24h, market_cap, volume_24h)",
-        count="exact"
-    )
-    
-    # Apply search filter
-    if search:
-        query = query.or_(f"display_name.ilike.%{search}%,username.ilike.%{search}%,token_symbol.ilike.%{search}%")
-    
-    # Execute query
-    response = query.range(offset, offset + limit - 1).execute()
-    
-    # Transform results
-    creators = []
-    for row in response.data:
-        pool = row.get("pools") or {}
-        if isinstance(pool, list):
-            pool = pool[0] if pool else {}
+    try:
+        supabase = get_supabase()
         
-        creators.append(CreatorListItem(
-            id=row["id"],
-            username=row["username"],
-            display_name=row["display_name"],
-            avatar_url=row.get("avatar_url"),
-            subscriber_count=row.get("subscriber_count", 0),
-            token_symbol=row["token_symbol"],
-            current_price=float(pool.get("current_price", 0)),
-            price_change_24h=float(pool.get("price_change_24h", 0)),
-            market_cap=float(pool.get("market_cap", 0)),
-            volume_24h=float(pool.get("volume_24h", 0))
-        ))
-    
-    # Sort by pool fields
-    sort_key = {
-        "price_change_24h": lambda x: x.price_change_24h,
-        "volume_24h": lambda x: x.volume_24h,
-        "market_cap": lambda x: x.market_cap,
-        "cpi_score": lambda x: x.subscriber_count  # Fallback to subscribers
-    }[sort_by]
-    
-    creators.sort(key=sort_key, reverse=(order == "desc"))
-    
-    return {
-        "creators": creators,
-        "total": response.count or len(creators),
-        "limit": limit,
-        "offset": offset
-    }
+        # Build query
+        query = supabase.table("creators").select(
+            "id, username, display_name, avatar_url, subscriber_count, token_symbol, "
+            "pools(current_price, price_change_24h, market_cap, volume_24h)",
+            count="exact"
+        )
+        
+        # Apply search filter
+        if search:
+            query = query.or_(f"display_name.ilike.%{search}%,username.ilike.%{search}%,token_symbol.ilike.%{search}%")
+        
+        # Execute query
+        response = query.range(offset, offset + limit - 1).execute()
+        
+        # Transform results
+        creators = []
+        for row in response.data:
+            pool = row.get("pools") or {}
+            if isinstance(pool, list):
+                pool = pool[0] if pool else {}
+            
+            creators.append(CreatorListItem(
+                id=row["id"],
+                username=row["username"],
+                display_name=row["display_name"],
+                avatar_url=row.get("avatar_url"),
+                subscriber_count=row.get("subscriber_count", 0),
+                token_symbol=row["token_symbol"],
+                current_price=float(pool.get("current_price", 0)),
+                price_change_24h=float(pool.get("price_change_24h", 0)),
+                market_cap=float(pool.get("market_cap", 0)),
+                volume_24h=float(pool.get("volume_24h", 0))
+            ))
+        
+        # Sort by pool fields
+        sort_key = {
+            "price_change_24h": lambda x: x.price_change_24h,
+            "volume_24h": lambda x: x.volume_24h,
+            "market_cap": lambda x: x.market_cap,
+            "cpi_score": lambda x: x.subscriber_count  # Fallback to subscribers
+        }[sort_by]
+        
+        creators.sort(key=sort_key, reverse=(order == "desc"))
+        
+        return {
+            "creators": creators,
+            "total": response.count or len(creators),
+            "limit": limit,
+            "offset": offset
+        }
+    except Exception as e:
+        import traceback
+        print(f"ERROR in list_creators: {e}")
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
 @router.get("/{creator_id}", response_model=CreatorWithPool)
