@@ -191,8 +191,10 @@ class LeaderboardEntry(BaseModel):
     user_id: str
     display_name: str
     avatar_url: Optional[str] = None
-    roi_pct: float
+    total_valuation: float  # portfolio_value + nmbr_balance
     portfolio_value: float
+    nmbr_balance: float
+    roi_pct: float
     total_invested: float
 
 

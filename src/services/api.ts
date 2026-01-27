@@ -335,8 +335,10 @@ export interface LeaderboardEntry {
     user_id: string;
     display_name: string;
     avatar_url: string;
-    roi_pct: number;
+    total_valuation: number;
     portfolio_value: number;
+    nmbr_balance: number;
+    roi_pct: number;
     total_invested: number;
 }
 

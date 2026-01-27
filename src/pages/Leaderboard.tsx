@@ -88,7 +88,7 @@ export const Leaderboard: React.FC = () => {
           color: 'var(--text-muted)',
           fontSize: '0.8125rem',
         }}>
-          Top traders ranked by portfolio value
+          Top traders ranked by total valuation
         </p>
       </div>
 
@@ -196,7 +196,7 @@ export const Leaderboard: React.FC = () => {
                 fontWeight: 500,
                 marginBottom: '4px',
               }}>
-                Your Portfolio
+                Total Valuation
               </div>
               <span style={{
                 fontFamily: 'var(--font-mono)',
@@ -204,7 +204,7 @@ export const Leaderboard: React.FC = () => {
                 fontSize: '1.25rem',
                 color: 'var(--color-accent)',
               }}>
-                {formatCurrency(myEntry?.portfolio_value || 0)}
+                {formatCurrency(myEntry?.total_valuation || 0)}
               </span>
             </div>
           </div>
@@ -228,7 +228,7 @@ export const Leaderboard: React.FC = () => {
         }}>
           <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Rank</span>
           <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>Trader</span>
-          <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, textAlign: 'right' }}>Portfolio Value</span>
+          <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, textAlign: 'right' }}>Total Valuation</span>
           <span style={{ fontSize: '0.6875rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, textAlign: 'right' }}>ROI</span>
         </div>
 
@@ -388,7 +388,7 @@ export const Leaderboard: React.FC = () => {
                       fontSize: '0.875rem',
                       color: 'var(--text-secondary)',
                     }}>
-                      {formatCurrency(entry.portfolio_value)}
+                      {formatCurrency(entry.total_valuation)}
                     </span>
                   </div>
 
