@@ -1,7 +1,7 @@
 """
 Leaderboard Router
 
-Handles ROI-based competition leaderboard.
+Handles portfolio value-based competition leaderboard.
 """
 
 from fastapi import APIRouter, Depends, Query
@@ -22,9 +22,9 @@ async def get_leaderboard(
     offset: int = Query(default=0, ge=0)
 ):
     """
-    Get ROI-based leaderboard.
+    Get portfolio value-based leaderboard.
     
-    Users are ranked by ROI % = (holdings_value - cost_basis) / cost_basis * 100
+    Users are ranked by total holdings value (portfolio_value).
     """
     supabase = get_supabase()
     
@@ -60,9 +60,9 @@ async def get_leaderboard(
             "roi_pct": roi_pct
         })
     
-    # Sort by ROI descending, then by portfolio value for ties
+    # Sort by portfolio value descending, then by ROI for ties
     users_with_roi.sort(
-        key=lambda x: (x["roi_pct"], float(x.get("portfolio_value", 0))),
+        key=lambda x: (x["portfolio_value"], x["roi_pct"]),
         reverse=True
     )
     

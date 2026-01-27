@@ -9,6 +9,9 @@ export const Leaderboard: React.FC = () => {
   const { user } = useAuthStore();
   const { leaderboard, myRank, totalUsers, isLoading, error } = useLeaderboard();
 
+  // Find current user's entry to get their portfolio value
+  const myEntry = leaderboard.find(entry => entry.user_id === user?.id);
+
   const getRankBadge = (rank: number) => {
     const baseStyle: React.CSSProperties = {
       width: 32,
@@ -85,7 +88,7 @@ export const Leaderboard: React.FC = () => {
           color: 'var(--text-muted)',
           fontSize: '0.8125rem',
         }}>
-          Top traders ranked by ROI percentage
+          Top traders ranked by portfolio value
         </p>
       </div>
 
@@ -163,19 +166,19 @@ export const Leaderboard: React.FC = () => {
                 )}
               </div>
               <div>
-                <div style={{ 
-                  fontSize: '0.6875rem', 
-                  color: 'var(--text-muted)', 
-                  textTransform: 'uppercase', 
+                <div style={{
+                  fontSize: '0.6875rem',
+                  color: 'var(--text-muted)',
+                  textTransform: 'uppercase',
                   letterSpacing: '0.05em',
                   fontWeight: 500,
                   marginBottom: '4px',
                 }}>
                   Your Rank
                 </div>
-                <div style={{ 
-                  fontSize: '1.75rem', 
-                  fontWeight: 700, 
+                <div style={{
+                  fontSize: '1.75rem',
+                  fontWeight: 700,
                   color: 'var(--color-accent)',
                   fontFamily: 'var(--font-mono)',
                   lineHeight: 1,
@@ -185,17 +188,24 @@ export const Leaderboard: React.FC = () => {
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ 
-                fontSize: '0.6875rem', 
-                color: 'var(--text-muted)', 
-                textTransform: 'uppercase', 
+              <div style={{
+                fontSize: '0.6875rem',
+                color: 'var(--text-muted)',
+                textTransform: 'uppercase',
                 letterSpacing: '0.05em',
                 fontWeight: 500,
                 marginBottom: '4px',
               }}>
-                Your ROI
+                Your Portfolio
               </div>
-              <PriceDisplay value={user?.roi_pct || 0} format="percent" variant="badge" size="lg" />
+              <span style={{
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 700,
+                fontSize: '1.25rem',
+                color: 'var(--color-accent)',
+              }}>
+                {formatCurrency(myEntry?.portfolio_value || 0)}
+              </span>
             </div>
           </div>
         </div>
@@ -302,8 +312,8 @@ export const Leaderboard: React.FC = () => {
                     padding: '14px 16px',
                     alignItems: 'center',
                     borderBottom: '1px solid var(--border-color)',
-                    backgroundColor: isCurrentUser 
-                      ? 'var(--color-accent-bg)' 
+                    backgroundColor: isCurrentUser
+                      ? 'var(--color-accent-bg)'
                       : 'transparent',
                     transition: 'var(--transition-fast)',
                     cursor: 'default',
