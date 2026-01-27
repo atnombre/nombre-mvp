@@ -6,6 +6,13 @@ from .routers import auth, users, creators, trading, portfolio, leaderboard, mai
 
 settings = get_settings()
 
+# DEBUG: Log loaded settings at startup
+print(f"=== STARTUP DEBUG ===")
+print(f"SUPABASE_URL: '{settings.supabase_url[:30]}...' (len={len(settings.supabase_url)})" if settings.supabase_url else "SUPABASE_URL: EMPTY!")
+print(f"SUPABASE_SERVICE_KEY: '{settings.supabase_service_key[:10]}...' (len={len(settings.supabase_service_key)})" if settings.supabase_service_key else "SUPABASE_SERVICE_KEY: EMPTY!")
+print(f"CORS_ORIGINS: '{settings.cors_origins}'")
+print(f"=== END DEBUG ===")
+
 app = FastAPI(
     title="Nombre API",
     description="SocialFi Creator Stock Trading Platform",
@@ -14,7 +21,6 @@ app = FastAPI(
     redoc_url="/redoc" if settings.debug else None,
 )
 
-# CORS Configuration
 # CORS Configuration
 raw_origins = settings.cors_origins.split(",")
 origins = []
@@ -25,19 +31,32 @@ for origin in raw_origins:
     # Remove trailing slash if present
     if origin.endswith("/"):
         origin = origin[:-1]
-    origins.append(origin)
+    if origin:  # Only add non-empty origins
+        origins.append(origin)
 
-# If wildcard is present, simplify
-if "*" in origins:
-    origins = ["*"]
+# Check if wildcard mode
+is_wildcard = "*" in origins or not origins
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+print(f"DEBUG CORS: origins={origins}, is_wildcard={is_wildcard}")
+
+if is_wildcard:
+    # Use regex to match any origin - this properly handles preflight
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=r".*",  # Match any origin
+        allow_credentials=False,   # Required when allowing all origins
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # Explicit origins - enable credentials
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
