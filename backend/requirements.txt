@@ -4,9 +4,6 @@ supabase==2.3.0
 python-dotenv==1.0.0
 pydantic==2.5.3
 pydantic-settings==2.1.0
-# Core networking stack pinned to compatible versions
-httpx==0.24.1
-httpcore==0.17.3
-anyio==3.7.1
-sniffio==1.3.0
-h11==0.14.0
+# Let supabase control its own httpx version
+httpx>=0.25.0
+anyio>=4.0.0
