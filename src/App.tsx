@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './App.css';
 
 // Landing page components (your friend's work)
@@ -82,30 +83,33 @@ const LandingPage: React.FC = () => {
 
 function App() {
     return (
-        <BrowserRouter>
-            <Routes>
-                {/* Landing Page */}
-                <Route path="/" element={<LandingPage />} />
+        <>
+            <BrowserRouter>
+                <Routes>
+                    {/* Landing Page */}
+                    <Route path="/" element={<LandingPage />} />
 
-                {/* Auth Callback */}
-                <Route path="/auth/callback" element={<AuthCallback />} />
+                    {/* Auth Callback */}
+                    <Route path="/auth/callback" element={<AuthCallback />} />
 
-                {/* Protected App Routes */}
-                <Route element={<AppLayout />}>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/explore" element={<Explore />} />
-                    <Route path="/portfolio" element={<Portfolio />} />
-                    <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="/history" element={<History />} />
+                    {/* Protected App Routes */}
+                    <Route element={<AppLayout />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/explore" element={<Explore />} />
+                        <Route path="/portfolio" element={<Portfolio />} />
+                        <Route path="/leaderboard" element={<Leaderboard />} />
+                        <Route path="/history" element={<History />} />
 
-                    <Route path="/creator/:id" element={<CreatorProfile />} />
+                        <Route path="/creator/:id" element={<CreatorProfile />} />
 
-                </Route>
+                    </Route>
 
-                {/* Fallback */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        </BrowserRouter>
+                    {/* Fallback */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </BrowserRouter>
+            <SpeedInsights />
+        </>
     );
 }
 
