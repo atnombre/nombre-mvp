@@ -25,32 +25,32 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
   const isPositive = value > 0;
   const isNegative = value < 0;
   const isNeutral = value === 0;
-  
-  const color = isPositive 
-    ? 'var(--color-positive)' 
-    : isNegative 
-      ? 'var(--color-negative)' 
+
+  const color = isPositive
+    ? 'var(--color-positive)'
+    : isNegative
+      ? 'var(--color-negative)'
       : 'var(--text-muted)';
-      
-  const bgColor = isPositive 
-    ? 'var(--color-positive-bg)' 
-    : isNegative 
-      ? 'var(--color-negative-bg)' 
+
+  const bgColor = isPositive
+    ? 'var(--color-positive-bg)'
+    : isNegative
+      ? 'var(--color-negative-bg)'
       : 'rgba(255, 255, 255, 0.05)';
-  
+
   const sizeConfig = {
     xs: { fontSize: '0.7rem', iconSize: 10, padding: '2px 6px', gap: '2px' },
     sm: { fontSize: '0.75rem', iconSize: 12, padding: '3px 8px', gap: '3px' },
     md: { fontSize: '0.8125rem', iconSize: 14, padding: '4px 10px', gap: '4px' },
     lg: { fontSize: '0.9375rem', iconSize: 16, padding: '6px 12px', gap: '5px' },
   };
-  
+
   const config = sizeConfig[size];
-  
+
   const formatValue = () => {
     const absValue = Math.abs(value);
     let formatted = '';
-    
+
     switch (format) {
       case 'percent':
         formatted = `${absValue.toFixed(decimals)}%`;
@@ -62,18 +62,18 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
         formatted = formatNumber(absValue);
         break;
     }
-    
+
     if (showSign && !isNeutral) {
       formatted = (isPositive ? '+' : '-') + formatted;
     } else if (isNegative) {
       formatted = '-' + formatted;
     }
-    
+
     return formatted;
   };
-  
+
   const Icon = isPositive ? TrendingUp : isNegative ? TrendingDown : Minus;
-  
+
   if (variant === 'inline') {
     return (
       <span
@@ -81,6 +81,7 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
           color,
           fontSize: config.fontSize,
           fontWeight: 600,
+          fontFamily: 'var(--font-mono)',
           display: 'inline-flex',
           alignItems: 'center',
           gap: config.gap,
@@ -91,7 +92,7 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
       </span>
     );
   }
-  
+
   if (variant === 'badge') {
     return (
       <span
@@ -103,6 +104,7 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
           color,
           fontSize: config.fontSize,
           fontWeight: 600,
+          fontFamily: 'var(--font-mono)',
           padding: config.padding,
           borderRadius: 'var(--radius-md)',
         }}
@@ -112,7 +114,7 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
       </span>
     );
   }
-  
+
   // Default variant
   return (
     <span

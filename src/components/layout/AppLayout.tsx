@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { TopNavbar } from './TopNavbar';
 import { MobileNav } from './MobileNav';
+import { ClaimModal } from '../ClaimModal';
 import { useAuthStore } from '../../stores/authStore';
 
 // Custom hook for responsive breakpoint
@@ -58,6 +59,9 @@ export const AppLayout: React.FC = () => {
             minHeight: '100vh',
             backgroundColor: 'var(--bg-primary)',
         }}>
+            {/* Blocking Claim Modal for new users */}
+            <ClaimModal />
+
             {/* Top Navigation Bar */}
             {!isMobile && <TopNavbar />}
 

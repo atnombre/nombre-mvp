@@ -229,6 +229,7 @@ export const Explore: React.FC = () => {
             <span style={{
               fontSize: '0.75rem',
               color: 'rgba(255, 255, 255, 0.5)',
+              fontFamily: 'var(--font-mono)',
             }}>
               Vol: {formatNumber(creator.volume_24h)}
             </span>
@@ -236,6 +237,7 @@ export const Explore: React.FC = () => {
             <span style={{
               fontSize: '0.75rem',
               color: 'rgba(255, 255, 255, 0.5)',
+              fontFamily: 'var(--font-mono)',
             }}>
               <Users size={10} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
               {formatNumber(creator.subscriber_count)}

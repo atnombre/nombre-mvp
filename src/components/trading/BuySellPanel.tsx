@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTrade } from '../../hooks/useTrade';
 import { Creator, Holding } from '../../services/api';
-import { ArrowDownUp, AlertCircle, CheckCircle, Loader, Wallet, Zap, Coins } from 'lucide-react';
+import { AlertCircle, CheckCircle, Loader, Wallet, Zap, Coins } from 'lucide-react';
 import { formatNumber } from '../ui';
 
 interface BuySellPanelProps {
@@ -9,9 +9,10 @@ interface BuySellPanelProps {
     userBalance: number;
     userHolding?: Holding | null;
     onTradeComplete?: () => void;
+    isAdmin?: boolean; // For role-based visibility
 }
 
-export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance, userHolding, onTradeComplete }) => {
+export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance, userHolding, onTradeComplete, isAdmin = false }) => {
     const [mode, setMode] = useState<'buy' | 'sell'>('buy');
     const [amount, setAmount] = useState<string>('');
     const [showSuccess, setShowSuccess] = useState(false);
@@ -221,65 +222,128 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                 </span>
             </div>
 
-            {/* Big Number Input - Calculator Style */}
+            {/* ZONE A: You Pay (Source) */}
             <div style={{
                 position: 'relative',
-                marginBottom: '24px',
-                padding: '32px 20px',
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                marginBottom: '12px',
+                padding: '20px',
+                backgroundColor: mode === 'buy' ? 'rgba(234, 153, 153, 0.08)' : 'rgba(255, 255, 255, 0.02)',
                 borderRadius: '16px',
-                border: '1px solid rgba(255, 255, 255, 0.04)',
+                border: mode === 'buy' ? '1px solid rgba(234, 153, 153, 0.2)' : '1px solid rgba(255, 255, 255, 0.06)',
             }}>
-                <input
-                    type="number"
-                    placeholder="0"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    style={{
-                        width: '100%',
-                        background: 'transparent',
-                        border: 'none',
-                        outline: 'none',
-                        fontSize: '3rem',
-                        fontWeight: 700,
-                        color: '#fff',
-                        textAlign: 'center',
-                        fontFamily: 'var(--font-mono)',
-                        letterSpacing: '-0.02em',
-                    }}
-                />
                 <div style={{
                     display: 'flex',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    gap: '12px',
-                    marginTop: '8px',
+                    marginBottom: '12px',
                 }}>
                     <span style={{
-                        color: 'rgba(255, 255, 255, 0.4)',
-                        fontSize: '0.9rem',
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        fontSize: '0.75rem',
                         fontWeight: 500,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
                     }}>
-                        {mode === 'buy' ? 'NMBR' : creator.token_symbol}
+                        You Pay
                     </span>
-                    <button
-                        onClick={handleMaxClick}
-                        style={{
-                            padding: '6px 14px',
-                            background: `linear-gradient(135deg, rgba(${accentColorRgb}, 0.2) 0%, rgba(${accentColorRgb}, 0.1) 100%)`,
-                            border: `1px solid rgba(${accentColorRgb}, 0.3)`,
-                            borderRadius: '20px',
-                            color: accentColor,
-                            fontSize: '0.7rem',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                        }}
-                    >
-                        Max
-                    </button>
+                    <span style={{
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        fontSize: '0.7rem',
+                    }}>
+                        Balance: {formatNumber(mode === 'buy' ? userBalance : userTokenBalance)}
+                    </span>
+                </div>
+
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                }}>
+                    {/* Token Logo/Avatar */}
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '10px',
+                        background: mode === 'buy'
+                            ? 'linear-gradient(135deg, #EA9999 0%, #d88888 100%)'
+                            : `url(${creator.avatar_url}) center/cover`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: '0.7rem',
+                        color: '#000',
+                        flexShrink: 0,
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                    }}>
+                        {mode === 'buy' && 'N'}
+                    </div>
+
+                    <div style={{ position: 'relative', flex: 1 }}>
+                        <input
+                            type="number"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            style={{
+                                width: '100%',
+                                background: 'transparent',
+                                border: 'none',
+                                outline: 'none',
+                                fontSize: '2rem',
+                                fontWeight: 700,
+                                fontStyle: 'normal',
+                                color: amount ? '#fff' : 'transparent',
+                                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                                letterSpacing: '-0.02em',
+                                minWidth: 0,
+                                caretColor: '#fff',
+                            }}
+                        />
+                        {!amount && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: 0,
+                                transform: 'translateY(-50%)',
+                                fontSize: '2rem',
+                                fontWeight: 700,
+                                fontStyle: 'normal',
+                                color: 'rgba(255, 255, 255, 0.4)',
+                                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                                letterSpacing: '-0.02em',
+                                pointerEvents: 'none',
+                            }}>
+                                0
+                            </div>
+                        )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{
+                            color: 'rgba(255, 255, 255, 0.5)',
+                            fontSize: '0.875rem',
+                            fontWeight: 600,
+                        }}>
+                            {mode === 'buy' ? 'NMBR' : creator.token_symbol}
+                        </span>
+                        <button
+                            onClick={handleMaxClick}
+                            style={{
+                                padding: '4px 10px',
+                                background: `rgba(${accentColorRgb}, 0.15)`,
+                                border: `1px solid rgba(${accentColorRgb}, 0.3)`,
+                                borderRadius: '6px',
+                                color: accentColor,
+                                fontSize: '0.65rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                textTransform: 'uppercase',
+                            }}
+                        >
+                            Max
+                        </button>
+                    </div>
                 </div>
 
                 {/* Validation errors */}
@@ -290,17 +354,95 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                         marginTop: '12px',
                         display: 'flex',
                         alignItems: 'center',
-                        justifyContent: 'center',
                         gap: '6px',
                     }}>
                         <AlertCircle size={12} />
-                        {isBuyDisabled ? 'Insufficient balance' : 'Insufficient tokens'}
+                        {isBuyDisabled ? 'Insufficient NMBR balance' : 'Insufficient token balance'}
                     </p>
                 )}
             </div>
 
+            {/* ZONE B: You Receive (Destination) */}
+            <div style={{
+                position: 'relative',
+                marginBottom: '20px',
+                marginTop: '12px',
+                padding: '20px',
+                backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                borderRadius: '16px',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+            }}>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '12px',
+                }}>
+                    <span style={{
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                    }}>
+                        You Receive
+                    </span>
+                </div>
+
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                }}>
+                    {/* Token Logo/Avatar */}
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '10px',
+                        background: mode === 'sell'
+                            ? 'linear-gradient(135deg, #EA9999 0%, #d88888 100%)'
+                            : `url(${creator.avatar_url}) center/cover`,
+                        backgroundSize: 'cover',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 700,
+                        fontSize: '0.7rem',
+                        color: '#000',
+                        flexShrink: 0,
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                    }}>
+                        {mode === 'sell' && 'N'}
+                    </div>
+
+                    <div style={{
+                        flex: 1,
+                        fontSize: '2rem',
+                        fontWeight: 700,
+                        fontStyle: 'normal',
+                        color: quote ? accentColor : 'rgba(255, 255, 255, 0.4)',
+                        fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                        letterSpacing: '-0.02em',
+                    }}>
+                        {isLoadingQuote ? (
+                            <Loader size={24} style={{ animation: 'spin 1s linear infinite' }} />
+                        ) : (
+                            quote ? formatNumber(quote.output_amount) : '0'
+                        )}
+                    </div>
+
+                    <span style={{
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        fontSize: '0.875rem',
+                        fontWeight: 600,
+                    }}>
+                        {mode === 'buy' ? creator.token_symbol : 'NMBR'}
+                    </span>
+                </div>
+            </div>
+
             {/* Quote Preview */}
-            {(isLoadingQuote || quote) && (
+            {quote && (
                 <div style={{
                     marginBottom: '20px',
                     padding: '16px',
@@ -308,93 +450,45 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                     borderRadius: '14px',
                     border: '1px solid rgba(255, 255, 255, 0.04)',
                 }}>
-                    {isLoadingQuote ? (
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            color: 'rgba(255, 255, 255, 0.4)',
-                            padding: '8px 0',
-                        }}>
-                            <Loader size={16} style={{ animation: 'spin 1s linear infinite' }} />
-                            <span style={{ fontSize: '0.85rem' }}>Fetching quote...</span>
+                    {/* Quote details - horizontal layout with flexbox */}
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: isAdmin ? 'flex-start' : 'space-around',
+                        gap: '24px',
+                        flexWrap: 'wrap',
+                    }}>
+                        {/* Exchange Rate (renamed from Price) */}
+                        <div style={{ textAlign: 'left' }}>
+                            <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Exchange Rate</div>
+                            <div style={{ color: accentColor, fontWeight: 600, fontSize: '0.8rem', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+                                1 {creator.token_symbol} ≈ {quote.price_per_token.toFixed(4)} NMBR
+                            </div>
                         </div>
-                    ) : quote && (
-                        <>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                marginBottom: '12px',
-                                color: 'rgba(255, 255, 255, 0.25)',
-                            }}>
-                                <ArrowDownUp size={14} />
-                            </div>
 
-                            <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+                        {/* Price Impact - Admin only */}
+                        {isAdmin && (
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Price Impact</div>
                                 <div style={{
-                                    color: 'rgba(255, 255, 255, 0.4)',
-                                    fontSize: '0.7rem',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.1em',
-                                    marginBottom: '6px',
-                                }}>
-                                    You will {mode === 'buy' ? 'receive' : 'get'}
-                                </div>
-                                <div style={{
-                                    fontSize: '1.75rem',
-                                    fontWeight: 700,
-                                    color: accentColor,
+                                    color: quote.price_impact_pct > 5 ? '#f87171' : quote.price_impact_pct > 2 ? '#fbbf24' : '#4ade80',
+                                    fontWeight: 600,
+                                    fontSize: '0.8rem',
                                     fontFamily: 'var(--font-mono)',
+                                    marginTop: '4px',
                                 }}>
-                                    {formatNumber(quote.output_amount)}
-                                    <span style={{
-                                        color: 'rgba(255, 255, 255, 0.5)',
-                                        fontSize: '0.9rem',
-                                        marginLeft: '8px',
-                                        fontWeight: 500,
-                                    }}>
-                                        {quote.output_currency}
-                                    </span>
+                                    {quote.price_impact_pct.toFixed(2)}%
                                 </div>
                             </div>
+                        )}
 
-                            {/* Quote details - cleaner horizontal layout */}
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'space-around',
-                                padding: '12px 0',
-                                borderTop: '1px solid rgba(255, 255, 255, 0.04)',
-                            }}>
-                                <div style={{ textAlign: 'center' }}>
-                                    <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Price</div>
-                                    <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
-                                        {quote.price_per_token.toFixed(6)}
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: 'center' }}>
-                                    <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Impact</div>
-                                    <div style={{
-                                        color: quote.price_impact_pct > 5 ? '#f87171' : quote.price_impact_pct > 2 ? '#fbbf24' : '#4ade80',
-                                        fontWeight: 600,
-                                        fontSize: '0.8rem',
-                                        fontFamily: 'var(--font-mono)',
-                                        marginTop: '4px',
-                                    }}>
-                                        {quote.price_impact_pct.toFixed(2)}%
-                                    </div>
-                                </div>
-                                <div style={{ textAlign: 'center' }}>
-                                    <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fee</div>
-                                    <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
-                                        {quote.fee_amount.toFixed(4)}
-                                    </div>
-                                </div>
+                        {/* Fee */}
+                        <div style={{ textAlign: 'left' }}>
+                            <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fee</div>
+                            <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+                                {quote.fee_amount.toFixed(4)} NMBR
                             </div>
-                        </>
-                    )}
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -486,6 +580,13 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                 }
                 input[type="number"] {
                     -moz-appearance: textfield;
+                }
+                input[type="number"]::placeholder {
+                    color: rgba(255, 255, 255, 0.4);
+                    font-weight: 700;
+                    font-style: normal;
+                    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                    opacity: 1;
                 }
             `}</style>
         </div>

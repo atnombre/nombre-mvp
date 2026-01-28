@@ -115,6 +115,7 @@ export const StatCard: React.FC<StatCardProps> = ({
               : 'rgba(255, 255, 255, 1)',
             letterSpacing: '-0.02em',
             lineHeight: 1.1,
+            fontFamily: 'var(--font-mono)',
           }}
         >
           {typeof value === 'number' ? value.toLocaleString() : value}

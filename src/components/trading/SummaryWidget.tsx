@@ -30,7 +30,7 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
       default: return 'var(--text-primary)';
     }
   };
-  
+
   return (
     <div
       style={{
@@ -59,7 +59,7 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
         >
           {title}
         </div>
-        
+
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
           <span
             style={{
@@ -67,11 +67,12 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
               fontWeight: 700,
               color: getValueColor(mainValueColor),
               letterSpacing: '-0.02em',
+              fontFamily: 'var(--font-mono)',
             }}
           >
             {mainValue}
           </span>
-          
+
           {mainValueTrend !== undefined && (
             <PriceDisplay
               value={mainValueTrend}
@@ -82,7 +83,7 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
           )}
         </div>
       </div>
-      
+
       {/* Rows */}
       <div style={{ padding: '12px 20px' }}>
         {rows.map((row, index) => (
@@ -112,7 +113,7 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
           </div>
         ))}
       </div>
-      
+
       {/* Footer */}
       {footer && (
         <div
@@ -148,7 +149,7 @@ export const PnLWidget: React.FC<PnLWidgetProps> = ({
   // dayPnLPercent, // Available but not used in current design
 }) => {
   const isProfit = totalPnL >= 0;
-  
+
   return (
     <SummaryWidget
       title={`P&L`}

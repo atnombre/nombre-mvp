@@ -18,6 +18,7 @@ import { useAuthStore } from '../stores/authStore';
 import { usePoolPriceSubscription } from '../hooks/useRealtime';
 import { BuySellPanel } from '../components/trading/BuySellPanel';
 import { PriceChart } from '../components/trading/PriceChart';
+import { FinancialChart } from '../components/trading/FinancialChart';
 import { formatNumber, formatPrice } from '../components/trading';
 import { api } from '../services/api';
 
@@ -271,24 +272,36 @@ export const CreatorProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats Row - Horizontal Scroll */}
+        {/* Stats Row - Merged Continuous Rectangle */}
         <div style={{
           display: 'flex',
-          gap: '12px',
           marginBottom: '16px',
           overflowX: 'auto',
           WebkitOverflowScrolling: 'touch',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          paddingBottom: '4px',
+          background: 'rgba(20, 20, 20, 0.6)',
+          backdropFilter: 'blur(16px)',
+          WebkitBackdropFilter: 'blur(16px)',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
         }}>
           <MobileStat icon={<Coins size={12} />} label="Mkt Cap" value={formatNumber(marketCap)} />
           <MobileStat icon={<BarChart3 size={12} />} label="24h Vol" value={formatNumber(volume24h)} />
           <MobileStat icon={<Users size={12} />} label="Holders" value={(pool?.holder_count || 0).toString()} />
-          <MobileStat icon={<Users size={12} />} label="Subs" value={formatNumber(creator.subscriber_count)} />
+          <MobileStat icon={<Users size={12} />} label="Subs" value={formatNumber(creator.subscriber_count)} isLast />
         </div>
 
-        {/* Chart */}
+        {/* Buy/Sell Panel - First on Mobile */}
+        <BuySellPanel
+          creator={creator}
+          userBalance={user?.nmbr_balance || 0}
+          userHolding={userHolding}
+          onTradeComplete={handleTradeComplete}
+          isAdmin={user?.is_admin}
+        />
+
+        {/* Chart - Below on Mobile */}
         <div style={{
           background: 'rgba(20, 20, 20, 0.6)',
           backdropFilter: 'blur(16px)',
@@ -296,7 +309,7 @@ export const CreatorProfile: React.FC = () => {
           borderRadius: '14px',
           padding: '14px',
           border: '1px solid rgba(255, 255, 255, 0.06)',
-          marginBottom: '16px',
+          marginTop: '16px',
         }}>
           {/* Period Selector */}
           <div style={{
@@ -338,21 +351,17 @@ export const CreatorProfile: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ height: '180px' }}>
-            <PriceChart
-              data={priceHistory?.prices || []}
-              period={chartPeriod}
+          <div style={{ height: '300px' }}>
+            <FinancialChart
+              data={(priceHistory?.prices || []).map((p: any) => ({
+                time: new Date(p.timestamp).getTime(),
+                value: p.price
+              }))}
+              color={isPositive ? '#4ade80' : '#f87171'}
+              height={300}
             />
           </div>
         </div>
-
-        {/* Buy/Sell Panel - Inline on Mobile */}
-        <BuySellPanel
-          creator={creator}
-          userBalance={user?.nmbr_balance || 0}
-          userHolding={userHolding}
-          onTradeComplete={handleTradeComplete}
-        />
 
         {/* Animations */}
         <style>{`
@@ -628,6 +637,7 @@ export const CreatorProfile: React.FC = () => {
               <PriceChart
                 data={priceHistory?.prices || []}
                 period={chartPeriod}
+                height={220}
               />
             </div>
           </div>
@@ -640,6 +650,7 @@ export const CreatorProfile: React.FC = () => {
             userBalance={user?.nmbr_balance || 0}
             userHolding={userHolding}
             onTradeComplete={handleTradeComplete}
+            isAdmin={user?.is_admin}
           />
         </div>
       </div>
@@ -660,16 +671,13 @@ const MobileStat: React.FC<{
   icon: React.ReactNode;
   label: string;
   value: string;
-}> = ({ icon, label, value }) => (
+  isLast?: boolean;
+}> = ({ icon, label, value, isLast = false }) => (
   <div style={{
     flexShrink: 0,
-    padding: '12px 14px',
-    background: 'rgba(20, 20, 20, 0.6)',
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
-    borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    minWidth: '90px',
+    padding: '12px 16px',
+    minWidth: '85px',
+    borderRight: isLast ? 'none' : '1px solid rgba(255, 255, 255, 0.06)',
   }}>
     <div style={{
       display: 'flex',

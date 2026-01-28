@@ -9,6 +9,8 @@ import {
   Wallet,
   BarChart3,
   Search,
+  Star,
+  ArrowDownCircle,
 } from 'lucide-react';
 import {
   StatCard,
@@ -88,6 +90,16 @@ export const Portfolio: React.FC = () => {
   const totalPnL = portfolio?.total_pnl || 0;
   const isProfit = totalPnL >= 0;
 
+  // Compute best and worst performers from holdings
+  const bestPerformer = holdingsCount > 0
+    ? portfolio?.holdings.reduce((best, h) =>
+      (h.pnl_pct > (best?.pnl_pct ?? -Infinity)) ? h : best, portfolio.holdings[0])
+    : null;
+  const worstPerformer = holdingsCount > 0
+    ? portfolio?.holdings.reduce((worst, h) =>
+      (h.pnl_pct < (worst?.pnl_pct ?? Infinity)) ? h : worst, portfolio.holdings[0])
+    : null;
+
   return (
     <div>
       {/* Header */}
@@ -115,10 +127,10 @@ export const Portfolio: React.FC = () => {
       {/* Mobile Layout - Vertical Stack */}
       {isMobile ? (
         <div>
-          {/* Stats Grid - 2x2 on mobile */}
+          {/* Stats Grid - 3x2 on mobile */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'repeat(2, 1fr)',
             gap: '12px',
             marginBottom: '16px',
           }}>
@@ -151,6 +163,22 @@ export const Portfolio: React.FC = () => {
               icon={<Wallet size={14} />}
               size="sm"
             />
+            <StatCard
+              label="Best (24h)"
+              value={bestPerformer ? `$${bestPerformer.token_symbol}` : '--'}
+              trend={bestPerformer?.pnl_pct}
+              icon={<Star size={14} />}
+              variant="positive"
+              size="sm"
+            />
+            <StatCard
+              label="Worst (24h)"
+              value={worstPerformer ? `$${worstPerformer.token_symbol}` : '--'}
+              trend={worstPerformer?.pnl_pct}
+              icon={<ArrowDownCircle size={14} />}
+              variant={worstPerformer && worstPerformer.pnl_pct < 0 ? 'negative' : 'default'}
+              size="sm"
+            />
           </div>
 
           {/* Chart - Full Width on Mobile */}
@@ -179,10 +207,11 @@ export const Portfolio: React.FC = () => {
               </span>
             </div>
             <PortfolioChart
-              data={[]}
-              height={140}
-              showTimeControls={true}
-              currentValue={portfolio?.total_value || 0}
+              holdings={portfolio?.holdings}
+              totalPnL={totalPnL}
+              valueChangePercent={portfolio?.roi_pct}
+              height={180}
+              showTimeControls={false}
             />
           </div>
 
@@ -308,18 +337,19 @@ export const Portfolio: React.FC = () => {
                 </span>
               </div>
               <PortfolioChart
-                data={[]}
-                height={180}
-                showTimeControls={true}
-                currentValue={portfolio?.total_value || 0}
+                holdings={portfolio?.holdings}
+                totalPnL={totalPnL}
+                valueChangePercent={portfolio?.roi_pct}
+                height={200}
+                showTimeControls={false}
               />
             </div>
 
-            {/* Right: 2x2 Stats Grid */}
+            {/* Right: 3x2 Stats Grid */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gridTemplateRows: '1fr 1fr',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gridTemplateRows: 'repeat(3, 1fr)',
               gap: '12px',
             }}>
               <StatCard
@@ -349,6 +379,22 @@ export const Portfolio: React.FC = () => {
                 value={formatNumber(user?.nmbr_balance || 0)}
                 subValue="NMBR"
                 icon={<Wallet size={14} />}
+                size="sm"
+              />
+              <StatCard
+                label="Best Performer (24h)"
+                value={bestPerformer ? `$${bestPerformer.token_symbol}` : '--'}
+                trend={bestPerformer?.pnl_pct}
+                icon={<Star size={14} />}
+                variant="positive"
+                size="sm"
+              />
+              <StatCard
+                label="Worst Performer (24h)"
+                value={worstPerformer ? `$${worstPerformer.token_symbol}` : '--'}
+                trend={worstPerformer?.pnl_pct}
+                icon={<ArrowDownCircle size={14} />}
+                variant={worstPerformer && worstPerformer.pnl_pct < 0 ? 'negative' : 'default'}
                 size="sm"
               />
             </div>
