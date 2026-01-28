@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { api, Holding, PriceHistoryResponse } from '../services/api';
+import { api, Holding } from '../services/api';
 
 interface PortfolioPnLPoint {
     time: number; // ms timestamp
