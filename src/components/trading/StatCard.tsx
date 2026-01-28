@@ -126,17 +126,17 @@ export const StatCard: React.FC<StatCardProps> = ({
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '3px',
-              fontSize: '0.75rem',
+              gap: '2px',
+              fontSize: '0.65rem',
               fontWeight: 600,
               color: isPositive ? '#00C853' : '#FF5252',
-              padding: '3px 8px',
+              padding: '2px 6px',
               background: isPositive ? 'rgba(0, 200, 83, 0.15)' : 'rgba(255, 82, 82, 0.15)',
-              borderRadius: '6px',
+              borderRadius: '4px',
             }}
           >
-            {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-            {isPositive ? '+' : ''}{trend.toFixed(2)}%
+            {isPositive ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+            {isPositive ? '+' : ''}{trend.toFixed(1)}%
           </span>
         )}
       </div>

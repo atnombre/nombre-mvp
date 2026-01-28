@@ -153,7 +153,7 @@ export const ClaimModal: React.FC = () => {
                             letterSpacing: '-0.02em',
                         }}
                     >
-                        {success ? 'You\'re All Set! 🎉' : 'Welcome to Nombre! 🎉'}
+                        {success ? 'You\'re All Set!' : 'Welcome to Nombre!'}
                     </h2>
 
                     {/* Subtitle */}
