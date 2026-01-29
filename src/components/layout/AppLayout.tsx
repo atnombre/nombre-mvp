@@ -3,6 +3,7 @@ import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { TopNavbar } from './TopNavbar';
 import { MobileNav } from './MobileNav';
 import { ClaimModal } from '../ClaimModal';
+import { UsernameModal } from '../UsernameModal';
 import { useAuthStore } from '../../stores/authStore';
 
 // Custom hook for responsive breakpoint
@@ -61,6 +62,9 @@ export const AppLayout: React.FC = () => {
         }}>
             {/* Blocking Claim Modal for new users */}
             <ClaimModal />
+
+            {/* Username Modal - appears after faucet claim for users without username */}
+            <UsernameModal />
 
             {/* Top Navigation Bar */}
             {!isMobile && <TopNavbar />}

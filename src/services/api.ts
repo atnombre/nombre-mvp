@@ -71,6 +71,13 @@ class ApiClient {
         });
     }
 
+    async updateUsername(username: string) {
+        return this.request<{ success: boolean; username: string }>('/api/v1/users/username', {
+            method: 'PUT',
+            body: { username }
+        });
+    }
+
     // ============ Creators ============
 
     async getCreators(params: CreatorListParams = {}) {
@@ -176,6 +183,7 @@ export interface UserProfile {
     id: string;
     email: string;
     display_name: string;
+    username?: string;
     avatar_url: string;
     nmbr_balance: number;
     portfolio_value: number;
@@ -333,6 +341,7 @@ export interface PortfolioResponse {
 export interface LeaderboardEntry {
     rank: number;
     user_id: string;
+    username: string | null;
     display_name: string;
     avatar_url: string;
     total_valuation: number;

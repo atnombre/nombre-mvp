@@ -18,6 +18,7 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: str
+    username: Optional[str] = None
     nmbr_balance: float
     portfolio_value: float
     total_invested: float
@@ -189,6 +190,7 @@ class PortfolioResponse(BaseModel):
 class LeaderboardEntry(BaseModel):
     rank: int
     user_id: str
+    username: Optional[str] = None
     display_name: str
     avatar_url: Optional[str] = None
     total_valuation: float  # portfolio_value + nmbr_balance
@@ -214,6 +216,15 @@ class FaucetResponse(BaseModel):
     success: bool
     amount_claimed: float
     new_balance: float
+
+
+class UsernameRequest(BaseModel):
+    username: str = Field(..., min_length=3, max_length=20, pattern="^[a-zA-Z0-9_]+$")
+
+
+class UsernameResponse(BaseModel):
+    success: bool
+    username: str
 
 
 # ============ Price History ============

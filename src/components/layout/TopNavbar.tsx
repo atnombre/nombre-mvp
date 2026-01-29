@@ -219,7 +219,7 @@ export const TopNavbar: React.FC = () => {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {user.display_name?.split(' ')[0]}
+                {user.username || user.display_name?.split(' ')[0]}
               </span>
               <ChevronDown
                 size={14}
@@ -267,7 +267,7 @@ export const TopNavbar: React.FC = () => {
                     }}
                   >
                     <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'rgba(255, 255, 255, 1)' }}>
-                      {user.display_name}
+                      {user.username || user.display_name}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginTop: '2px' }}>
                       {user.email}

@@ -1,62 +1,68 @@
 import React, { useState } from 'react';
-import { Gift, Sparkles, AlertCircle, Loader } from 'lucide-react';
+import { AtSign, Sparkles, AlertCircle, Loader } from 'lucide-react';
 import { Button } from './ui';
 import { api } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
 
-// Generate a simple device fingerprint
-const getDeviceFingerprint = (): string => {
-    const nav = window.navigator;
-    const screen = window.screen;
-
-    const fingerprint = [
-        nav.userAgent,
-        nav.language,
-        screen.width,
-        screen.height,
-        screen.colorDepth,
-        new Date().getTimezoneOffset(),
-        nav.hardwareConcurrency || 'unknown',
-    ].join('|');
-
-    let hash = 0;
-    for (let i = 0; i < fingerprint.length; i++) {
-        const char = fingerprint.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-
-    return Math.abs(hash).toString(16);
-};
-
-export const ClaimModal: React.FC = () => {
+export const UsernameModal: React.FC = () => {
     const { user, refreshUser } = useAuthStore();
+    const [username, setUsername] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Don't render if user has already claimed or not logged in
-    if (!user || user.faucet_claimed) {
+    // Don't render if user not logged in, no faucet claimed, or already has username
+    if (!user || !user.faucet_claimed || (user.username && user.username.trim() !== '')) {
         return null;
     }
 
-    const handleClaim = async () => {
+    const RESERVED_USERNAMES = [
+        'admin', 'administrator', 'mod', 'moderator', 'nombre', 'support', 'help',
+        'api', 'root', 'system', 'official', 'staff', 'team', 'null', 'undefined',
+        'test', 'testing', 'demo', 'anonymous', 'user', 'users', 'account'
+    ];
+
+    const validateUsername = (value: string): string | null => {
+        if (value.length < 3) return 'Username must be at least 3 characters';
+        if (value.length > 20) return 'Username must be 20 characters or less';
+        if (!/^[a-zA-Z0-9_]+$/.test(value)) return 'Only letters, numbers, and underscores allowed';
+        if (/^_|_$/.test(value)) return 'Username cannot start or end with underscore';
+        if (/__/.test(value)) return 'Username cannot contain consecutive underscores';
+        if (/^[0-9]/.test(value)) return 'Username must start with a letter';
+        if (RESERVED_USERNAMES.includes(value.toLowerCase())) return 'This username is reserved';
+        return null;
+    };
+
+    const handleSubmit = async () => {
+        const validationError = validateUsername(username);
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
 
         try {
-            const fingerprint = getDeviceFingerprint();
-            await api.claimFaucet(fingerprint);
-            // Refresh user data - modal will auto-close when user.faucet_claimed becomes true
+            await api.updateUsername(username);
+            // Refresh user data - modal will auto-close when user.username is set
             await refreshUser();
+            // No need to setSuccess - refreshUser updates user.username
+            // which triggers the null return at line 15
         } catch (err: any) {
-            setError(err.message || 'Failed to claim tokens');
+            setError(err.message || 'Failed to set username');
             setIsLoading(false);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !isLoading) {
+            handleSubmit();
         }
     };
 
     return (
         <>
-            {/* Blocking Backdrop - No click handler to dismiss */}
+            {/* Blocking Backdrop - Same DNA as ClaimModal */}
             <div
                 style={{
                     position: 'fixed',
@@ -71,7 +77,7 @@ export const ClaimModal: React.FC = () => {
                     padding: 'clamp(16px, 4vw, 24px)',
                 }}
             >
-                {/* Celebratory Modal Card */}
+                {/* Modal Card - Same DNA as ClaimModal */}
                 <div
                     style={{
                         position: 'relative',
@@ -110,10 +116,10 @@ export const ClaimModal: React.FC = () => {
                     {/* Icon with Sparkle */}
                     <div
                         style={{
-                            width: '80px',
-                            height: '80px',
-                            margin: '0 auto 24px',
-                            borderRadius: '20px',
+                            width: 'clamp(64px, 15vw, 80px)',
+                            height: 'clamp(64px, 15vw, 80px)',
+                            margin: '0 auto clamp(16px, 4vw, 24px)',
+                            borderRadius: 'clamp(14px, 3vw, 20px)',
                             background: 'linear-gradient(135deg, #EA9999 0%, #d88888 100%)',
                             display: 'flex',
                             alignItems: 'center',
@@ -122,7 +128,7 @@ export const ClaimModal: React.FC = () => {
                             position: 'relative',
                         }}
                     >
-                        <Gift size={40} color="#000" />
+                        <AtSign size={40} color="#000" />
                         <Sparkles
                             size={20}
                             color="#fff"
@@ -146,21 +152,21 @@ export const ClaimModal: React.FC = () => {
                             letterSpacing: '-0.02em',
                         }}
                     >
-                        Welcome to Nombre!
+                        Choose Your Handle
                     </h2>
 
                     {/* Subtitle */}
                     <p
                         style={{
                             margin: '0 0 8px',
-                            fontSize: '1rem',
+                            fontSize: 'clamp(0.875rem, 3vw, 1rem)',
                             color: 'rgba(255, 255, 255, 0.7)',
                         }}
                     >
-                        Claim your free tokens to start trading creator coins.
+                        Pick a unique username for the leaderboard.
                     </p>
 
-                    {/* Token Amount Highlight */}
+                    {/* Username Input */}
                     <div
                         style={{
                             margin: 'clamp(16px, 4vw, 24px) 0',
@@ -172,25 +178,47 @@ export const ClaimModal: React.FC = () => {
                     >
                         <div
                             style={{
-                                fontSize: 'clamp(2rem, 8vw, 2.5rem)',
-                                fontWeight: 800,
-                                color: '#EA9999',
-                                fontFamily: 'var(--font-mono)',
-                                letterSpacing: '-0.03em',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                background: 'rgba(0, 0, 0, 0.3)',
+                                borderRadius: '12px',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                padding: '12px 16px',
                             }}
                         >
-                            10,000
+                            <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '1.1rem' }}>@</span>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => {
+                                    setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+                                    setError(null);
+                                }}
+                                onKeyDown={handleKeyDown}
+                                placeholder="yourname"
+                                autoFocus
+                                style={{
+                                    flex: 1,
+                                    background: 'transparent',
+                                    border: 'none',
+                                    outline: 'none',
+                                    color: '#fff',
+                                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                                    fontWeight: 600,
+                                    fontFamily: 'var(--font-mono)',
+                                }}
+                            />
                         </div>
-                        <div
+                        <p
                             style={{
-                                fontSize: '0.875rem',
-                                color: 'rgba(255, 255, 255, 0.5)',
-                                marginTop: '4px',
-                                fontWeight: 500,
+                                margin: '10px 0 0',
+                                fontSize: '0.75rem',
+                                color: 'rgba(255, 255, 255, 0.4)',
                             }}
                         >
-                            NMBR TOKENS
-                        </div>
+                            3-20 characters, letters, numbers, underscores only
+                        </p>
                     </div>
 
                     {/* Error Message */}
@@ -215,31 +243,31 @@ export const ClaimModal: React.FC = () => {
                         </div>
                     )}
 
-                    {/* CTA Button - Only path forward */}
+                    {/* CTA Button */}
                     <Button
-                        onClick={handleClaim}
-                        disabled={isLoading}
+                        onClick={handleSubmit}
+                        disabled={isLoading || username.length < 3}
                         glow
                         style={{
                             width: '100%',
-                            padding: '16px 24px',
-                            fontSize: '1.1rem',
+                            padding: 'clamp(12px, 3vw, 16px) 24px',
+                            fontSize: 'clamp(0.95rem, 3vw, 1.1rem)',
                             fontWeight: 700,
                         }}
                     >
                         {isLoading ? (
                             <>
                                 <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
-                                Claiming...
+                                Setting up...
                             </>
                         ) : (
                             <>
-                                <Gift size={20} />
-                                Claim 10K NMBR
+                                Claim @{username || 'username'}
                             </>
                         )}
                     </Button>
 
+                    {/* Note */}
                     <p
                         style={{
                             margin: '20px 0 0',
@@ -247,12 +275,12 @@ export const ClaimModal: React.FC = () => {
                             color: 'rgba(255, 255, 255, 0.4)',
                         }}
                     >
-                        This is a one-time bonus for new users.
+                        You can change this later in settings.
                     </p>
                 </div>
             </div>
 
-            {/* Keyframe Animations */}
+            {/* Keyframe Animations - Same as ClaimModal */}
             <style>{`
                 @keyframes modalGlow {
                     0%, 100% {

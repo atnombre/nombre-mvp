@@ -302,7 +302,7 @@ export const Leaderboard: React.FC = () => {
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                       }}>
-                        {entry.display_name.split(' ')[0]}
+                        {entry.username || entry.display_name.split(' ')[0]}
                       </span>
                       {isCurrentUser && (
                         <span style={{
@@ -624,7 +624,7 @@ export const Leaderboard: React.FC = () => {
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                         }}>
-                          {entry.display_name}
+                          {entry.username || entry.display_name}
                         </span>
                         {isCurrentUser && (
                           <span style={{

@@ -41,7 +41,7 @@ export const Sidebar: React.FC = () => {
             zIndex: 100,
         }}>
             {/* Logo */}
-            <div style={{ 
+            <div style={{
                 marginBottom: '2rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -195,7 +195,7 @@ export const Sidebar: React.FC = () => {
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                             }}>
-                                {user.display_name || 'User'}
+                                {user.username || user.display_name || 'User'}
                             </div>
                             <div style={{
                                 fontSize: '0.7rem',

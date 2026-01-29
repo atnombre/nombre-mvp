@@ -72,7 +72,7 @@ export const Dashboard: React.FC = () => {
           color: 'var(--text-primary)',
           letterSpacing: '-0.02em',
         }}>
-          Hi, {user?.display_name?.split(' ')[0] || 'Trader'}
+          Hi, {user?.username || user?.display_name?.split(' ')[0] || 'Trader'}
         </h1>
       </div>
 
@@ -372,7 +372,7 @@ export const Dashboard: React.FC = () => {
                     </div>
                     <Avatar src={entry.avatar_url} alt={entry.display_name} fallback={entry.display_name} size="xs" />
                     <span style={{ flex: 1, fontSize: '0.8125rem', color: 'var(--text-primary)', fontWeight: 500 }}>
-                      {entry.display_name.split(' ')[0]}
+                      {entry.username || entry.display_name.split(' ')[0]}
                     </span>
                     <PriceDisplay value={entry.roi_pct} format="percent" variant="badge" size="xs" />
                   </div>
@@ -783,7 +783,7 @@ export const Dashboard: React.FC = () => {
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                     }}>
-                      {entry.display_name}
+                      {entry.username || entry.display_name}
                     </div>
                     <PriceDisplay value={entry.roi_pct} format="percent" variant="badge" size="sm" />
                   </div>

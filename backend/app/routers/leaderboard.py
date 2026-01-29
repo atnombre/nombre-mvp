@@ -30,7 +30,7 @@ async def get_leaderboard(
     
     # Get all users with their nmbr_balance
     response = supabase.table("users").select(
-        "id, display_name, avatar_url, nmbr_balance",
+        "id, username, display_name, avatar_url, nmbr_balance",
         count="exact"
     ).execute()
     
@@ -89,6 +89,7 @@ async def get_leaderboard(
             leaderboard.append(LeaderboardEntry(
                 rank=rank,
                 user_id=user["id"],
+                username=user.get("username"),
                 display_name=user.get("display_name", "Anonymous"),
                 avatar_url=user.get("avatar_url"),
                 total_valuation=user["total_valuation"],
