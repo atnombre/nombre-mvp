@@ -156,6 +156,7 @@ class TransactionResponse(BaseModel):
     price_per_token: float
     fee_amount: float
     slippage_pct: float
+    price_impact_pct: float = 0.0
     created_at: datetime
     
     class Config:

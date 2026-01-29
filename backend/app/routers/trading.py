@@ -254,7 +254,8 @@ async def execute_trade(
             "nmbr_amount": nmbr_amount,
             "price_per_token": result.price_per_token,
             "fee_amount": result.fee_amount,
-            "slippage_pct": actual_slippage
+            "slippage_pct": actual_slippage,
+            "price_impact_pct": result.price_impact_pct
         }
         tx_response = supabase.table("transactions").insert(tx_data).execute()
         tx = tx_response.data[0]
@@ -398,7 +399,8 @@ async def execute_trade(
             "nmbr_amount": result.output_amount,
             "price_per_token": result.price_per_token,
             "fee_amount": result.fee_amount,
-            "slippage_pct": actual_slippage
+            "slippage_pct": actual_slippage,
+            "price_impact_pct": result.price_impact_pct
         }
         tx_response = supabase.table("transactions").insert(tx_data).execute()
         tx = tx_response.data[0]

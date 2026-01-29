@@ -10,8 +10,9 @@ import InfiniteTicker from './components/InfiniteTicker';
 import Header from './components/Header';
 
 // App components
-import { AppLayout } from './components/layout';
+import { AppLayout, AdminRoute, AdminLayout } from './components/layout';
 import { Dashboard, Explore, Portfolio, Leaderboard, AuthCallback, CreatorProfile, History } from './pages';
+import { AdminDashboard, AdminPortfolioInspector, AdminUsers, GlobalLedger, TransactionDetailsPage } from './pages/admin';
 
 
 
@@ -103,6 +104,17 @@ function App() {
 
                         <Route path="/creator/:id" element={<CreatorProfile />} />
 
+                    </Route>
+
+                    {/* Admin Routes (Protected) */}
+                    <Route element={<AdminRoute />}>
+                        <Route element={<AdminLayout />}>
+                            <Route path="/admin" element={<AdminDashboard />} />
+                            <Route path="/admin/users" element={<AdminUsers />} />
+                            <Route path="/admin/transactions" element={<GlobalLedger />} />
+                            <Route path="/admin/transactions/:txId" element={<TransactionDetailsPage />} />
+                            <Route path="/admin/inspect/:userId" element={<AdminPortfolioInspector />} />
+                        </Route>
                     </Route>
 
                     {/* Fallback */}

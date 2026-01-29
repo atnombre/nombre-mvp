@@ -163,6 +163,68 @@ class ApiClient {
         const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
         return this.request<LeaderboardResponse>(`/api/v1/leaderboard${query}`);
     }
+
+    // ============ Admin (Protected) ============
+
+    async getAdminStats() {
+        return this.request<AdminStatsResponse>('/api/v1/admin/stats');
+    }
+
+    async getAllUsers(params: { limit?: number; offset?: number; search?: string } = {}) {
+        const searchParams = new URLSearchParams();
+        if (params.limit) searchParams.set('limit', params.limit.toString());
+        if (params.offset) searchParams.set('offset', params.offset.toString());
+        if (params.search) searchParams.set('search', params.search);
+
+        const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
+        return this.request<AdminUserListResponse>(`/api/v1/admin/users${query}`);
+    }
+
+    async getAdminUserDetails(userId: string) {
+        return this.request<AdminUserDetails>(`/api/v1/admin/users/${userId}`);
+    }
+
+    async getAdminUserPortfolio(userId: string) {
+        return this.request<PortfolioResponse>(`/api/v1/admin/users/${userId}/portfolio`);
+    }
+
+    async banUser(userId: string) {
+        return this.request<{ success: boolean; message: string }>(`/api/v1/admin/users/${userId}/ban`, {
+            method: 'POST'
+        });
+    }
+
+    async unbanUser(userId: string) {
+        return this.request<{ success: boolean; message: string }>(`/api/v1/admin/users/${userId}/unban`, {
+            method: 'POST'
+        });
+    }
+
+    async resetUsername(userId: string) {
+        return this.request<{ success: boolean; message: string }>(`/api/v1/admin/users/${userId}/reset-username`, {
+            method: 'POST'
+        });
+    }
+
+    async getAdminTransactions(params: AdminTransactionParams = {}) {
+        const searchParams = new URLSearchParams();
+        if (params.limit) searchParams.set('limit', params.limit.toString());
+        if (params.offset) searchParams.set('offset', params.offset.toString());
+        if (params.search) searchParams.set('search', params.search);
+        if (params.user_id) searchParams.set('user_id', params.user_id);
+        if (params.pool_id) searchParams.set('pool_id', params.pool_id);
+        if (params.time_range) searchParams.set('time_range', params.time_range);
+        if (params.type) searchParams.set('type', params.type);
+        if (params.min_amount !== undefined) searchParams.set('min_amount', params.min_amount.toString());
+        if (params.max_amount !== undefined) searchParams.set('max_amount', params.max_amount.toString());
+
+        const query = searchParams.toString() ? `?${searchParams.toString()}` : '';
+        return this.request<AdminTransactionListResponse>(`/api/v1/admin/transactions${query}`);
+    }
+
+    async getAdminTransaction(txId: string) {
+        return this.request<AdminTransactionItem>(`/api/v1/admin/transactions/${txId}`);
+    }
 }
 
 // Custom error class
@@ -382,6 +444,91 @@ export interface RefreshStatsResponse {
     subscriber_count: number;
     view_count_30d: number;
     cpi_score: number;
+}
+
+// ============ Admin Types ============
+
+export interface AdminStatsResponse {
+    total_users: number;
+    new_users_24h: number;
+    total_nmbr_circulating: number;
+    volume_24h: number;
+    system_status: string;
+}
+
+export interface AdminUserListItem {
+    id: string;
+    email: string;
+    display_name: string;
+    username: string | null;
+    avatar_url: string | null;
+    nmbr_balance: number;
+    portfolio_value: number;
+    created_at: string;
+    is_banned: boolean;
+    faucet_claimed: boolean;
+}
+
+export interface AdminUserListResponse {
+    users: AdminUserListItem[];
+    total: number;
+    limit: number;
+    offset: number;
+}
+
+export interface AdminUserDetails {
+    id: string;
+    email: string;
+    display_name: string;
+    username: string | null;
+    avatar_url: string | null;
+    nmbr_balance: number;
+    portfolio_value: number;
+    total_invested: number;
+    roi_pct: number;
+    created_at: string;
+    is_banned: boolean;
+    is_admin: boolean;
+    faucet_claimed: boolean;
+}
+
+export interface AdminTransactionItem {
+    id: string;
+    created_at: string;
+    type: 'buy' | 'sell';
+    status: string;
+    nmbr_amount: number;
+    token_amount: number;
+    price_per_token: number;
+    fee_amount: number;
+    slippage_pct: number;
+    price_impact_pct: number;
+    user_id: string;
+    user_display_name: string;
+    user_username?: string;
+    user_avatar_url?: string;
+    pool_id: string;
+    token_symbol: string;
+    creator_name: string;
+}
+
+export interface AdminTransactionListResponse {
+    transactions: AdminTransactionItem[];
+    total: number;
+    limit: number;
+    offset: number;
+}
+
+export interface AdminTransactionParams {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    user_id?: string;
+    pool_id?: string;
+    time_range?: '24h' | '7d' | '30d' | 'all';
+    type?: 'buy' | 'sell';
+    min_amount?: number;
+    max_amount?: number;
 }
 
 // Singleton instance

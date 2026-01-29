@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .routers import auth, users, creators, trading, portfolio, leaderboard, maintenance
+from .routers import auth, users, creators, trading, portfolio, leaderboard, maintenance, admin
 
 settings = get_settings()
 
@@ -66,6 +66,7 @@ app.include_router(trading.router, prefix="/api/v1/trade", tags=["trading"])
 app.include_router(portfolio.router, prefix="/api/v1/portfolio", tags=["portfolio"])
 app.include_router(leaderboard.router, prefix="/api/v1/leaderboard", tags=["leaderboard"])
 app.include_router(maintenance.router, prefix="/api/v1/maintenance", tags=["maintenance"])
+app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
 
 
 @app.get("/")
