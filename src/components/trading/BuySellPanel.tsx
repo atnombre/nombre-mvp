@@ -483,8 +483,16 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
 
                         {/* Fee */}
                         <div style={{ textAlign: 'left' }}>
-                            <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Fee</div>
-                            <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.8rem', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+                            <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Fee ({quote.fee_pct.toFixed(1)}%)
+                            </div>
+                            <div style={{
+                                color: quote.fee_pct > 5 ? '#fbbf24' : '#fff',
+                                fontWeight: 600,
+                                fontSize: '0.8rem',
+                                fontFamily: 'var(--font-mono)',
+                                marginTop: '4px'
+                            }}>
                                 {quote.fee_amount.toFixed(4)} NMBR
                             </div>
                         </div>

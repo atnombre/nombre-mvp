@@ -70,7 +70,7 @@ async def get_trade_quote(
                 price_per_token=result.price_per_token,
                 price_impact_pct=result.price_impact_pct,
                 fee_amount=result.fee_amount,
-                fee_pct=settings.protocol_fee_pct,
+                fee_pct=result.fee_pct,  # Dynamic fee from engine
                 expires_at=datetime.utcnow() + timedelta(minutes=5)
             )
         else:
@@ -92,7 +92,7 @@ async def get_trade_quote(
                 price_per_token=result.price_per_token,
                 price_impact_pct=result.price_impact_pct,
                 fee_amount=result.fee_amount,
-                fee_pct=settings.protocol_fee_pct,
+                fee_pct=result.fee_pct,  # Base fee for sells
                 expires_at=datetime.utcnow() + timedelta(minutes=5)
             )
         else:

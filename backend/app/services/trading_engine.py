@@ -16,6 +16,7 @@ class TradeResult:
     input_amount: float
     output_amount: float
     fee_amount: float
+    fee_pct: float  # The actual fee percentage applied
     price_per_token: float
     price_impact_pct: float
     new_nmbr_reserve: float
@@ -31,6 +32,10 @@ class TradingEngine:
     - x = $NMBR reserve in pool
     - y = Creator token supply in pool
     - k = Constant (invariant)
+    
+    Includes Dynamic Fee System:
+    - Early trades (when few tokens have been bought) pay higher fees.
+    - Fee decays from max_fee_pct to base_fee_pct as tokens are bought.
     """
     
     def __init__(self, fee_pct: float = None):
@@ -38,10 +43,44 @@ class TradingEngine:
         Initialize trading engine.
         
         Args:
-            fee_pct: Protocol fee percentage (default from settings)
+            fee_pct: Protocol fee percentage (default from settings).
+                     This is the BASE fee after decay completes.
         """
         settings = get_settings()
-        self.fee_pct = fee_pct if fee_pct is not None else settings.protocol_fee_pct
+        self.base_fee_pct = fee_pct if fee_pct is not None else settings.protocol_fee_pct
+        self.max_fee_pct = settings.max_fee_pct
+        self.fee_decay_threshold = settings.fee_decay_threshold
+        self.initial_token_supply = settings.initial_token_supply
+    
+    def calculate_dynamic_fee_pct(self, current_token_supply: float) -> float:
+        """
+        Calculate the dynamic fee percentage based on how many tokens
+        have been bought from the initial supply.
+        
+        Early buyers pay higher fees (up to max_fee_pct).
+        Fee decays linearly to base_fee_pct after fee_decay_threshold tokens are bought.
+        
+        Args:
+            current_token_supply: Current tokens remaining in pool.
+        
+        Returns:
+            Fee percentage to apply (between base_fee_pct and max_fee_pct).
+        """
+        tokens_bought = self.initial_token_supply - current_token_supply
+        
+        # Clamp to valid range
+        tokens_bought = max(0, tokens_bought)
+        
+        if tokens_bought >= self.fee_decay_threshold:
+            # Decay complete, use base fee
+            return self.base_fee_pct
+        
+        # Linear decay: fee = max - (max - base) * (tokens_bought / threshold)
+        progress = tokens_bought / self.fee_decay_threshold
+        fee_range = self.max_fee_pct - self.base_fee_pct
+        current_fee = self.max_fee_pct - (fee_range * progress)
+        
+        return current_fee
     
     def get_current_price(self, nmbr_reserve: float, token_supply: float) -> float:
         """
@@ -70,8 +109,11 @@ class TradingEngine:
         Returns:
             TradeResult with tokens received and new pool state
         """
+        # Calculate dynamic fee based on current supply
+        fee_pct = self.calculate_dynamic_fee_pct(token_supply)
+        
         # Calculate fee (deducted from input)
-        fee_amount = nmbr_amount * (self.fee_pct / 100)
+        fee_amount = nmbr_amount * (fee_pct / 100)
         nmbr_after_fee = nmbr_amount - fee_amount
         
         # Constant product: k = x * y
@@ -100,6 +142,7 @@ class TradingEngine:
             input_amount=nmbr_amount,
             output_amount=tokens_received,
             fee_amount=fee_amount,
+            fee_pct=fee_pct,
             price_per_token=price_per_token,
             price_impact_pct=price_impact,
             new_nmbr_reserve=new_nmbr_reserve,
@@ -137,7 +180,8 @@ class TradingEngine:
         nmbr_gross = nmbr_reserve - new_nmbr_reserve
         
         # Calculate fee (deducted from output)
-        fee_amount = nmbr_gross * (self.fee_pct / 100)
+        # Sells use base fee (no dynamic penalty for selling)
+        fee_amount = nmbr_gross * (self.base_fee_pct / 100)
         nmbr_received = nmbr_gross - fee_amount
         
         # Prices
@@ -154,6 +198,7 @@ class TradingEngine:
             input_amount=token_amount,
             output_amount=nmbr_received,
             fee_amount=fee_amount,
+            fee_pct=self.base_fee_pct,
             price_per_token=price_per_token,
             price_impact_pct=price_impact,
             new_nmbr_reserve=new_nmbr_reserve,
