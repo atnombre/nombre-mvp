@@ -52,7 +52,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            zIndex: 9999,
+            zIndex: 10000,
             transition: 'transform 0.8s cubic-bezier(0.76, 0, 0.24, 1)',
             transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
         }}>
