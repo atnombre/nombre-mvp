@@ -39,7 +39,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
         try {
             const { data: { session }, error } = await supabase.auth.getSession();
-            
+
             if (error || !session) {
                 set({ user: null, isAuthenticated: false, isLoading: false });
                 return;
@@ -111,7 +111,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     refreshUser: async () => {
         const { isAuthenticated } = get();
         if (!isAuthenticated) return;
-        
+
         try {
             const user = await api.getCurrentUser();
             set({ user });
@@ -134,10 +134,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     updateHolding: (creatorId: string, holding: { token_amount: number; avg_buy_price: number; current_price: number; creator_name?: string; token_symbol?: string; avatar_url?: string } | null) => {
         const { user } = get();
         if (!user) return;
-        
+
         let newHoldings = [...(user.holdings || [])];
         const existingIndex = newHoldings.findIndex(h => h.creator_id === creatorId);
-        
+
         if (holding === null || holding.token_amount <= 0) {
             // Remove holding if sold all
             if (existingIndex !== -1) {
@@ -149,7 +149,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             const costBasis = holding.token_amount * holding.avg_buy_price;
             const pnl = currentValue - costBasis;
             const pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
-            
+
             newHoldings[existingIndex] = {
                 ...newHoldings[existingIndex],
                 token_amount: holding.token_amount,
@@ -166,7 +166,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             const costBasis = holding.token_amount * holding.avg_buy_price;
             const pnl = currentValue - costBasis;
             const pnlPct = costBasis > 0 ? (pnl / costBasis) * 100 : 0;
-            
+
             newHoldings.push({
                 creator_id: creatorId,
                 creator_name: holding.creator_name || '',
@@ -181,7 +181,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 pnl_pct: pnlPct,
             });
         }
-        
+
         set({ user: { ...user, holdings: newHoldings } });
     },
 
@@ -193,7 +193,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 // Set up auth state listener once
 supabase.auth.onAuthStateChange((event) => {
     const store = useAuthStore.getState();
-    
+
     if (event === 'SIGNED_OUT') {
         store.clearAuth();
     } else if (event === 'TOKEN_REFRESHED') {

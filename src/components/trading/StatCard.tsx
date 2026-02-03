@@ -67,6 +67,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
         position: 'relative',
         overflow: 'hidden',
+        textAlign: 'left',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)';
@@ -115,7 +116,8 @@ export const StatCard: React.FC<StatCardProps> = ({
               : 'rgba(255, 255, 255, 1)',
             letterSpacing: '-0.02em',
             lineHeight: 1.1,
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-heading)',
+            fontVariantNumeric: 'tabular-nums',
           }}
         >
           {typeof value === 'number' ? value.toLocaleString() : value}

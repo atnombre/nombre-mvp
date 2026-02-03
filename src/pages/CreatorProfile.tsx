@@ -73,7 +73,7 @@ export const CreatorProfile: React.FC = () => {
   // Callback after trade completes
   const handleTradeComplete = useCallback(() => {
     refreshUser();
-    refreshCreator();
+    refreshCreator(true); // Silent refresh
     fetchPriceHistory(chartPeriod);
   }, [refreshUser, refreshCreator, fetchPriceHistory, chartPeriod]);
 
@@ -221,7 +221,8 @@ export const CreatorProfile: React.FC = () => {
                   fontSize: '0.7rem',
                   fontWeight: 700,
                   color: 'var(--color-accent)',
-                  fontFamily: 'var(--font-mono)',
+                  fontFamily: 'var(--font-heading)',
+                  fontVariantNumeric: 'tabular-nums',
                 }}>
                   ${creator.token_symbol}
                 </span>
@@ -251,7 +252,8 @@ export const CreatorProfile: React.FC = () => {
               fontSize: '2rem',
               fontWeight: 700,
               color: '#fff',
-              fontFamily: 'var(--font-mono)',
+              fontFamily: 'var(--font-heading)',
+              fontVariantNumeric: 'tabular-nums',
             }}>
               {formatPrice(currentPrice)}
             </span>
@@ -376,7 +378,7 @@ export const CreatorProfile: React.FC = () => {
 
   // Desktop Layout - Original
   return (
-    <div>
+    <div style={{ textAlign: 'left' }}>
       {/* Back Button - Minimal */}
       <button
         onClick={() => navigate(-1)}
@@ -416,7 +418,7 @@ export const CreatorProfile: React.FC = () => {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
               <Avatar src={creator.avatar_url} alt={creator.display_name} fallback={creator.display_name} size="xl" />
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
                   <h1 style={{
                     margin: 0,
@@ -435,7 +437,8 @@ export const CreatorProfile: React.FC = () => {
                     fontSize: '0.8rem',
                     fontWeight: 700,
                     color: 'var(--color-accent)',
-                    fontFamily: 'var(--font-mono)',
+                    fontFamily: 'var(--font-heading)',
+                    fontVariantNumeric: 'tabular-nums',
                   }}>
                     ${creator.token_symbol}
                   </span>
@@ -500,7 +503,8 @@ export const CreatorProfile: React.FC = () => {
                 fontSize: '2.5rem',
                 fontWeight: 700,
                 color: '#fff',
-                fontFamily: 'var(--font-mono)',
+                fontFamily: 'var(--font-heading)',
+                fontVariantNumeric: 'tabular-nums',
                 letterSpacing: '-0.02em',
               }}>
                 {formatPrice(currentPrice)}
@@ -696,7 +700,8 @@ const MobileStat: React.FC<{
       fontSize: '0.9rem',
       fontWeight: 600,
       color: '#fff',
-      fontFamily: 'var(--font-mono)',
+      fontFamily: 'var(--font-heading)',
+      fontVariantNumeric: 'tabular-nums',
     }}>
       {value}
     </div>
@@ -733,7 +738,8 @@ const StatItem: React.FC<{
         fontSize: '1.125rem',
         fontWeight: 600,
         color: '#fff',
-        fontFamily: 'var(--font-mono)',
+        fontFamily: 'var(--font-heading)',
+        fontVariantNumeric: 'tabular-nums',
       }}>
         {value}
       </span>

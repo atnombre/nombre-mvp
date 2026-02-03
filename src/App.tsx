@@ -1,91 +1,27 @@
-import React from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from "@vercel/analytics/react"
 import './App.css';
-
-// Landing page components (your friend's work)
 import InteractiveGrid from './components/InteractiveGrid';
-import InfiniteTicker from './components/InfiniteTicker';
-import Header from './components/Header';
 
 // App components
 import { AppLayout, AdminRoute, AdminLayout } from './components/layout';
-import { Dashboard, Explore, Portfolio, Leaderboard, AuthCallback, CreatorProfile, History } from './pages';
+import { Dashboard, Explore, Portfolio, Leaderboard, AuthCallback, CreatorProfile, History, LandingPage } from './pages';
+
 import { AdminDashboard, AdminPortfolioInspector, AdminUsers, GlobalLedger, TransactionDetailsPage } from './pages/admin';
 
-
-
-// Landing Page Component
-const LandingPage: React.FC = () => {
-    const [tickerVisible, setTickerVisible] = React.useState(false);
-
-    React.useEffect(() => {
-        const handleInteraction = () => {
-            setTickerVisible(true);
-            window.removeEventListener('scroll', handleInteraction);
-            window.removeEventListener('click', handleInteraction);
-            window.removeEventListener('mousemove', handleInteraction);
-        };
-
-        window.addEventListener('scroll', handleInteraction);
-        window.addEventListener('click', handleInteraction);
-        window.addEventListener('mousemove', handleInteraction);
-
-        return () => {
-            window.removeEventListener('scroll', handleInteraction);
-            window.removeEventListener('click', handleInteraction);
-            window.removeEventListener('mousemove', handleInteraction);
-        };
-    }, []);
-
-    return (
-        <>
-            <Header />
-            <InteractiveGrid
-                color="#FFFFFF"
-                backgroundColor="#0a0a0a"
-                opacity={0}
-                lineWidth={0.3}
-                spacing={80}
-                glowRadius={120}
-                fadeEffect={true}
-            />
-
-            <main style={{
-                position: 'relative',
-                zIndex: 1,
-                height: '100vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                pointerEvents: 'none'
-            }}>
-                {/* Your friend's landing page content goes here */}
-            </main>
-
-            <InfiniteTicker
-                items={[
-                    { symbol: "PEWDS", price: "$0.0094", change: "+0.82", pctChange: "+9.5%" },
-                    { symbol: "BEAST", price: "$0.0106", change: "+1.20", pctChange: "+12.8%" },
-                    { symbol: "MARK", price: "$0.0072", change: "-0.10", pctChange: "-1.4%" },
-                    { symbol: "JACK", price: "$0.0064", change: "+0.45", pctChange: "+7.5%" },
-                    { symbol: "VERIT", price: "$0.0047", change: "+0.12", pctChange: "+2.6%" },
-                    { symbol: "WEEKND", price: "$0.0080", change: "+2.10", pctChange: "+35.4%" },
-                    { symbol: "TSERIES", price: "$0.0102", change: "-0.05", pctChange: "-0.5%" },
-                    { symbol: "ASMR", price: "$0.0031", change: "+0.08", pctChange: "+2.6%" },
-                ]}
-                speed={60}
-                visible={tickerVisible}
-            />
-        </>
-    );
-};
+import { AnimatePresence } from 'framer-motion';
+import LoadingScreen from './components/ui/LoadingScreen';
 
 function App() {
+    const [loading, setLoading] = useState(true);
+
     return (
         <>
+            <AnimatePresence mode="wait">
+                {loading && <LoadingScreen onComplete={() => setLoading(false)} key="loading-screen" />}
+            </AnimatePresence>
             <BrowserRouter>
                 <Routes>
                     {/* Landing Page */}
@@ -93,6 +29,9 @@ function App() {
 
                     {/* Auth Callback */}
                     <Route path="/auth/callback" element={<AuthCallback />} />
+
+                    {/* Preview Route - Dev Only */}
+
 
                     {/* Protected App Routes */}
                     <Route element={<AppLayout />}>
@@ -123,6 +62,15 @@ function App() {
             </BrowserRouter>
             <SpeedInsights />
             <Analytics />
+            <InteractiveGrid
+                color="#00ffff"
+                backgroundColor="transparent"
+                opacity={0.5}
+                lineWidth={2}
+                spacing={40}
+                glowRadius={250}
+                fadeEffect={false}
+            />
         </>
     );
 }

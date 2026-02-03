@@ -87,7 +87,7 @@ interface UseCreatorReturn {
     priceHistory: PriceHistoryResponse | null;
     isLoading: boolean;
     error: string | null;
-    refresh: () => Promise<void>;
+    refresh: (background?: boolean) => Promise<void>;
     fetchPriceHistory: (period: string) => Promise<void>;
 }
 
@@ -97,18 +97,18 @@ export function useCreator(creatorId: string | undefined): UseCreatorReturn {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchCreator = useCallback(async () => {
+    const fetchCreator = useCallback(async (background = false) => {
         if (!creatorId) return;
 
         try {
-            setIsLoading(true);
+            if (!background) setIsLoading(true);
             setError(null);
             const data = await api.getCreator(creatorId);
             setCreator(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch creator');
         } finally {
-            setIsLoading(false);
+            if (!background) setIsLoading(false);
         }
     }, [creatorId]);
 
@@ -124,7 +124,7 @@ export function useCreator(creatorId: string | undefined): UseCreatorReturn {
     }, [creatorId]);
 
     useEffect(() => {
-        fetchCreator();
+        fetchCreator(false);
         fetchPriceHistory('24h');
     }, [fetchCreator, fetchPriceHistory]);
 
@@ -133,7 +133,7 @@ export function useCreator(creatorId: string | undefined): UseCreatorReturn {
         priceHistory,
         isLoading,
         error,
-        refresh: fetchCreator,
+        refresh: () => fetchCreator(true), // Default refresh to background
         fetchPriceHistory,
     };
 }

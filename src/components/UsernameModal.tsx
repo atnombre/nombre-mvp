@@ -206,7 +206,8 @@ export const UsernameModal: React.FC = () => {
                                     color: '#fff',
                                     fontSize: 'clamp(1rem, 4vw, 1.25rem)',
                                     fontWeight: 600,
-                                    fontFamily: 'var(--font-mono)',
+                                    fontFamily: 'var(--font-heading)',
+                                    fontVariantNumeric: 'tabular-nums',
                                 }}
                             />
                         </div>

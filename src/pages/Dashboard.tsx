@@ -64,7 +64,7 @@ export const Dashboard: React.FC = () => {
       <FaucetBanner />
 
       {/* Welcome Header */}
-      <div style={{ marginBottom: isMobile ? '16px' : '24px' }}>
+      <div style={{ marginBottom: isMobile ? '16px' : '24px', textAlign: 'left' }}>
         <h1 style={{
           margin: 0,
           fontSize: isMobile ? '1.25rem' : '1.5rem',
@@ -284,7 +284,7 @@ export const Dashboard: React.FC = () => {
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: '0.8125rem' }}>
+                      <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 600, fontSize: '0.8125rem' }}>
                         {formatPrice(creator.current_price)}
                       </span>
                       <PriceDisplay value={creator.price_change_24h} format="percent" variant="badge" size="xs" />
@@ -559,7 +559,8 @@ export const Dashboard: React.FC = () => {
                     <span style={{
                       fontSize: '1rem',
                       fontWeight: 700,
-                      fontFamily: 'var(--font-mono)',
+                      fontFamily: 'var(--font-heading)',
+                      fontVariantNumeric: 'tabular-nums',
                       color: 'var(--text-primary)',
                     }}>
                       ₹{formatNumber(portfolio?.total_value || 0)}
@@ -677,7 +678,7 @@ export const Dashboard: React.FC = () => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+                      <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>
                         {formatPrice(creator.current_price)}
                       </span>
                       <PriceDisplay value={creator.price_change_24h} format="percent" variant="badge" size="xs" />

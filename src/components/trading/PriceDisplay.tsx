@@ -32,11 +32,18 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
       ? 'var(--color-negative)'
       : 'var(--text-muted)';
 
+  // Premium, subtle glass-like backgrounds
   const bgColor = isPositive
-    ? 'var(--color-positive-bg)'
+    ? 'rgba(0, 200, 83, 0.08)'
     : isNegative
-      ? 'var(--color-negative-bg)'
-      : 'rgba(255, 255, 255, 0.05)';
+      ? 'rgba(255, 82, 82, 0.08)'
+      : 'rgba(255, 255, 255, 0.04)';
+
+  const borderColor = isPositive
+    ? 'rgba(0, 200, 83, 0.2)'
+    : isNegative
+      ? 'rgba(255, 82, 82, 0.2)'
+      : 'rgba(255, 255, 255, 0.1)';
 
   const sizeConfig = {
     xs: { fontSize: '0.7rem', iconSize: 10, padding: '2px 6px', gap: '2px' },
@@ -80,8 +87,9 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
         style={{
           color,
           fontSize: config.fontSize,
-          fontWeight: 600,
-          fontFamily: 'var(--font-mono)',
+          fontWeight: 500, // Lighter weight
+          fontFamily: 'var(--font-heading)', // Geist
+          fontVariantNumeric: 'tabular-nums', // Aligned numbers
           display: 'inline-flex',
           alignItems: 'center',
           gap: config.gap,
@@ -101,12 +109,14 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
           alignItems: 'center',
           gap: config.gap,
           backgroundColor: bgColor,
+          border: `1px solid ${borderColor}`,
           color,
           fontSize: config.fontSize,
-          fontWeight: 600,
-          fontFamily: 'var(--font-mono)',
+          fontWeight: 500, // Lighter weight
+          fontFamily: 'var(--font-heading)', // Geist
+          fontVariantNumeric: 'tabular-nums', // Aligned numbers
           padding: config.padding,
-          borderRadius: 'var(--radius-md)',
+          borderRadius: '6px', // Slightly sharper than md (10px) for financial feel
         }}
       >
         {showIcon && <Icon size={config.iconSize} />}
@@ -121,9 +131,10 @@ export const PriceDisplay: React.FC<PriceDisplayProps> = ({
       style={{
         color,
         fontSize: config.fontSize,
-        fontWeight: 600,
-        fontFamily: 'var(--font-mono)',
-        letterSpacing: '0.02em',
+        fontWeight: 500,
+        fontFamily: 'var(--font-heading)',
+        fontVariantNumeric: 'tabular-nums',
+        letterSpacing: '0.01em',
       }}
     >
       {formatValue()}

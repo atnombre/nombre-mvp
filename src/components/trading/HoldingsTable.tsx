@@ -97,35 +97,35 @@ export const HoldingRow: React.FC<HoldingRowProps> = ({
 
       {/* Quantity */}
       <div style={{ flex: '0 0 80px', textAlign: 'right' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: compact ? '0.75rem' : '0.8125rem', color: 'rgba(255, 255, 255, 0.9)' }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500, fontSize: compact ? '0.75rem' : '0.8125rem', color: 'rgba(255, 255, 255, 0.9)' }}>
           {compact ? formatCompactNumber(quantity) : quantity.toLocaleString()}
         </div>
       </div>
 
       {/* Avg Cost */}
       <div style={{ flex: '0 0 90px', textAlign: 'right' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.6)', fontSize: compact ? '0.75rem' : '0.8125rem' }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', color: 'rgba(255, 255, 255, 0.6)', fontSize: compact ? '0.75rem' : '0.8125rem' }}>
           {formatPrice(avgCost)}
         </div>
       </div>
 
       {/* Current Price (LTP) */}
       <div style={{ flex: '0 0 90px', textAlign: 'right' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: compact ? '0.75rem' : '0.8125rem', color: 'rgba(255, 255, 255, 0.9)' }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500, fontSize: compact ? '0.75rem' : '0.8125rem', color: 'rgba(255, 255, 255, 0.9)' }}>
           {formatPrice(currentPrice)}
         </div>
       </div>
 
       {/* Invested */}
       <div style={{ flex: '0 0 100px', textAlign: 'right' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', color: 'rgba(255, 255, 255, 0.6)', fontSize: compact ? '0.75rem' : '0.8125rem' }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', color: 'rgba(255, 255, 255, 0.6)', fontSize: compact ? '0.75rem' : '0.8125rem' }}>
           {compact ? formatCompactNumber(investedValue) : investedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
       </div>
 
       {/* Current Value */}
       <div style={{ flex: '0 0 100px', textAlign: 'right' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, fontSize: compact ? '0.75rem' : '0.8125rem', color: 'rgba(255, 255, 255, 0.9)' }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500, fontSize: compact ? '0.75rem' : '0.8125rem', color: 'rgba(255, 255, 255, 0.9)' }}>
           {compact ? formatCompactNumber(currentValue) : currentValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </div>
       </div>
@@ -134,7 +134,8 @@ export const HoldingRow: React.FC<HoldingRowProps> = ({
       <div style={{ flex: '0 0 110px', textAlign: 'right', paddingLeft: '8px' }}>
         <div
           style={{
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-heading)',
+            fontVariantNumeric: 'tabular-nums',
             fontWeight: 600,
             color: isProfit ? '#00C853' : '#FF5252',
             fontSize: compact ? '0.75rem' : '0.8125rem',
@@ -211,7 +212,8 @@ export const HoldingsSummaryRow: React.FC<HoldingsSummaryRowProps> = ({
   const cellStyle: React.CSSProperties = {
     fontSize: '0.8125rem',
     fontWeight: 600,
-    fontFamily: 'var(--font-mono)',
+    fontFamily: 'var(--font-heading)',
+    fontVariantNumeric: 'tabular-nums',
   };
 
   return (
@@ -285,7 +287,7 @@ export const MobileHoldingsSummary: React.FC<MobileHoldingsSummaryProps> = ({
         <div style={{ fontSize: '0.7rem', color: 'rgba(255, 255, 255, 0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
           Total Value
         </div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.125rem', color: 'rgba(255, 255, 255, 1)' }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 700, fontSize: '1.125rem', color: 'rgba(255, 255, 255, 1)' }}>
           {formatCompactNumber(totalCurrentValue)}
         </div>
         <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginTop: '2px' }}>
@@ -297,7 +299,8 @@ export const MobileHoldingsSummary: React.FC<MobileHoldingsSummaryProps> = ({
           Total P&L
         </div>
         <div style={{
-          fontFamily: 'var(--font-mono)',
+          fontFamily: 'var(--font-heading)',
+          fontVariantNumeric: 'tabular-nums',
           fontWeight: 700,
           fontSize: '1.125rem',
           color: isProfit ? '#00C853' : '#FF5252',

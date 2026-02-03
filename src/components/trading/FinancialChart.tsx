@@ -130,7 +130,7 @@ export const FinancialChart: React.FC<FinancialChartProps> = ({
                 duration: 500,
             },
             style: {
-                fontFamily: 'var(--font-mono), monospace',
+                fontFamily: 'var(--font-heading)',
             },
         },
         title: {

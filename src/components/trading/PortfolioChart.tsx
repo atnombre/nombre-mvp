@@ -69,7 +69,7 @@ export const PortfolioChart: React.FC<PortfolioChartProps> = ({
       backgroundColor: 'transparent',
       margin: [10, 50, 30, 50],
       animation: { duration: 600 },
-      style: { fontFamily: 'var(--font-mono), monospace' },
+      style: { fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums' },
       zooming: {
         type: 'x',
         mouseWheel: { enabled: true },
@@ -208,7 +208,8 @@ export const PortfolioChart: React.FC<PortfolioChartProps> = ({
           <div style={{
             fontSize: '1.5rem',
             fontWeight: 700,
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-heading)',
+            fontVariantNumeric: 'tabular-nums',
             color: isProfit ? '#4ade80' : '#f87171',
           }}>
             {isProfit ? '+' : ''}{formatSmartPrice(displayPnL)}

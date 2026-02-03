@@ -1,0 +1,74 @@
+/* HeroCTAButton.css */
+
+.hero-cta-wrapper {
+    position: relative;
+    display: inline-block;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+/* 
+   Override the .shimmer-button styles when it's inside the hero wrapper.
+   We explicitly set position relative and flex styling to handle the inner spans.
+*/
+.hero-cta-wrapper .shimmer-button {
+    text-decoration: none !important;
+    font-size: 1rem !important;
+    padding: 0.9rem 3rem !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 8px 20px rgba(234, 153, 153, 0.3) !important;
+
+    /* Layout for manual arrow animation */
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    /* Needed for absolute arrow position */
+    overflow: hidden;
+    /* Hide arrow when it's outside */
+}
+
+/* Label transition */
+.hero-cta-wrapper .shimmer-button .cta-label {
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    display: inline-block;
+}
+
+/* Arrow styling */
+.hero-cta-wrapper .shimmer-button .cta-arrow {
+    position: absolute;
+    /* Center vertically */
+    top: 50%;
+    transform: translateY(-50%) translateX(20px);
+    right: 1.5rem;
+    /* End position, initially hidden by translateX and opacity */
+
+    opacity: 0;
+    /* smoother transition with 0.1s delay (applies to all properties) */
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1) 0.1s;
+
+    /* Ensure icon size */
+    display: flex;
+    align-items: center;
+}
+
+/* Hover Effects */
+.hero-cta-wrapper .shimmer-button:hover {
+    box-shadow: 0 12px 28px rgba(234, 153, 153, 0.5) !important;
+    transform: scale(1.05) !important;
+}
+
+/* 1. Shift text left */
+.hero-cta-wrapper .shimmer-button:hover .cta-label {
+    transform: translateX(-12px);
+}
+
+/* 2. Slide arrow in */
+.hero-cta-wrapper .shimmer-button:hover .cta-arrow {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+.hero-cta-wrapper .shimmer-button:active {
+    transform: scale(0.98) !important;
+}

@@ -116,7 +116,7 @@ export const Explore: React.FC = () => {
       align: 'right' as const,
       width: '100px',
       render: (creator: any) => (
-        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+        <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
           {formatPrice(getCreatorPrice(creator))}
         </span>
       ),
@@ -143,7 +143,7 @@ export const Explore: React.FC = () => {
       width: '120px',
       sortable: true,
       render: (creator: any) => (
-        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--text-secondary)' }}>
+        <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500, color: 'var(--text-secondary)' }}>
           {formatNumber(creator.market_cap)}
         </span>
       ),
@@ -155,7 +155,7 @@ export const Explore: React.FC = () => {
       width: '120px',
       sortable: true,
       render: (creator: any) => (
-        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--text-secondary)' }}>
+        <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500, color: 'var(--text-secondary)' }}>
           {formatNumber(creator.volume_24h)}
         </span>
       ),
@@ -166,7 +166,7 @@ export const Explore: React.FC = () => {
       align: 'right' as const,
       width: '110px',
       render: (creator: any) => (
-        <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+        <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', color: 'var(--text-muted)' }}>
           {formatNumber(creator.subscriber_count)}
         </span>
       ),
@@ -229,7 +229,8 @@ export const Explore: React.FC = () => {
             <span style={{
               fontSize: '0.75rem',
               color: 'rgba(255, 255, 255, 0.5)',
-              fontFamily: 'var(--font-mono)',
+              fontFamily: 'var(--font-heading)',
+              fontVariantNumeric: 'tabular-nums',
             }}>
               Vol: {formatNumber(creator.volume_24h)}
             </span>
@@ -237,7 +238,8 @@ export const Explore: React.FC = () => {
             <span style={{
               fontSize: '0.75rem',
               color: 'rgba(255, 255, 255, 0.5)',
-              fontFamily: 'var(--font-mono)',
+              fontFamily: 'var(--font-heading)',
+              fontVariantNumeric: 'tabular-nums',
             }}>
               <Users size={10} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
               {formatNumber(creator.subscriber_count)}
@@ -247,7 +249,8 @@ export const Explore: React.FC = () => {
 
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
           <div style={{
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-heading)',
+            fontVariantNumeric: 'tabular-nums',
             fontWeight: 600,
             fontSize: '0.9375rem',
             color: 'rgba(255, 255, 255, 1)',
@@ -279,6 +282,7 @@ export const Explore: React.FC = () => {
         alignItems: 'flex-start',
         marginBottom: isMobile ? '16px' : '24px',
         gap: '16px',
+        textAlign: 'left',
       }}>
         <div>
           <h1 style={{

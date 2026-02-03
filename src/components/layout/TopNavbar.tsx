@@ -7,9 +7,9 @@ import {
   Trophy,
   History,
   LogOut,
-  Zap,
   ChevronDown,
 } from 'lucide-react';
+import logo from '../../assets/logo.png';
 import { useAuthStore } from '../../stores/authStore';
 import { formatNumber } from '../trading/PriceDisplay';
 
@@ -56,20 +56,11 @@ export const TopNavbar: React.FC = () => {
           marginRight: '32px',
         }}
       >
-        <div
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #EA9999 0%, #d88888 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(234, 153, 153, 0.3)',
-          }}
-        >
-          <Zap size={18} color="#000" fill="#000" />
-        </div>
+        <img
+          src={logo}
+          alt="Nombre"
+          style={{ width: '32px', height: '32px', borderRadius: '8px' }}
+        />
         <span
           style={{
             fontSize: '1.125rem',
@@ -163,7 +154,8 @@ export const TopNavbar: React.FC = () => {
                 fontSize: '0.875rem',
                 fontWeight: 700,
                 color: '#EA9999',
-                fontFamily: 'var(--font-mono)',
+                fontFamily: 'var(--font-heading)',
+                fontVariantNumeric: 'tabular-nums',
               }}
             >
               {formatNumber(user.nmbr_balance)}

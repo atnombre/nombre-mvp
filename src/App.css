@@ -34,16 +34,16 @@
         grid-template-columns: 1fr 1fr;
         gap: 0.75rem;
     }
-    
+
     .two-column-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .creator-grid {
         grid-template-columns: 1fr;
     }
-    
+
     /* Hide elements on mobile */
     .hide-mobile {
         display: none !important;
@@ -61,8 +61,184 @@
     .trading-layout {
         flex-direction: column !important;
     }
-    
-    .trading-layout > div {
+
+    .trading-layout>div {
         min-width: 100% !important;
+    }
+}
+
+/* Landing Page Styles */
+
+#root {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0;
+    /* Override default padding */
+    text-align: center;
+}
+
+@property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rotate {
+    to {
+        --angle: 360deg;
+    }
+}
+
+.shimmer-button {
+    /* Dimensions and shape */
+    padding: 0.6rem 1.5rem;
+    border-radius: 24px;
+    border: 2px solid transparent;
+    /* Transparent border creates the space for the conic gradient */
+    outline: none;
+    cursor: pointer;
+
+    /* Typography */
+    color: #FFFFFF;
+    font-family: 'Geist', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    /* The core logic: 
+       1. Inner background (#EA9999) confined to padding-box (covers the center)
+       2. Conic gradient border confined to border-box (shows only in the transparent border area)
+    */
+    background:
+        linear-gradient(#EA9999, #EA9999) padding-box,
+        conic-gradient(from var(--angle), transparent 25%, white 50%, transparent 75%) border-box;
+
+    /* Animation */
+    animation: rotate 4s linear infinite;
+
+    /* Other effects */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(234, 153, 153, 0.2);
+}
+
+.shimmer-button:hover {
+    box-shadow: 0 6px 16px rgba(234, 153, 153, 0.4);
+    /* Slightly lighten the inner background on hover */
+    background:
+        linear-gradient(#E08888, #E08888) padding-box,
+        conic-gradient(from var(--angle), transparent 25%, white 50%, transparent 75%) border-box;
+}
+
+.shimmer-button:active {
+    transform: scale(0.98);
+}
+
+/* Logo Interaction - Novelty Jelly Effect */
+@keyframes jelly {
+    0% {
+        transform: scale(1, 1);
+    }
+
+    30% {
+        transform: scale(1.25, 0.75);
+    }
+
+    40% {
+        transform: scale(0.75, 1.25);
+    }
+
+    50% {
+        transform: scale(1.15, 0.85);
+    }
+
+    65% {
+        transform: scale(0.95, 1.05);
+    }
+
+    75% {
+        transform: scale(1.05, 0.95);
+    }
+
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
+.nav-logo {
+    height: 48px;
+    /* High visibility */
+    filter: brightness(1.15);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-logo:hover {
+    transform: scale(1.05);
+}
+
+/* Rubber Band / Jelly effect on click */
+.nav-logo:active {
+    animation: jelly 0.6s;
+}
+
+/* No-blend utility for cursor */
+.no-blend {
+    mix-blend-mode: normal !important;
+}
+
+/* --- Responsive Design Utilities --- */
+
+@media (max-width: 1024px) {
+
+    /* Tablet Adjustments */
+    #root {
+        padding: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Mobile Adjustments */
+
+    /* Typography Scaling */
+    html {
+        font-size: 14px;
+        /* Slight scale down base */
+    }
+
+    h1,
+    .hero-title {
+        font-size: clamp(2.5rem, 9vw, 3.5rem) !important;
+        /* Slightly smaller for safety */
+        line-height: 1.1 !important;
+    }
+
+    h2,
+    .section-title {
+        font-size: clamp(1.8rem, 7vw, 2.5rem) !important;
+    }
+
+    p,
+    .hero-subtitle {
+        font-size: 1rem !important;
+        max-width: 90vw !important;
+    }
+
+    /* Layout Utilities */
+    .responsive-col {
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .responsive-padding {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .responsive-gap {
+        gap: 2rem !important;
+    }
+
+    /* Hide decorative elements on small mobile if needed */
+    .hide-mobile {
+        display: none !important;
     }
 }

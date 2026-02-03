@@ -12,6 +12,7 @@ interface TickerProps {
     speed?: number; // Duration in seconds
     className?: string;
     visible?: boolean;
+    top?: string | number;
 }
 
 const InfiniteTicker: React.FC<TickerProps> = ({
@@ -19,6 +20,7 @@ const InfiniteTicker: React.FC<TickerProps> = ({
     speed = 40,
     className = '',
     visible = false,
+    top = 0,
 }) => {
     // Duplicate for seamless loop
     // Ensure we have enough items to fill screen width
@@ -33,7 +35,7 @@ const InfiniteTicker: React.FC<TickerProps> = ({
             style={{
                 width: '100%',
                 position: 'fixed',
-                top: 0,
+                top: top,
                 left: 0,
                 zIndex: 50,
                 backgroundColor: 'transparent', // Ambient: No background
@@ -66,10 +68,11 @@ const InfiniteTicker: React.FC<TickerProps> = ({
                     <span
                         key={index}
                         style={{
-                            fontSize: '0.8rem',
+                            fontSize: '0.9rem',
                             color: 'rgba(255, 255, 255, 0.7)', // Muted primary text
                             whiteSpace: 'nowrap',
-                            fontFamily: 'Inter, system-ui, sans-serif', // Modern sans-serif
+                            fontFamily: 'var(--font-heading)', // Geist
+                            fontVariantNumeric: 'tabular-nums',
                             fontWeight: 400,
                             letterSpacing: '0.04em',
                             display: 'flex',
@@ -87,7 +90,6 @@ const InfiniteTicker: React.FC<TickerProps> = ({
                         <span style={{ marginRight: '0.5em', color: item.change.startsWith('+') ? '#86efac' : item.change.startsWith('-') ? '#fca5a5' : '#e5e5e5', opacity: 0.8 }}>
                             {item.change}
                         </span>
-                        <span style={{ opacity: 0.4, fontSize: '0.8em' }}>({item.pctChange})</span>
                     </span>
                 ))}
             </div>

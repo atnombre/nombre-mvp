@@ -103,7 +103,7 @@ export const Portfolio: React.FC = () => {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: isMobile ? '16px' : '24px' }}>
+      <div style={{ marginBottom: isMobile ? '16px' : '24px', textAlign: 'left' }}>
         <h1 style={{
           margin: 0,
           fontSize: isMobile ? '1.25rem' : '1.5rem',

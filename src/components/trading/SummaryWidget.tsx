@@ -38,6 +38,7 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
         borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--border-color)',
         overflow: 'hidden',
+        textAlign: 'left',
       }}
     >
       {/* Header */}
@@ -67,7 +68,8 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
               fontWeight: 700,
               color: getValueColor(mainValueColor),
               letterSpacing: '-0.02em',
-              fontFamily: 'var(--font-mono)',
+              fontFamily: 'var(--font-heading)',
+              fontVariantNumeric: 'tabular-nums',
             }}
           >
             {mainValue}
@@ -104,7 +106,8 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({
               style={{
                 fontSize: '0.875rem',
                 fontWeight: 600,
-                fontFamily: 'var(--font-mono)',
+                fontFamily: 'var(--font-heading)',
+                fontVariantNumeric: 'tabular-nums',
                 color: getValueColor(row.valueColor),
               }}
             >

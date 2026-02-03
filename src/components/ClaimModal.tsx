@@ -155,6 +155,7 @@ export const ClaimModal: React.FC = () => {
                             margin: '0 0 8px',
                             fontSize: '1rem',
                             color: 'rgba(255, 255, 255, 0.7)',
+                            fontFamily: '"Instrument Sans", sans-serif',
                         }}
                     >
                         Claim your free tokens to start trading creator coins.
@@ -175,7 +176,8 @@ export const ClaimModal: React.FC = () => {
                                 fontSize: 'clamp(2rem, 8vw, 2.5rem)',
                                 fontWeight: 800,
                                 color: '#EA9999',
-                                fontFamily: 'var(--font-mono)',
+                                fontFamily: 'var(--font-heading)',
+                                fontVariantNumeric: 'tabular-nums',
                                 letterSpacing: '-0.03em',
                             }}
                         >
@@ -187,6 +189,7 @@ export const ClaimModal: React.FC = () => {
                                 color: 'rgba(255, 255, 255, 0.5)',
                                 marginTop: '4px',
                                 fontWeight: 500,
+                                fontFamily: '"Instrument Sans", sans-serif',
                             }}
                         >
                             NMBR TOKENS
@@ -245,6 +248,7 @@ export const ClaimModal: React.FC = () => {
                             margin: '20px 0 0',
                             fontSize: '0.75rem',
                             color: 'rgba(255, 255, 255, 0.4)',
+                            fontFamily: '"Instrument Sans", sans-serif',
                         }}
                     >
                         This is a one-time bonus for new users.

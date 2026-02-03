@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTrade } from '../../hooks/useTrade';
 import { Creator, Holding } from '../../services/api';
 import { AlertCircle, CheckCircle, Loader, Wallet, Zap, Coins } from 'lucide-react';
@@ -185,7 +186,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                     color: '#fff',
                     fontWeight: 600,
                     fontSize: '0.875rem',
-                    fontFamily: 'var(--font-mono)',
+                    fontFamily: 'var(--font-heading)',
+                    fontVariantNumeric: 'tabular-nums',
                 }}>
                     {formatNumber(userBalance)} NMBR
                 </span>
@@ -216,7 +218,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                     color: userTokenBalance > 0 ? '#EA9999' : 'rgba(255, 255, 255, 0.3)',
                     fontWeight: 600,
                     fontSize: '0.875rem',
-                    fontFamily: 'var(--font-mono)',
+                    fontFamily: 'var(--font-heading)',
+                    fontVariantNumeric: 'tabular-nums',
                 }}>
                     {formatNumber(userTokenBalance)} {creator.token_symbol}
                 </span>
@@ -293,7 +296,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                                 fontWeight: 700,
                                 fontStyle: 'normal',
                                 color: amount ? '#fff' : 'transparent',
-                                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                                fontFamily: "var(--font-heading)",
+                                fontVariantNumeric: 'tabular-nums',
                                 letterSpacing: '-0.02em',
                                 minWidth: 0,
                                 caretColor: '#fff',
@@ -309,7 +313,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                                 fontWeight: 700,
                                 fontStyle: 'normal',
                                 color: 'rgba(255, 255, 255, 0.4)',
-                                fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                                fontFamily: "var(--font-heading)",
+                                fontVariantNumeric: 'tabular-nums',
                                 letterSpacing: '-0.02em',
                                 pointerEvents: 'none',
                             }}>
@@ -421,7 +426,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                         fontWeight: 700,
                         fontStyle: 'normal',
                         color: quote ? accentColor : 'rgba(255, 255, 255, 0.4)',
-                        fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                        fontFamily: "var(--font-heading)",
+                        fontVariantNumeric: 'tabular-nums',
                         letterSpacing: '-0.02em',
                     }}>
                         {isLoadingQuote ? (
@@ -460,7 +466,7 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                         {/* Exchange Rate (renamed from Price) */}
                         <div style={{ textAlign: 'left' }}>
                             <div style={{ color: 'rgba(255, 255, 255, 0.35)', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Exchange Rate</div>
-                            <div style={{ color: accentColor, fontWeight: 600, fontSize: '0.8rem', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+                            <div style={{ color: accentColor, fontWeight: 600, fontSize: '0.8rem', fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', marginTop: '4px' }}>
                                 1 {creator.token_symbol} ≈ {quote.price_per_token.toFixed(4)} NMBR
                             </div>
                         </div>
@@ -473,7 +479,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                                     color: quote.price_impact_pct > 5 ? '#f87171' : quote.price_impact_pct > 2 ? '#fbbf24' : '#4ade80',
                                     fontWeight: 600,
                                     fontSize: '0.8rem',
-                                    fontFamily: 'var(--font-mono)',
+                                    fontFamily: 'var(--font-heading)',
+                                    fontVariantNumeric: 'tabular-nums',
                                     marginTop: '4px',
                                 }}>
                                     {quote.price_impact_pct.toFixed(2)}%
@@ -490,7 +497,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                                 color: quote.fee_pct > 5 ? '#fbbf24' : '#fff',
                                 fontWeight: 600,
                                 fontSize: '0.8rem',
-                                fontFamily: 'var(--font-mono)',
+                                fontFamily: 'var(--font-heading)',
+                                fontVariantNumeric: 'tabular-nums',
                                 marginTop: '4px'
                             }}>
                                 {quote.fee_amount.toFixed(4)} NMBR
@@ -538,42 +546,115 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                 </div>
             )}
 
-            {/* Trade Button - Premium Pill Style */}
-            <button
-                onClick={handleTrade}
-                disabled={!canTrade || isExecuting}
-                style={{
-                    width: '100%',
-                    padding: '16px 24px',
-                    background: canTrade && !isExecuting ? accentGradient : 'rgba(255, 255, 255, 0.05)',
-                    border: 'none',
-                    borderRadius: '14px',
-                    color: canTrade && !isExecuting ? '#000' : 'rgba(255, 255, 255, 0.3)',
-                    fontSize: '1rem',
-                    fontWeight: 700,
-                    cursor: canTrade && !isExecuting ? 'pointer' : 'not-allowed',
-                    transition: 'all 0.25s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px',
-                    boxShadow: canTrade && !isExecuting
-                        ? `0 4px 20px rgba(${accentColorRgb}, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)`
-                        : 'none',
-                }}
-            >
-                {isExecuting ? (
-                    <>
-                        <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
-                        Processing...
-                    </>
-                ) : (
-                    <>
-                        <Zap size={18} />
-                        {mode === 'buy' ? 'Buy' : 'Sell'} {creator.token_symbol}
-                    </>
-                )}
-            </button>
+            {/* Trade Button - Elegant Addicting Success Animation */}
+            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', position: 'relative' }}>
+                <AnimatePresence mode="wait">
+                    {showSuccess ? (
+                        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            {/* Elegant Sonar Ripples */}
+                            {[0, 1, 2].map((i) => (
+                                <motion.div
+                                    key={`ripple-${i}`}
+                                    initial={{ scale: 0.8, opacity: 0.4 }}
+                                    animate={{ scale: 2.2, opacity: 0 }}
+                                    transition={{
+                                        duration: 1.8,
+                                        delay: i * 0.3,
+                                        ease: [0.22, 1, 0.36, 1],
+                                        repeat: Infinity,
+                                        repeatDelay: 0.5
+                                    }}
+                                    style={{
+                                        position: 'absolute',
+                                        width: '56px',
+                                        height: '56px',
+                                        borderRadius: '50%',
+                                        border: `1px solid ${mode === 'buy' ? '#4ade80' : '#f87171'}`,
+                                        zIndex: 0,
+                                    }}
+                                />
+                            ))}
+
+                            <motion.button
+                                key="success"
+                                initial={{ width: '100%', borderRadius: '14px', scale: 0.8, opacity: 0 }}
+                                animate={{
+                                    width: '64px',
+                                    borderRadius: '32px',
+                                    scale: 1,
+                                    opacity: 1,
+                                    boxShadow: `0 0 30px ${mode === 'buy' ? 'rgba(74, 222, 128, 0.5)' : 'rgba(248, 113, 113, 0.5)'}`
+                                }}
+                                exit={{ width: '100%', borderRadius: '14px', scale: 0.9, opacity: 0 }}
+                                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                                style={{
+                                    height: '64px',
+                                    border: 'none',
+                                    background: mode === 'buy' ? '#4ade80' : '#f87171',
+                                    color: '#000',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'default',
+                                    zIndex: 1,
+                                    position: 'relative',
+                                }}
+                            >
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <motion.path
+                                        d="M20 6L9 17l-5-5"
+                                        initial={{ pathLength: 0 }}
+                                        animate={{ pathLength: 1 }}
+                                        transition={{ duration: 0.4, delay: 0.1, ease: 'easeOut' }}
+                                    />
+                                </svg>
+                            </motion.button>
+                        </div>
+                    ) : (
+                        <motion.button
+                            key="default"
+                            onClick={handleTrade}
+                            disabled={!canTrade || isExecuting}
+                            initial={{ width: '64px', borderRadius: '32px', opacity: 0 }}
+                            animate={{ width: '100%', borderRadius: '14px', opacity: 1 }}
+                            exit={{ width: '64px', borderRadius: '32px', opacity: 0 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                            style={{
+                                height: '56px',
+                                padding: '0 24px',
+                                background: canTrade && !isExecuting ? accentGradient : 'rgba(255, 255, 255, 0.05)',
+                                border: 'none',
+                                color: canTrade && !isExecuting ? '#000' : 'rgba(255, 255, 255, 0.3)',
+                                fontSize: '1rem',
+                                fontWeight: 700,
+                                cursor: canTrade && !isExecuting ? 'pointer' : 'not-allowed',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                boxShadow: canTrade && !isExecuting
+                                    ? `0 4px 20px rgba(${accentColorRgb}, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)`
+                                    : 'none',
+                                zIndex: 1,
+                            }}
+                            whileHover={canTrade && !isExecuting ? { scale: 1.02, boxShadow: `0 6px 24px rgba(${accentColorRgb}, 0.4)` } : {}}
+                            whileTap={canTrade && !isExecuting ? { scale: 0.96 } : {}}
+                        >
+                            {isExecuting ? (
+                                <>
+                                    <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                                    Processing...
+                                </>
+                            ) : (
+                                <>
+                                    <Zap size={18} />
+                                    {mode === 'buy' ? 'Buy' : 'Sell'} {creator.token_symbol}
+                                </>
+                            )}
+                        </motion.button>
+                    )}
+                </AnimatePresence>
+            </div>
 
             {/* Animations */}
             <style>{`
@@ -593,7 +674,8 @@ export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance
                     color: rgba(255, 255, 255, 0.4);
                     font-weight: 700;
                     font-style: normal;
-                    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+                    font-family: var(--font-heading);
+                    font-variant-numeric: tabular-nums;
                     opacity: 1;
                 }
             `}</style>

@@ -82,7 +82,8 @@ export const HoldingCard: React.FC<HoldingCardProps> = ({
             {/* Value + P&L - Right Aligned */}
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div style={{
-                    fontFamily: 'var(--font-mono)',
+                    fontFamily: 'var(--font-heading)',
+                    fontVariantNumeric: 'tabular-nums',
                     fontWeight: 600,
                     fontSize: '0.9375rem',
                     color: '#fff',

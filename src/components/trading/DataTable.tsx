@@ -230,23 +230,23 @@ export const columnRenderers = {
     </div>
   ),
 
-  // Quantity with monospace font
+  // Quantity with monospace font (now Geist)
   quantity: (value: number) => (
-    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
+    <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
       {value.toLocaleString()}
     </span>
   ),
 
   // Price value
   price: (value: number) => (
-    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
+    <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
       {formatPrice(value)}
     </span>
   ),
 
   // Currency value
   currency: (value: number, symbol: string = 'NMBR') => (
-    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
+    <span style={{ fontFamily: 'var(--font-heading)', fontVariantNumeric: 'tabular-nums', fontWeight: 500 }}>
       {formatNumber(value)} <span style={{ color: 'var(--text-muted)', fontSize: '0.75em' }}>{symbol}</span>
     </span>
   ),
@@ -257,7 +257,8 @@ export const columnRenderers = {
     return (
       <span
         style={{
-          fontFamily: 'var(--font-mono)',
+          fontFamily: 'var(--font-heading)',
+          fontVariantNumeric: 'tabular-nums',
           fontWeight: 600,
           color: isPositive ? 'var(--color-positive)' : 'var(--color-negative)',
         }}

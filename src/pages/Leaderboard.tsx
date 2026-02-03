@@ -42,7 +42,8 @@ export const Leaderboard: React.FC = () => {
       justifyContent: 'center',
       fontWeight: 700,
       fontSize,
-      fontFamily: 'var(--font-mono)',
+      fontFamily: 'var(--font-heading)',
+      fontVariantNumeric: 'tabular-nums',
       flexShrink: 0,
     };
 
@@ -96,7 +97,7 @@ export const Leaderboard: React.FC = () => {
     return (
       <div>
         {/* Header */}
-        <div style={{ marginBottom: '16px' }}>
+        <div style={{ marginBottom: '16px', textAlign: 'left' }}>
           <h1 style={{
             margin: 0,
             fontSize: '1.25rem',
@@ -198,7 +199,8 @@ export const Leaderboard: React.FC = () => {
                   fontSize: '1.5rem',
                   fontWeight: 700,
                   color: 'var(--color-accent)',
-                  fontFamily: 'var(--font-mono)',
+                  fontFamily: 'var(--font-heading)',
+                  fontVariantNumeric: 'tabular-nums',
                   lineHeight: 1,
                 }}>
                   #{myRank}
@@ -215,7 +217,8 @@ export const Leaderboard: React.FC = () => {
                   Value
                 </div>
                 <span style={{
-                  fontFamily: 'var(--font-mono)',
+                  fontFamily: 'var(--font-heading)',
+                  fontVariantNumeric: 'tabular-nums',
                   fontWeight: 700,
                   fontSize: '1rem',
                   color: 'var(--color-accent)',
@@ -319,7 +322,8 @@ export const Leaderboard: React.FC = () => {
                       )}
                     </div>
                     <span style={{
-                      fontFamily: 'var(--font-mono)',
+                      fontFamily: 'var(--font-heading)',
+                      fontVariantNumeric: 'tabular-nums',
                       fontSize: '0.75rem',
                       color: 'var(--text-muted)',
                     }}>
@@ -348,7 +352,7 @@ export const Leaderboard: React.FC = () => {
   return (
     <div>
       {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
+      <div style={{ marginBottom: '24px', textAlign: 'left' }}>
         <h1 style={{
           margin: 0,
           fontSize: '1.5rem',
@@ -455,7 +459,8 @@ export const Leaderboard: React.FC = () => {
                   fontSize: '1.75rem',
                   fontWeight: 700,
                   color: 'var(--color-accent)',
-                  fontFamily: 'var(--font-mono)',
+                  fontFamily: 'var(--font-heading)',
+                  fontVariantNumeric: 'tabular-nums',
                   lineHeight: 1,
                 }}>
                   #{myRank}
@@ -474,7 +479,8 @@ export const Leaderboard: React.FC = () => {
                 Total Valuation
               </div>
               <span style={{
-                fontFamily: 'var(--font-mono)',
+                fontFamily: 'var(--font-heading)',
+                fontVariantNumeric: 'tabular-nums',
                 fontWeight: 700,
                 fontSize: '1.25rem',
                 color: 'var(--color-accent)',
@@ -656,7 +662,8 @@ export const Leaderboard: React.FC = () => {
                   {/* Portfolio Value */}
                   <div style={{ textAlign: 'right' }}>
                     <span style={{
-                      fontFamily: 'var(--font-mono)',
+                      fontFamily: 'var(--font-heading)',
+                      fontVariantNumeric: 'tabular-nums',
                       fontWeight: 600,
                       fontSize: '0.875rem',
                       color: 'var(--text-secondary)',

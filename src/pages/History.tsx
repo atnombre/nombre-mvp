@@ -158,7 +158,8 @@ export const History: React.FC = () => {
       {/* Values */}
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
         <div style={{
-          fontFamily: 'var(--font-mono)',
+          fontFamily: 'var(--font-heading)',
+          fontVariantNumeric: 'tabular-nums',
           fontWeight: 600,
           fontSize: '0.9375rem',
           color: tx.type === 'buy' ? 'var(--color-positive)' : 'var(--color-negative)',
@@ -167,7 +168,8 @@ export const History: React.FC = () => {
           {tx.type === 'buy' ? '+' : '-'}{formatTokenAmount(tx.token_amount)}
         </div>
         <div style={{
-          fontFamily: 'var(--font-mono)',
+          fontFamily: 'var(--font-heading)',
+          fontVariantNumeric: 'tabular-nums',
           fontSize: '0.75rem',
           color: 'var(--text-muted)',
         }}>
@@ -186,6 +188,7 @@ export const History: React.FC = () => {
         alignItems: isMobile ? 'center' : 'flex-start',
         marginBottom: isMobile ? '16px' : '24px',
         gap: '12px',
+        textAlign: 'left',
       }}>
         <div>
           <h1 style={{
@@ -543,7 +546,8 @@ export const History: React.FC = () => {
                   {/* Token Amount */}
                   <div style={{ textAlign: 'right' }}>
                     <span style={{
-                      fontFamily: 'var(--font-mono)',
+                      fontFamily: 'var(--font-heading)',
+                      fontVariantNumeric: 'tabular-nums',
                       fontWeight: 600,
                       fontSize: '0.875rem',
                       color: tx.type === 'buy' ? 'var(--color-positive)' : 'var(--color-negative)',
@@ -555,7 +559,8 @@ export const History: React.FC = () => {
                   {/* NMBR Value */}
                   <div style={{ textAlign: 'right' }}>
                     <span style={{
-                      fontFamily: 'var(--font-mono)',
+                      fontFamily: 'var(--font-heading)',
+                      fontVariantNumeric: 'tabular-nums',
                       fontWeight: 500,
                       fontSize: '0.8125rem',
                       color: 'var(--text-secondary)',
@@ -623,7 +628,8 @@ export const History: React.FC = () => {
           <span style={{
             fontSize: '0.8125rem',
             color: 'var(--text-muted)',
-            fontFamily: 'var(--font-mono)',
+            fontFamily: 'var(--font-heading)',
+            fontVariantNumeric: 'tabular-nums',
           }}>
             {currentPage}/{totalPages}
           </span>
