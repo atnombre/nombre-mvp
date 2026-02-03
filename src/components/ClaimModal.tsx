@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Gift, Sparkles, AlertCircle, Loader } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Gift, Sparkles, AlertCircle, Loader, ArrowLeft } from 'lucide-react';
 import { Button } from './ui';
 import { api } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
@@ -30,6 +31,7 @@ const getDeviceFingerprint = (): string => {
 };
 
 export const ClaimModal: React.FC = () => {
+    const navigate = useNavigate();
     const { user, refreshUser } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -216,6 +218,41 @@ export const ClaimModal: React.FC = () => {
                             <AlertCircle size={16} />
                             {error}
                         </div>
+                    )}
+
+                    {/* Back Button (Visible only on error) */}
+                    {error && (
+                        <button
+                            onClick={() => navigate('/')}
+                            style={{
+                                position: 'absolute',
+                                top: '24px',
+                                left: '24px',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '50%',
+                                color: '#fff',
+                                cursor: 'pointer',
+                                width: '40px',
+                                height: '40px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s',
+                                backdropFilter: 'blur(4px)',
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                                e.currentTarget.style.transform = 'scale(1.05)';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                                e.currentTarget.style.transform = 'scale(1)';
+                            }}
+                            aria-label="Back to Home"
+                        >
+                            <ArrowLeft size={24} />
+                        </button>
                     )}
 
                     {/* CTA Button - Only path forward */}

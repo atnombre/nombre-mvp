@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Zap } from 'lucide-react'
 import { useAuthStore } from '../stores/authStore'
 import logo from '../assets/logo.png'
 
