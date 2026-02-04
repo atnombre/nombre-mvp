@@ -30,46 +30,44 @@ export const AppLayout: React.FC = () => {
 
     // Show loading while checking auth (init happens in main.tsx)
     if (isLoading) {
-        return (
         return <LoadingScreen onComplete={() => { }} autoHide={false} />;
-        );
     }
 
-// Not authenticated - redirect to landing
-if (!isAuthenticated) {
-    return <Navigate to="/" state={{ from: location }} replace />;
-}
+    // Not authenticated - redirect to landing
+    if (!isAuthenticated) {
+        return <Navigate to="/" state={{ from: location }} replace />;
+    }
 
-return (
-    <div style={{
-        minHeight: '100vh',
-        backgroundColor: 'var(--bg-primary)',
-    }}>
-        {/* Blocking Claim Modal for new users */}
-        <ClaimModal />
-
-        {/* Username Modal - appears after faucet claim for users without username */}
-        <UsernameModal />
-
-        {/* Top Navigation Bar */}
-        {!isMobile && <TopNavbar />}
-
-        <main style={{
-            paddingTop: isMobile ? '0' : 'var(--nav-height)',
-            paddingBottom: isMobile ? '70px' : '24px',
+    return (
+        <div style={{
             minHeight: '100vh',
+            backgroundColor: 'var(--bg-primary)',
         }}>
-            <div style={{
-                maxWidth: 'var(--content-max-width)',
-                margin: '0 auto',
-                padding: isMobile ? '16px' : '24px 32px',
-            }}>
-                <Outlet />
-            </div>
-        </main>
+            {/* Blocking Claim Modal for new users */}
+            <ClaimModal />
 
-        {/* Mobile Bottom Navigation */}
-        {isMobile && <MobileNav />}
-    </div>
-);
+            {/* Username Modal - appears after faucet claim for users without username */}
+            <UsernameModal />
+
+            {/* Top Navigation Bar */}
+            {!isMobile && <TopNavbar />}
+
+            <main style={{
+                paddingTop: isMobile ? '0' : 'var(--nav-height)',
+                paddingBottom: isMobile ? '70px' : '24px',
+                minHeight: '100vh',
+            }}>
+                <div style={{
+                    maxWidth: 'var(--content-max-width)',
+                    margin: '0 auto',
+                    padding: isMobile ? '16px' : '24px 32px',
+                }}>
+                    <Outlet />
+                </div>
+            </main>
+
+            {/* Mobile Bottom Navigation */}
+            {isMobile && <MobileNav />}
+        </div>
+    );
 };

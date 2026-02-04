@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
+import LoadingScreen from '../ui/LoadingScreen';
 
 /**
  * AdminRoute - Security wrapper for admin-only routes.
@@ -19,25 +20,7 @@ export const AdminRoute: React.FC = () => {
 
     // Show loading spinner while checking auth
     if (isLoading) {
-        return (
-            <div style={{
-                width: '100vw',
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'var(--bg-primary)',
-            }}>
-                <div style={{
-                    width: '40px',
-                    height: '40px',
-                    border: '3px solid var(--color-accent-bg)',
-                    borderTopColor: 'var(--color-accent)',
-                    borderRadius: '50%',
-                    animation: 'spin 0.8s linear infinite',
-                }} />
-            </div>
-        );
+        return <LoadingScreen onComplete={() => { }} autoHide={false} />;
     }
 
     // Not authenticated - redirect to landing

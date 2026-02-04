@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { AtSign, Sparkles, AlertCircle, Loader } from 'lucide-react';
-import { Button } from './ui';
+import { AlertCircle, Loader } from 'lucide-react';
 import { api } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
 
@@ -63,132 +62,106 @@ export const UsernameModal: React.FC = () => {
 
     return (
         <>
-            {/* Blocking Backdrop - Same DNA as ClaimModal */}
-            <div
-                style={{
-                    position: 'fixed',
-                    inset: 0,
-                    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    zIndex: 9999,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    padding: 'clamp(16px, 4vw, 24px)',
-                }}
-            >
-                {/* Modal Card - Same DNA as ClaimModal */}
-                <div
-                    style={{
-                        position: 'relative',
-                        maxWidth: 'min(420px, calc(100vw - 32px))',
-                        width: '100%',
-                        padding: 'clamp(24px, 5vw, 40px) clamp(20px, 4vw, 32px)',
-                        background: 'rgba(30, 30, 30, 0.95)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        borderRadius: 'clamp(18px, 4vw, 24px)',
-                        border: '1px solid rgba(234, 153, 153, 0.3)',
-                        boxShadow: `
-                            0 0 60px rgba(234, 153, 153, 0.2),
-                            0 0 120px rgba(234, 153, 153, 0.1),
-                            0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.1)
-                        `,
-                        textAlign: 'center',
-                        animation: 'modalGlow 3s ease-in-out infinite',
-                    }}
-                >
-                    {/* Animated Glow Border */}
-                    <div
-                        style={{
-                            position: 'absolute',
-                            inset: '-2px',
-                            borderRadius: '26px',
-                            background: 'linear-gradient(45deg, #EA9999, #d88888, #EA9999, #f0b8b8, #EA9999)',
-                            backgroundSize: '400% 400%',
-                            animation: 'borderGlow 4s ease infinite',
-                            zIndex: -1,
-                            opacity: 0.6,
-                        }}
-                    />
+            {/* Animation Styles */}
+            <style>{`
+                @property --angle {
+                    syntax: "<angle>";
+                    initial-value: 0deg;
+                    inherits: false;
+                }
 
-                    {/* Icon with Sparkle */}
-                    <div
-                        style={{
-                            width: 'clamp(64px, 15vw, 80px)',
-                            height: 'clamp(64px, 15vw, 80px)',
-                            margin: '0 auto clamp(16px, 4vw, 24px)',
-                            borderRadius: 'clamp(14px, 3vw, 20px)',
-                            background: 'linear-gradient(135deg, #EA9999 0%, #d88888 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            boxShadow: '0 8px 32px rgba(234, 153, 153, 0.4)',
-                            position: 'relative',
-                        }}
-                    >
-                        <AtSign size={40} color="#000" />
-                        <Sparkles
-                            size={20}
-                            color="#fff"
-                            style={{
-                                position: 'absolute',
-                                top: '-8px',
-                                right: '-8px',
-                                filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.8))',
-                                animation: 'sparkle 1.5s ease-in-out infinite',
-                            }}
-                        />
-                    </div>
+                @keyframes rotate {
+                    to {
+                        --angle: 360deg;
+                    }
+                }
+            `}</style>
+
+            <div style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 9999,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'rgba(3, 3, 3, 0.4)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                fontFamily: '"Instrument Sans", sans-serif',
+            }}>
+                {/* Minimal Spotlight Background Effect */}
+                <div style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100vw',
+                    height: '100vh',
+                    pointerEvents: 'none',
+                    background: 'radial-gradient(circle, rgba(234, 153, 153, 0.1) 0%, transparent 50%)',
+                    zIndex: -1,
+                }} />
+
+                {/* Shimmer Border Card */}
+                <div style={{
+                    position: 'relative',
+                    width: '380px',
+                    borderRadius: '32px',
+                    padding: '48px 32px',
+
+                    // Shimmer Effect Styles
+                    border: '2px solid transparent',
+                    outline: 'none',
+                    background: `
+                        linear-gradient(#050505, #050505) padding-box,
+                        conic-gradient(from var(--angle), transparent 25%, #EA9999 50%, transparent 75%) border-box
+                    `,
+                    animation: 'rotate 4s linear infinite',
+
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    boxShadow: '0 20px 50px -10px rgba(234, 153, 153, 0.15)',
+                }}>
 
                     {/* Title */}
-                    <h2
-                        style={{
-                            margin: '0 0 12px',
-                            fontSize: 'clamp(1.375rem, 5vw, 1.75rem)',
-                            fontWeight: 700,
-                            color: '#fff',
-                            letterSpacing: '-0.02em',
-                        }}
-                    >
+                    <h1 style={{
+                        fontSize: '1.5rem',
+                        fontWeight: 600,
+                        color: '#fff',
+                        marginBottom: '8px',
+                        letterSpacing: '-0.02em',
+                    }}>
                         Choose Your Handle
-                    </h2>
+                    </h1>
 
                     {/* Subtitle */}
-                    <p
-                        style={{
-                            margin: '0 0 8px',
-                            fontSize: 'clamp(0.875rem, 3vw, 1rem)',
-                            color: 'rgba(255, 255, 255, 0.7)',
-                        }}
-                    >
+                    <p style={{
+                        fontSize: '0.9rem',
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        marginBottom: '32px',
+                        lineHeight: '1.5',
+                    }}>
                         Pick a unique username for the leaderboard.
                     </p>
 
                     {/* Username Input */}
-                    <div
-                        style={{
-                            margin: 'clamp(16px, 4vw, 24px) 0',
-                            padding: 'clamp(14px, 3vw, 20px)',
-                            background: 'rgba(234, 153, 153, 0.1)',
-                            borderRadius: 'clamp(12px, 3vw, 16px)',
-                            border: '1px solid rgba(234, 153, 153, 0.2)',
-                        }}
-                    >
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                background: 'rgba(0, 0, 0, 0.3)',
-                                borderRadius: '12px',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                padding: '12px 16px',
-                            }}
-                        >
-                            <span style={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '1.1rem' }}>@</span>
+                    <div style={{
+                        width: '100%',
+                        marginBottom: '32px',
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            background: 'rgba(255, 255, 255, 0.05)',
+                            borderRadius: '16px',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            padding: '16px 20px',
+                            transition: 'border-color 0.2s',
+                        }}>
+                            <span style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: '1.25rem', fontWeight: 500 }}>@</span>
                             <input
                                 type="text"
                                 value={username}
@@ -197,7 +170,7 @@ export const UsernameModal: React.FC = () => {
                                     setError(null);
                                 }}
                                 onKeyDown={handleKeyDown}
-                                placeholder="yourname"
+                                placeholder="username"
                                 autoFocus
                                 style={{
                                     flex: 1,
@@ -205,124 +178,96 @@ export const UsernameModal: React.FC = () => {
                                     border: 'none',
                                     outline: 'none',
                                     color: '#fff',
-                                    fontSize: 'clamp(1rem, 4vw, 1.25rem)',
-                                    fontWeight: 600,
+                                    fontSize: '1.25rem',
+                                    fontWeight: 500,
                                     fontFamily: 'var(--font-heading)',
-                                    fontVariantNumeric: 'tabular-nums',
                                 }}
                             />
                         </div>
-                        <p
-                            style={{
-                                margin: '10px 0 0',
-                                fontSize: '0.75rem',
-                                color: 'rgba(255, 255, 255, 0.4)',
-                            }}
-                        >
-                            3-20 characters, letters, numbers, underscores only
+                        <p style={{
+                            marginTop: '12px',
+                            fontSize: '0.75rem',
+                            color: 'rgba(255, 255, 255, 0.4)',
+                            textAlign: 'left',
+                            paddingLeft: '4px',
+                        }}>
+                            3-20 characters, letters & numbers only.
                         </p>
                     </div>
 
                     {/* Error Message */}
                     {error && (
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '8px',
-                                marginBottom: '16px',
-                                padding: '12px 16px',
-                                background: 'rgba(248, 113, 113, 0.1)',
-                                border: '1px solid rgba(248, 113, 113, 0.2)',
-                                borderRadius: '12px',
-                                color: '#f87171',
-                                fontSize: '0.875rem',
-                            }}
-                        >
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            marginBottom: '24px',
+                            padding: '12px 16px',
+                            background: 'rgba(248, 113, 113, 0.1)',
+                            border: '1px solid rgba(248, 113, 113, 0.2)',
+                            borderRadius: '12px',
+                            color: '#f87171',
+                            fontSize: '0.875rem',
+                        }}>
                             <AlertCircle size={16} />
                             {error}
                         </div>
                     )}
 
                     {/* CTA Button */}
-                    <Button
+                    <button
                         onClick={handleSubmit}
                         disabled={isLoading || username.length < 3}
-                        glow
                         style={{
                             width: '100%',
-                            padding: 'clamp(12px, 3vw, 16px) 24px',
-                            fontSize: 'clamp(0.95rem, 3vw, 1.1rem)',
-                            fontWeight: 700,
+                            height: '56px',
+                            borderRadius: '28px',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            background: 'transparent',
+                            color: '#fff',
+                            fontSize: '1rem',
+                            fontWeight: 500,
+                            cursor: (isLoading || username.length < 3) ? 'not-allowed' : 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '12px',
+                            transition: 'all 0.3s ease',
+                            opacity: (isLoading || username.length < 3) ? 0.5 : 1,
+                        }}
+                        onMouseEnter={e => {
+                            if (!isLoading && username.length >= 3) {
+                                e.currentTarget.style.borderColor = '#EA9999';
+                                e.currentTarget.style.background = 'rgba(234, 153, 153, 0.05)';
+                            }
+                        }}
+                        onMouseLeave={e => {
+                            if (!isLoading) {
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                e.currentTarget.style.background = 'transparent';
+                            }
                         }}
                     >
                         {isLoading ? (
-                            <>
-                                <Loader size={20} style={{ animation: 'spin 1s linear infinite' }} />
-                                Setting up...
-                            </>
+                            <Loader size={20} className="animate-spin" />
                         ) : (
                             <>
                                 Claim @{username || 'username'}
                             </>
                         )}
-                    </Button>
+                    </button>
 
                     {/* Note */}
-                    <p
-                        style={{
-                            margin: '20px 0 0',
-                            fontSize: '0.75rem',
-                            color: 'rgba(255, 255, 255, 0.4)',
-                        }}
-                    >
+                    <p style={{
+                        marginTop: '24px',
+                        fontSize: '0.75rem',
+                        color: 'rgba(255, 255, 255, 0.6)',
+                    }}>
                         You can change this later in settings.
                     </p>
                 </div>
             </div>
-
-            {/* Keyframe Animations - Same as ClaimModal */}
-            <style>{`
-                @keyframes modalGlow {
-                    0%, 100% {
-                        box-shadow: 
-                            0 0 60px rgba(234, 153, 153, 0.2),
-                            0 0 120px rgba(234, 153, 153, 0.1),
-                            0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-                    }
-                    50% {
-                        box-shadow: 
-                            0 0 80px rgba(234, 153, 153, 0.3),
-                            0 0 160px rgba(234, 153, 153, 0.15),
-                            0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.1);
-                    }
-                }
-
-                @keyframes borderGlow {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
-                }
-
-                @keyframes sparkle {
-                    0%, 100% { 
-                        opacity: 1; 
-                        transform: scale(1) rotate(0deg); 
-                    }
-                    50% { 
-                        opacity: 0.5; 
-                        transform: scale(1.2) rotate(15deg); 
-                    }
-                }
-
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            `}</style>
         </>
     );
 };

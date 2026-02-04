@@ -39,7 +39,7 @@ async def get_leaderboard(
     
     for user in response.data:
         # Get holdings for this user
-        holdings = await get_user_holdings(user["id"])
+        holdings = get_user_holdings(user["id"])
         
         nmbr_balance = float(user.get("nmbr_balance", 0))
         holdings_value = sum(h["current_value"] for h in holdings) if holdings else 0

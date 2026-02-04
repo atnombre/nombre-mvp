@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, TrendingUp, BarChart3, DollarSign, Users, Plus, ChevronRight } from 'lucide-react';
+import { Search, TrendingUp, BarChart3, DollarSign, Users, Plus, ChevronRight, Loader } from 'lucide-react';
 import { useCreators } from '../hooks/useCreators';
 import { useAllPoolsSubscription } from '../hooks/useRealtime';
 import { AddCreatorModal } from '../components/AddCreatorModal';
@@ -384,7 +384,7 @@ export const Explore: React.FC = () => {
         >
           {status === 'loading' ? (
             <>
-              <div className="spinner" style={{ width: 12, height: 12, border: '2px solid var(--text-muted)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+              <Loader size={12} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
               sending...
             </>
           ) : status === 'success' ? (
@@ -726,7 +726,7 @@ export const Explore: React.FC = () => {
           {isSearchingYT ? (
             // Only show spinner if creators list is empty or we want to indicate more loading at bottom
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '12px', justifyContent: 'center' }}>
-              <div className="spinner" style={{ width: 12, height: 12, border: '2px solid var(--text-muted)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+              <Loader size={12} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
               Searching YouTube for more matches...
             </div>
           ) : youtubeResults.length > 0 && (
