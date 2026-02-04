@@ -22,7 +22,7 @@ async def get_portfolio(current_user: dict = Depends(get_current_user)):
     nmbr_balance = float(current_user.get("nmbr_balance", 0))
     
     # Get all holdings with current values
-    holdings = await get_user_holdings(user_id)
+    holdings = get_user_holdings(user_id)
     
     # Calculate totals
     # Portfolio Value = just holdings (NOT including NMBR balance)

@@ -62,8 +62,8 @@ function App() {
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </BrowserRouter>
-            <SpeedInsights />
-            <Analytics />
+            <SpeedInsights debug={false} />
+            <Analytics debug={false} />
 
         </>
     );

@@ -261,7 +261,7 @@ async def execute_trade(
         tx = tx_response.data[0]
         
         # Update portfolio stats
-        await update_user_portfolio_stats(user_id)
+        update_user_portfolio_stats(user_id)
         
 
         
@@ -406,7 +406,7 @@ async def execute_trade(
         tx = tx_response.data[0]
         
         # Update portfolio stats
-        await update_user_portfolio_stats(user_id)
+        update_user_portfolio_stats(user_id)
         
 
         
