@@ -111,5 +111,6 @@ export const AuthCallback: React.FC = () => {
 
     // Use the nice LoadingScreen component
     // We pass a no-op to onComplete because the navigation logic above handles the unmounting/redirect
-    return <LoadingScreen onComplete={() => { }} />;
+    // autoHide={false} ensures it stays at 100% until we manually navigate away
+    return <LoadingScreen onComplete={() => { }} autoHide={false} />;
 };

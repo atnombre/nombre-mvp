@@ -93,41 +93,44 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, autoHide = tr
                     display: 'flex',
                     alignItems: 'baseline',
                     lineHeight: 1,
+                    marginTop: '4px', // Tighter coupling with logo
                 }}>
                     <span style={{
-                        fontSize: '1.5rem', // Smaller
-                        fontWeight: 600,
-                        color: 'rgba(255, 255, 255, 0.4)', // Muted color
-                        fontFamily: "'Geist', 'Inter', sans-serif",
+                        fontSize: '1.25rem', // More understated
+                        fontWeight: 500,
+                        color: 'rgba(255, 255, 255, 0.6)', // Softer white
+                        fontFamily: "'Geist Mono', 'SF Mono', 'Roboto Mono', monospace", // Technical/Clean feel
+                        letterSpacing: '-0.02em',
                         fontVariantNumeric: 'tabular-nums',
                     }}>
-                        {Math.floor(progress)}
+                        {Math.floor(progress).toString().padStart(3, '0')}
                     </span>
                     <span style={{
-                        fontSize: '0.875rem',
+                        fontSize: '0.75rem',
                         fontWeight: 400,
-                        color: 'rgba(255, 255, 255, 0.3)',
-                        marginLeft: '2px',
+                        color: 'rgba(255, 255, 255, 0.4)',
+                        marginLeft: '3px',
                     }}>
                         %
                     </span>
                 </div>
             </div>
 
-            {/* Subtle Loading Bar at bottom */}
+            {/* Subtle Loading Bar at bottom - Ultra minimalist */}
             <div style={{
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
-                height: '4px',
+                height: '2px', // Thinner
                 width: '100%',
-                background: 'rgba(255,255,255,0.05)'
+                background: 'rgba(255,255,255,0.02)'
             }}>
                 <div style={{
                     height: '100%',
                     width: `${progress}%`,
-                    background: 'var(--color-accent)',
-                    boxShadow: '0 0 10px var(--color-accent)',
+                    background: '#fff', // Pure white for cleanliness
+                    opacity: 0.2,
+                    transition: 'width 0.1s linear'
                 }} />
             </div>
 

@@ -5,6 +5,7 @@ import { MobileNav } from './MobileNav';
 import { ClaimModal } from '../ClaimModal';
 import { UsernameModal } from '../UsernameModal';
 import { useAuthStore } from '../../stores/authStore';
+import LoadingScreen from '../ui/LoadingScreen';
 
 // Custom hook for responsive breakpoint
 const useIsMobile = () => {
@@ -30,61 +31,45 @@ export const AppLayout: React.FC = () => {
     // Show loading while checking auth (init happens in main.tsx)
     if (isLoading) {
         return (
-            <div style={{
-                width: '100vw',
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'var(--bg-primary)',
-            }}>
-                <div style={{
-                    width: '40px',
-                    height: '40px',
-                    border: '3px solid var(--color-accent-bg)',
-                    borderTopColor: 'var(--color-accent)',
-                    borderRadius: '50%',
-                    animation: 'spin 0.8s linear infinite',
-                }} />
-            </div>
+        return <LoadingScreen onComplete={() => { }} autoHide={false} />;
         );
     }
 
-    // Not authenticated - redirect to landing
-    if (!isAuthenticated) {
-        return <Navigate to="/" state={{ from: location }} replace />;
-    }
+// Not authenticated - redirect to landing
+if (!isAuthenticated) {
+    return <Navigate to="/" state={{ from: location }} replace />;
+}
 
-    return (
-        <div style={{
+return (
+    <div style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--bg-primary)',
+    }}>
+        {/* Blocking Claim Modal for new users */}
+        <ClaimModal />
+
+        {/* Username Modal - appears after faucet claim for users without username */}
+        <UsernameModal />
+
+        {/* Top Navigation Bar */}
+        {!isMobile && <TopNavbar />}
+
+        <main style={{
+            paddingTop: isMobile ? '0' : 'var(--nav-height)',
+            paddingBottom: isMobile ? '70px' : '24px',
             minHeight: '100vh',
-            backgroundColor: 'var(--bg-primary)',
         }}>
-            {/* Blocking Claim Modal for new users */}
-            <ClaimModal />
-
-            {/* Username Modal - appears after faucet claim for users without username */}
-            <UsernameModal />
-
-            {/* Top Navigation Bar */}
-            {!isMobile && <TopNavbar />}
-
-            <main style={{
-                paddingTop: isMobile ? '0' : 'var(--nav-height)',
-                paddingBottom: isMobile ? '70px' : '24px',
-                minHeight: '100vh',
+            <div style={{
+                maxWidth: 'var(--content-max-width)',
+                margin: '0 auto',
+                padding: isMobile ? '16px' : '24px 32px',
             }}>
-                <div style={{
-                    maxWidth: 'var(--content-max-width)',
-                    margin: '0 auto',
-                    padding: isMobile ? '16px' : '24px 32px',
-                }}>
-                    <Outlet />
-                </div>
-            </main>
+                <Outlet />
+            </div>
+        </main>
 
-            {/* Mobile Bottom Navigation */}
-            {isMobile && <MobileNav />}
-        </div>
-    );
+        {/* Mobile Bottom Navigation */}
+        {isMobile && <MobileNav />}
+    </div>
+);
 };
