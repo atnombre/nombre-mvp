@@ -3,23 +3,28 @@ import logo from '../../assets/logo.png';
 
 interface LoadingScreenProps {
     onComplete: () => void;
+    autoHide?: boolean; // If true, automatically slides up when animation finishes
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, autoHide = true }) => {
     const [progress, setProgress] = useState(0);
     const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
-        const duration = 2000; // 2 seconds loading
+        const duration = 2000;
         const startTime = Date.now();
         let animationFrame: number;
 
         const animate = () => {
             const now = Date.now();
             const elapsed = now - startTime;
-            const rawProgress = Math.min(elapsed / duration, 1);
 
-            // Easing function for smoother counter (easeOutExpo)
+            // If onComplete is provided, we simulate progress up to 100%
+            // If we want it to hang (for real loading), we might want to approach 90% and wait.
+            // But for now, let's stick to the visual request: "nicer up to down loading screen"
+            // The existing logic is a fake loader. 
+
+            const rawProgress = Math.min(elapsed / duration, 1);
             const easeProgress = rawProgress === 1 ? 1 : 1 - Math.pow(2, -10 * rawProgress);
 
             setProgress(easeProgress * 100);
@@ -28,15 +33,17 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
                 animationFrame = requestAnimationFrame(animate);
             } else {
                 // Animation complete
-                setTimeout(() => {
-                    setIsExiting(true);
-                    setTimeout(onComplete, 800); // 800ms exit transition
-                }, 200);
+                if (autoHide) {
+                    setTimeout(() => {
+                        setIsExiting(true);
+                        setTimeout(onComplete, 800);
+                    }, 200);
+                }
+                // If autoHide is false, we just stay at 100%
             }
         };
 
         animationFrame = requestAnimationFrame(animate);
-
         return () => cancelAnimationFrame(animationFrame);
     }, [onComplete]);
 
@@ -57,56 +64,54 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
             transform: isExiting ? 'translateY(-100%)' : 'translateY(0)',
         }}>
 
-            {/* Centered Logo */}
+            {/* Centered Content Container */}
             <div style={{
                 transition: 'opacity 0.4s ease',
                 opacity: isExiting ? 0 : 1,
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                flex: 1, // Take up available space to center vertically
+                flex: 1,
+                gap: '24px', // Space between logo and percent
             }}>
                 <img
                     src={logo}
                     alt="Nombre Logo"
                     style={{
-                        width: '180px', // Significantly increased size
+                        width: '120px', // Slightly smaller
                         height: 'auto',
                         opacity: Math.max(0, (progress - 10) / 90), // Slow fade in
-                        transform: `scale(${0.9 + (progress / 1000)})`, // Subtle scale up breathing
+                        transform: `scale(${0.9 + (progress / 1000)})`,
                         transition: 'opacity 0.1s linear, transform 0.1s linear',
-                        filter: 'drop-shadow(0 0 30px rgba(234, 153, 153, 0.15))' // Subtle glow matching accent
+                        filter: 'drop-shadow(0 0 30px rgba(234, 153, 153, 0.15))'
                     }}
                 />
-            </div>
 
-            {/* Bottom Number */}
-            <div style={{
-                marginBottom: '60px', // Position from bottom
-                display: 'flex',
-                alignItems: 'baseline',
-                lineHeight: 1,
-                transition: 'opacity 0.4s ease',
-                opacity: isExiting ? 0 : 1,
-            }}>
-                <span style={{
-                    fontSize: '4rem', // Smaller than before, but still readable
-                    fontWeight: 700,
-                    color: '#fff',
-                    fontFamily: "'Geist', 'Inter', sans-serif",
-                    letterSpacing: '-0.02em',
-                    fontVariantNumeric: 'tabular-nums',
+                {/* Number below logo */}
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    lineHeight: 1,
                 }}>
-                    {Math.floor(progress)}
-                </span>
-                <span style={{
-                    fontSize: '1.5rem',
-                    fontWeight: 400,
-                    color: 'var(--color-accent)',
-                    marginLeft: '4px',
-                }}>
-                    %
-                </span>
+                    <span style={{
+                        fontSize: '1.5rem', // Smaller
+                        fontWeight: 600,
+                        color: 'rgba(255, 255, 255, 0.4)', // Muted color
+                        fontFamily: "'Geist', 'Inter', sans-serif",
+                        fontVariantNumeric: 'tabular-nums',
+                    }}>
+                        {Math.floor(progress)}
+                    </span>
+                    <span style={{
+                        fontSize: '0.875rem',
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.3)',
+                        marginLeft: '2px',
+                    }}>
+                        %
+                    </span>
+                </div>
             </div>
 
             {/* Subtle Loading Bar at bottom */}

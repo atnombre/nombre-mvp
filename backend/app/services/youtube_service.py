@@ -123,7 +123,7 @@ class YouTubeService:
             if data.get("items"):
                 return self._parse_channel_data(data["items"][0])
         except Exception as e:
-
+            pass
         
         return None
     
@@ -194,7 +194,7 @@ class YouTubeService:
             
             return videos
         except Exception as e:
-
+            pass
             return []
     
     async def calculate_30d_views(self, channel_id: str) -> int:

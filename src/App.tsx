@@ -15,7 +15,8 @@ import { AnimatePresence } from 'framer-motion';
 import LoadingScreen from './components/ui/LoadingScreen';
 
 function App() {
-    const [loading, setLoading] = useState(true);
+    // Skip initial loading screen on auth callback to avoid double-loading
+    const [loading, setLoading] = useState(() => !window.location.pathname.startsWith('/auth/callback'));
 
     return (
         <>

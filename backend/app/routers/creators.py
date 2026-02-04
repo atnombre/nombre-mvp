@@ -107,7 +107,7 @@ async def list_creators(
         }
     except Exception as e:
         import traceback
-
+        # pass
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 

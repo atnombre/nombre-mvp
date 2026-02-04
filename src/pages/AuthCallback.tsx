@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { api } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
+import LoadingScreen from '../components/ui/LoadingScreen';
 
 export const AuthCallback: React.FC = () => {
     const navigate = useNavigate();
@@ -108,32 +109,7 @@ export const AuthCallback: React.FC = () => {
         );
     }
 
-    return (
-        <div className="auth-callback-loading">
-            <div className="spinner" />
-            <p>Signing in...</p>
-            <style>{`
-                .auth-callback-loading {
-                    width: 100vw;
-                    height: 100vh;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    background: #0a0a0a;
-                }
-                .spinner {
-                    width: 48px;
-                    height: 48px;
-                    border: 3px solid rgba(234,153,153,0.3);
-                    border-top-color: #EA9999;
-                    border-radius: 50%;
-                    animation: spin 0.8s linear infinite;
-                    margin-bottom: 1.5rem;
-                }
-                @keyframes spin { to { transform: rotate(360deg); } }
-                .auth-callback-loading p { color: rgba(255,255,255,0.6); }
-            `}</style>
-        </div>
-    );
+    // Use the nice LoadingScreen component
+    // We pass a no-op to onComplete because the navigation logic above handles the unmounting/redirect
+    return <LoadingScreen onComplete={() => { }} />;
 };
