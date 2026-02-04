@@ -55,8 +55,11 @@ class AdminUserListResponse(BaseModel):
 
 # ============ Platform Stats ============
 
+
+# ============ Platform Stats ============
+
 @router.get("/stats", response_model=AdminStatsResponse)
-async def get_platform_stats(admin_user: dict = Depends(require_admin)):
+def get_platform_stats(admin_user: dict = Depends(require_admin)):
     """
     Get platform health statistics.
     Admin only.
@@ -99,7 +102,7 @@ async def get_platform_stats(admin_user: dict = Depends(require_admin)):
 # ============ User Management ============
 
 @router.get("/users", response_model=AdminUserListResponse)
-async def list_all_users(
+def list_all_users(
     admin_user: dict = Depends(require_admin),
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
@@ -159,7 +162,7 @@ async def list_all_users(
 
 
 @router.get("/users/{user_id}/portfolio", response_model=PortfolioResponse)
-async def get_user_portfolio(
+def get_user_portfolio(
     user_id: str,
     admin_user: dict = Depends(require_admin)
 ):
@@ -180,7 +183,7 @@ async def get_user_portfolio(
         nmbr_balance = float(target_user.get("nmbr_balance", 0))
         
         # Get holdings
-        holdings = await get_user_holdings(user_id)
+        holdings = get_user_holdings(user_id)
         
         # Calculate totals
         holdings_value = sum(h["current_value"] for h in holdings)
@@ -210,7 +213,7 @@ async def get_user_portfolio(
 
 
 @router.post("/users/{user_id}/ban")
-async def ban_user(
+def ban_user(
     user_id: str,
     admin_user: dict = Depends(require_admin)
 ):
@@ -246,7 +249,7 @@ async def ban_user(
 
 
 @router.post("/users/{user_id}/unban")
-async def unban_user(
+def unban_user(
     user_id: str,
     admin_user: dict = Depends(require_admin)
 ):
@@ -274,7 +277,7 @@ async def unban_user(
 
 
 @router.post("/users/{user_id}/reset-username")
-async def reset_username(
+def reset_username(
     user_id: str,
     admin_user: dict = Depends(require_admin)
 ):
@@ -302,7 +305,7 @@ async def reset_username(
 
 
 @router.get("/users/{user_id}")
-async def get_user_details(
+def get_user_details(
     user_id: str,
     admin_user: dict = Depends(require_admin)
 ):
@@ -362,7 +365,7 @@ class AdminTransactionListResponse(BaseModel):
 
 
 @router.get("/transactions", response_model=AdminTransactionListResponse)
-async def list_transactions(
+def list_transactions(
     admin_user: dict = Depends(require_admin),
     limit: int = Query(50, ge=1, le=100),
     offset: int = Query(0, ge=0),
@@ -498,7 +501,7 @@ async def list_transactions(
 
 
 @router.get("/transactions/{tx_id}", response_model=AdminTransactionItem)
-async def get_transaction_details(
+def get_transaction_details(
     tx_id: str,
     admin_user: dict = Depends(require_admin)
 ):

@@ -10,11 +10,12 @@ interface BuySellPanelProps {
     userBalance: number;
     userHolding?: Holding | null;
     onTradeComplete?: () => void;
-    isAdmin?: boolean; // For role-based visibility
+    isAdmin?: boolean;
+    initialMode?: 'buy' | 'sell'; // For trade page navigation
 }
 
-export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance, userHolding, onTradeComplete, isAdmin = false }) => {
-    const [mode, setMode] = useState<'buy' | 'sell'>('buy');
+export const BuySellPanel: React.FC<BuySellPanelProps> = ({ creator, userBalance, userHolding, onTradeComplete, isAdmin = false, initialMode = 'buy' }) => {
+    const [mode, setMode] = useState<'buy' | 'sell'>(initialMode);
     const [amount, setAmount] = useState<string>('');
     const [showSuccess, setShowSuccess] = useState(false);
 

@@ -2,16 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .routers import auth, users, creators, trading, portfolio, leaderboard, maintenance, admin
+from .routers import auth, users, creators, trading, portfolio, leaderboard, maintenance, admin, requests
 
 settings = get_settings()
 
 # DEBUG: Log loaded settings at startup
-print(f"=== STARTUP DEBUG ===")
-print(f"SUPABASE_URL: '{settings.supabase_url[:30]}...' (len={len(settings.supabase_url)})" if settings.supabase_url else "SUPABASE_URL: EMPTY!")
-print(f"SUPABASE_SERVICE_KEY: '{settings.supabase_service_key[:10]}...' (len={len(settings.supabase_service_key)})" if settings.supabase_service_key else "SUPABASE_SERVICE_KEY: EMPTY!")
-print(f"CORS_ORIGINS: '{settings.cors_origins}'")
-print(f"=== END DEBUG ===")
+
 
 app = FastAPI(
     title="Nombre API",
@@ -37,7 +33,7 @@ for origin in raw_origins:
 # Check if wildcard mode
 is_wildcard = "*" in origins or not origins
 
-print(f"DEBUG CORS: origins={origins}, is_wildcard={is_wildcard}")
+
 
 if is_wildcard:
     # Use regex to match any origin - this properly handles preflight
@@ -67,6 +63,7 @@ app.include_router(portfolio.router, prefix="/api/v1/portfolio", tags=["portfoli
 app.include_router(leaderboard.router, prefix="/api/v1/leaderboard", tags=["leaderboard"])
 app.include_router(maintenance.router, prefix="/api/v1/maintenance", tags=["maintenance"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
+app.include_router(requests.router, prefix="/api/v1/requests", tags=["requests"])
 
 
 @app.get("/")

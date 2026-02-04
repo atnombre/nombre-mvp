@@ -225,6 +225,30 @@ class ApiClient {
     async getAdminTransaction(txId: string) {
         return this.request<AdminTransactionItem>(`/api/v1/admin/transactions/${txId}`);
     }
+    // ============ Requests (Creator IPOs) ============
+
+    async createRequest(channelId: string, channelName: string, username: string) {
+        return this.request<{ success: boolean; message: string }>('/api/v1/requests', {
+            method: 'POST',
+            body: { youtube_channel_id: channelId, channel_name: channelName, username: username }
+        });
+    }
+
+    async getRequests(status: 'pending' | 'approved' | 'rejected' = 'pending') {
+        return this.request<RequestListResponse>(`/api/v1/requests?status=${status}`);
+    }
+
+    async approveRequest(requestId: string) {
+        return this.request<{ success: boolean; message: string }>(`/api/v1/requests/${requestId}/approve`, {
+            method: 'POST'
+        });
+    }
+
+    async rejectRequest(requestId: string) {
+        return this.request<{ success: boolean; message: string }>(`/api/v1/requests/${requestId}/reject`, {
+            method: 'POST'
+        });
+    }
 }
 
 // Custom error class
@@ -241,6 +265,21 @@ export class ApiError extends Error {
 }
 
 // Types
+export interface RequestItem {
+    id: string;
+    youtube_channel_id: string;
+    channel_name: string;
+    username?: string;
+    requested_by_user_id: string | null;
+    status: 'pending' | 'approved' | 'rejected';
+    created_at: string;
+}
+
+export interface RequestListResponse {
+    requests: RequestItem[];
+    total: number;
+}
+
 export interface UserProfile {
     id: string;
     email: string;
@@ -290,6 +329,7 @@ export interface Creator {
 
 export interface CreatorListItem {
     id: string;
+    youtube_channel_id: string;
     username: string;
     display_name: string;
     avatar_url: string;

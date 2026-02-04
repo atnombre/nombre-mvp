@@ -21,7 +21,8 @@ class AuthCallbackRequest(BaseModel):
     device_fingerprint: Optional[str] = None
 
 
-async def get_current_user(authorization: str = Header(...)) -> dict:
+
+def get_current_user(authorization: str = Header(...)) -> dict:
     """
     Validate JWT and get current user from Supabase.
     """
@@ -54,7 +55,8 @@ async def get_current_user(authorization: str = Header(...)) -> dict:
         raise HTTPException(status_code=401, detail=f"Authentication failed: {str(e)}")
 
 
-async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
+
+def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
     """
     Dependency that requires the user to have admin privileges.
     Admin status is stored in database and verified server-side.
@@ -68,8 +70,12 @@ async def require_admin(current_user: dict = Depends(get_current_user)) -> dict:
     return current_user
 
 
+# Alias for clarity
+require_user = get_current_user
+
+
 @router.post("/callback")
-async def auth_callback(request: AuthCallbackRequest):
+def auth_callback(request: AuthCallbackRequest):
     """
     Handle OAuth callback - create or update user profile.
     
@@ -111,7 +117,7 @@ async def auth_callback(request: AuthCallbackRequest):
             
             # Auto-claim faucet for new users if fingerprint provided
             if request.device_fingerprint:
-                success, new_balance, _ = await claim_faucet(user["id"], request.device_fingerprint)
+                success, new_balance, _ = claim_faucet(user["id"], request.device_fingerprint)
                 if success:
                     user["nmbr_balance"] = new_balance
                     user["faucet_claimed"] = True

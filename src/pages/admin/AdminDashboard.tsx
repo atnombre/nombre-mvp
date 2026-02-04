@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
     Users,
     Coins,
     TrendingUp,
     Activity,
-    RefreshCw
+    RefreshCw,
+    FileText,
+    UserCheck
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { UserManagementTable } from '../../components/admin/UserManagementTable';
+import { PendingRequestsTable } from '../../components/admin/PendingRequestsTable';
 
 interface AdminStats {
     total_users: number;
@@ -23,13 +26,28 @@ interface AdminStats {
  * 
  * Features:
  * - 4 Glassmorphic stat cards with platform health metrics
- * - User Management table with search/actions
+ * - Tabs for User Registry and Pending IPOs
  */
 export const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [stats, setStats] = useState<AdminStats | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Parse query param
+    const searchParams = new URLSearchParams(location.search);
+    const initialTab = searchParams.get('tab') === 'requests' ? 'requests' : 'users';
+
+    const [activeTab, setActiveTab] = useState<'users' | 'requests'>(initialTab);
+
+    // Sync tab state if URL changes (optional, but good for back/forward nav)
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tab = searchParams.get('tab');
+        if (tab === 'requests') setActiveTab('requests');
+        else if (!tab) setActiveTab('users');
+    }, [location.search]);
 
     const fetchStats = async () => {
         try {
@@ -238,7 +256,7 @@ export const AdminDashboard: React.FC = () => {
                 ))}
             </div>
 
-            {/* User Management Section */}
+            {/* Main Content Area */}
             <div style={{
                 background: 'rgba(20, 20, 20, 0.6)',
                 backdropFilter: 'blur(16px)',
@@ -247,6 +265,7 @@ export const AdminDashboard: React.FC = () => {
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 overflow: 'hidden',
             }}>
+                {/* Tabs & Header */}
                 <div style={{
                     padding: '20px 24px',
                     borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
@@ -254,28 +273,59 @@ export const AdminDashboard: React.FC = () => {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                 }}>
+                    <div style={{ display: 'flex', gap: '24px' }}>
+                        <button
+                            onClick={() => setActiveTab('users')}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: '0 0 10px 0',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                color: activeTab === 'users' ? '#fff' : 'rgba(255,255,255,0.4)',
+                                borderBottom: activeTab === 'users' ? '2px solid var(--color-accent)' : '2px solid transparent',
+                                cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', gap: '8px'
+                            }}
+                        >
+                            <UserCheck size={18} /> User Registry
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('requests')}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                padding: '0 0 10px 0',
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                color: activeTab === 'requests' ? '#fff' : 'rgba(255,255,255,0.4)',
+                                borderBottom: activeTab === 'requests' ? '2px solid var(--color-accent)' : '2px solid transparent',
+                                cursor: 'pointer',
+                                display: 'flex', alignItems: 'center', gap: '8px'
+                            }}
+                        >
+                            <FileText size={18} /> Pending IPOs
+                        </button>
+                    </div>
+
                     <div>
-                        <h2 style={{
-                            margin: 0,
-                            fontSize: '1rem',
-                            fontWeight: 600,
-                            color: '#fff',
-                        }}>
-                            User Registry
-                        </h2>
-                        <p style={{
-                            margin: '4px 0 0',
-                            fontSize: '0.75rem',
-                            color: 'rgba(255, 255, 255, 0.4)',
-                        }}>
-                            Manage all registered users
-                        </p>
+                        {/* Optional top-right action depending on tab */}
+                        {activeTab === 'requests' && (
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                Admins must approve requests for creators to be tradeable.
+                            </span>
+                        )}
                     </div>
                 </div>
 
-                <UserManagementTable
-                    onInspectPortfolio={(userId: string) => navigate(`/admin/inspect/${userId}`)}
-                />
+                {/* Tab Content */}
+                {activeTab === 'users' ? (
+                    <UserManagementTable
+                        onInspectPortfolio={(userId: string) => navigate(`/admin/inspect/${userId}`)}
+                    />
+                ) : (
+                    <PendingRequestsTable />
+                )}
             </div>
         </div>
     );

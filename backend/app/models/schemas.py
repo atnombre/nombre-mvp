@@ -68,6 +68,7 @@ class CreatorWithPool(CreatorResponse):
 class CreatorListItem(BaseModel):
     """Lightweight creator for list views."""
     id: str
+    youtube_channel_id: str
     username: str
     display_name: str
     avatar_url: Optional[str] = None

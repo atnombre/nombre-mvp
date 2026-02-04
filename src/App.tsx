@@ -3,11 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from "@vercel/analytics/react"
 import './App.css';
-import InteractiveGrid from './components/InteractiveGrid';
+
 
 // App components
 import { AppLayout, AdminRoute, AdminLayout } from './components/layout';
-import { Dashboard, Explore, Portfolio, Leaderboard, AuthCallback, CreatorProfile, History, LandingPage } from './pages';
+import { Dashboard, Explore, Portfolio, Leaderboard, AuthCallback, CreatorProfile, TradePage, History, LandingPage } from './pages';
 
 import { AdminDashboard, AdminPortfolioInspector, AdminUsers, GlobalLedger, TransactionDetailsPage } from './pages/admin';
 
@@ -42,6 +42,7 @@ function App() {
                         <Route path="/history" element={<History />} />
 
                         <Route path="/creator/:id" element={<CreatorProfile />} />
+                        <Route path="/trade/:id" element={<TradePage />} />
 
                     </Route>
 
@@ -62,15 +63,7 @@ function App() {
             </BrowserRouter>
             <SpeedInsights />
             <Analytics />
-            <InteractiveGrid
-                color="#00ffff"
-                backgroundColor="transparent"
-                opacity={0.5}
-                lineWidth={2}
-                spacing={40}
-                glowRadius={250}
-                fadeEffect={false}
-            />
+
         </>
     );
 }

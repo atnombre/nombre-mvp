@@ -7,6 +7,7 @@ import { AddCreatorModal } from '../components/AddCreatorModal';
 import { Avatar } from '../components/ui';
 import { PriceDisplay, formatNumber, formatPrice, DataTable } from '../components/trading';
 import { useAuthStore } from '../stores/authStore';
+import { api, YouTubeSearchResult } from '../services/api';
 
 // Custom hook for responsive breakpoint
 const useIsMobile = () => {
@@ -40,6 +41,12 @@ export const Explore: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>('volume_24h');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  // youtube hybrid search
+  const [youtubeResults, setYoutubeResults] = useState<YouTubeSearchResult[]>([]);
+  const [isSearchingYT, setIsSearchingYT] = useState(false);
+  const [requestStatus, setRequestStatus] = useState<Record<string, 'idle' | 'loading' | 'success' | 'existing'>>({});
+
 
   // Real-time price updates map
   const [realtimeUpdates, setRealtimeUpdates] = useState<Record<string, PoolPriceUpdate>>({});
@@ -79,7 +86,39 @@ export const Explore: React.FC = () => {
     const value = e.target.value;
     setSearchQuery(value);
     setParams({ search: value || undefined });
+
+    // Reset YT results if empty
+    if (!value) {
+      setYoutubeResults([]);
+    }
   };
+
+  // Debounced search for YouTube
+  useEffect(() => {
+    const delayDebounceForYT = setTimeout(async () => {
+      if (searchQuery.length > 2) {
+        setIsSearchingYT(true);
+        try {
+          // Fetch YouTube results
+          const results = await api.searchYouTubeChannels(searchQuery);
+
+          // Filter out channels that are already in the local creators list
+          const existingChannelIds = new Set(creators.map(c => c.youtube_channel_id));
+          const filteredResults = results.filter(r => !existingChannelIds.has(r.channel_id));
+
+          setYoutubeResults(filteredResults);
+        } catch (err) {
+          console.error("YT Search failed", err);
+        } finally {
+          setIsSearchingYT(false);
+        }
+      } else {
+        setYoutubeResults([]);
+      }
+    }, 800);
+
+    return () => clearTimeout(delayDebounceForYT);
+  }, [searchQuery]);
 
   const handleSortChange = (sort: SortOption) => {
     setSortBy(sort);
@@ -88,6 +127,23 @@ export const Explore: React.FC = () => {
 
   const handleCreatorAdded = () => {
     refresh();
+  };
+
+  const handleRequestListing = async (channel: YouTubeSearchResult) => {
+    setRequestStatus(prev => ({ ...prev, [channel.channel_id]: 'loading' }));
+    try {
+      await api.createRequest(channel.channel_id, channel.display_name, channel.username);
+      setRequestStatus(prev => ({ ...prev, [channel.channel_id]: 'success' }));
+    } catch (err: any) {
+      console.error("Request failed", err);
+      // If error is "Already listed" or similar
+      if (err.message?.includes("already")) {
+        setRequestStatus(prev => ({ ...prev, [channel.channel_id]: 'existing' }));
+      } else {
+        setRequestStatus(prev => ({ ...prev, [channel.channel_id]: 'idle' })); // Reset on generic error for retry
+        alert(err.message || "Failed to submit request");
+      }
+    }
   };
 
   // Table columns configuration (Desktop)
@@ -266,6 +322,83 @@ export const Explore: React.FC = () => {
     );
   };
 
+  // YouTube Result Card - Premium UI
+  const YouTubeResultCard: React.FC<{ channel: YouTubeSearchResult }> = ({ channel }) => {
+    const status = requestStatus[channel.channel_id] || 'idle';
+
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+        padding: '16px',
+        background: 'rgba(30, 30, 35, 0.4)', // Slightly clearer than main cards to differentiate
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderRadius: '14px',
+        border: '1px solid rgba(255, 255, 255, 0.08)',
+        marginBottom: '10px'
+      }}>
+        <Avatar src={channel.avatar_url} alt={channel.display_name} fallback={channel.display_name} size="md" />
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontWeight: 600,
+            fontSize: '0.9375rem',
+            color: 'var(--text-secondary)' // Slightly dimmed compared to listed creators
+          }}>
+            {channel.display_name}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            {channel.username ? `@${channel.username}` : 'YouTuber'} • Not Listed
+          </div>
+        </div>
+
+        <button
+          onClick={() => handleRequestListing(channel)}
+          disabled={status !== 'idle'}
+          style={{
+            padding: '8px 16px',
+            borderRadius: '10px',
+            border: status === 'success' ? '1px solid rgba(76, 175, 80, 0.3)' : '1px solid var(--border-color)',
+            background: status === 'success'
+              ? 'rgba(76, 175, 80, 0.1)'
+              : status === 'existing'
+                ? 'rgba(255, 255, 255, 0.05)'
+                : 'linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.1) 100%)',
+            color: status === 'success'
+              ? '#4CAF50'
+              : status === 'existing'
+                ? 'var(--text-muted)'
+                : 'var(--text-primary)',
+            fontSize: '0.75rem',
+            fontWeight: 600,
+            cursor: status === 'idle' ? 'pointer' : 'default',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'all 0.2s ease',
+            minHeight: '36px',
+            boxShadow: status === 'idle' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none'
+          }}
+        >
+          {status === 'loading' ? (
+            <>
+              <div className="spinner" style={{ width: 12, height: 12, border: '2px solid var(--text-muted)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+              sending...
+            </>
+          ) : status === 'success' ? (
+            <>Requested <span style={{ fontSize: '10px' }}>✓</span></>
+          ) : status === 'existing' ? (
+            'In Review'
+          ) : (
+            <>Request Listing</>
+          )}
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* Add Creator Modal */}
@@ -352,7 +485,7 @@ export const Explore: React.FC = () => {
             <Search size={16} style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
-              placeholder="Search creators..."
+              placeholder="Search creators (DB + YouTube)..."
               value={searchQuery}
               onChange={handleSearch}
               style={{
@@ -425,7 +558,10 @@ export const Explore: React.FC = () => {
         </div>
       )}
 
+
+
       {/* Creators List - Card view on mobile, Table on desktop */}
+      {/* Existing DB Results */}
       {isMobile ? (
         // Mobile Card View
         <div>
@@ -453,22 +589,25 @@ export const Explore: React.FC = () => {
               ))}
             </div>
           ) : creators.length === 0 ? (
-            <div style={{
-              textAlign: 'center',
-              padding: '48px 24px',
-              background: 'rgba(20, 20, 20, 0.6)',
-              backdropFilter: 'blur(16px)',
-              borderRadius: '14px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-            }}>
-              <Users size={40} style={{ color: 'var(--text-muted)', marginBottom: '16px' }} />
-              <h3 style={{ margin: '0 0 8px', color: 'var(--text-secondary)', fontSize: '0.9375rem', fontWeight: 600 }}>
-                No creators found
-              </h3>
-              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
-                Try adjusting your search
-              </p>
-            </div>
+            // If searching YT and we might have results there, hide this empty state
+            (searchQuery.length > 2 && (youtubeResults.length > 0 || isSearchingYT)) ? null : (
+              <div style={{
+                textAlign: 'center',
+                padding: '48px 24px',
+                background: 'rgba(20, 20, 20, 0.6)',
+                backdropFilter: 'blur(16px)',
+                borderRadius: '14px',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+              }}>
+                <Users size={40} style={{ color: 'var(--text-muted)', marginBottom: '16px' }} />
+                <h3 style={{ margin: '0 0 8px', color: 'var(--text-secondary)', fontSize: '0.9375rem', fontWeight: 600 }}>
+                  No creators found
+                </h3>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8125rem' }}>
+                  Try adjusting your search
+                </p>
+              </div>
+            )
           ) : (
             <div className="mobile-card-grid">
               {creators.map((creator) => (
@@ -511,58 +650,61 @@ export const Explore: React.FC = () => {
               ))}
             </div>
           ) : creators.length === 0 ? (
-            <div style={{
-              textAlign: 'center',
-              padding: '64px 24px',
-            }}>
+            // If searching YT and we might have results there, hide this empty state
+            (searchQuery.length > 2 && (youtubeResults.length > 0 || isSearchingYT)) ? null : (
               <div style={{
-                width: 64,
-                height: 64,
-                margin: '0 auto 20px',
-                borderRadius: 'var(--radius-lg)',
-                backgroundColor: 'var(--bg-hover)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                textAlign: 'center',
+                padding: '64px 24px',
               }}>
-                <Users size={32} style={{ color: 'var(--text-muted)' }} />
+                <div style={{
+                  width: 64,
+                  height: 64,
+                  margin: '0 auto 20px',
+                  borderRadius: 'var(--radius-lg)',
+                  backgroundColor: 'var(--bg-hover)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Users size={32} style={{ color: 'var(--text-muted)' }} />
+                </div>
+                <h3 style={{
+                  margin: '0 0 8px',
+                  color: 'var(--text-secondary)',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                }}>
+                  No creators found
+                </h3>
+                <p style={{
+                  margin: '0 0 24px',
+                  color: 'var(--text-muted)',
+                  fontSize: '0.8125rem',
+                }}>
+                  Try adjusting your search or filters
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setParams({ search: undefined });
+                    }}
+                    style={{
+                      padding: '10px 20px',
+                      backgroundColor: 'transparent',
+                      border: '1px solid var(--border-hover)',
+                      borderRadius: 'var(--radius-md)',
+                      color: 'var(--text-primary)',
+                      cursor: 'pointer',
+                      fontSize: '0.8125rem',
+                      fontWeight: 500,
+                    }}
+                  >
+                    Clear search
+                  </button>
+                )}
               </div>
-              <h3 style={{
-                margin: '0 0 8px',
-                color: 'var(--text-secondary)',
-                fontSize: '1rem',
-                fontWeight: 600,
-              }}>
-                No creators found
-              </h3>
-              <p style={{
-                margin: '0 0 24px',
-                color: 'var(--text-muted)',
-                fontSize: '0.8125rem',
-              }}>
-                Try adjusting your search or filters
-              </p>
-              {searchQuery && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setParams({ search: undefined });
-                  }}
-                  style={{
-                    padding: '10px 20px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid var(--border-hover)',
-                    borderRadius: 'var(--radius-md)',
-                    color: 'var(--text-primary)',
-                    cursor: 'pointer',
-                    fontSize: '0.8125rem',
-                    fontWeight: 500,
-                  }}
-                >
-                  Clear search
-                </button>
-              )}
-            </div>
+            )
           ) : (
             <DataTable
               columns={tableColumns}
@@ -574,6 +716,46 @@ export const Explore: React.FC = () => {
               onSort={(key) => handleSortChange(key as SortOption)}
               compact
             />
+          )}
+        </div>
+      )}
+
+      {/* YouTube Results Section (Hybrid Search) - Moved to bottom */}
+      {searchQuery.length > 2 && (
+        <div style={{ marginTop: '24px', marginBottom: '24px' }}>
+          {isSearchingYT ? (
+            // Only show spinner if creators list is empty or we want to indicate more loading at bottom
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '0.8125rem', color: 'var(--text-muted)', marginBottom: '12px', justifyContent: 'center' }}>
+              <div className="spinner" style={{ width: 12, height: 12, border: '2px solid var(--text-muted)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+              Searching YouTube for more matches...
+            </div>
+          ) : youtubeResults.length > 0 && (
+            <>
+              {/* Optional delimiter if we have DB results */}
+              {creators.length > 0 && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  margin: '32px 0 16px',
+                  color: 'var(--text-muted)',
+                  fontSize: '0.8125rem',
+                  fontWeight: 500,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
+                  Request New Listing
+                  <div style={{ flex: 1, height: '1px', background: 'var(--border-color)' }}></div>
+                </div>
+              )}
+
+              <div>
+                {youtubeResults.map(channel => (
+                  <YouTubeResultCard key={channel.channel_id} channel={channel} />
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}

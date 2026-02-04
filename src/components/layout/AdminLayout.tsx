@@ -7,7 +7,8 @@ import {
     BarChart3,
     ChevronLeft,
     LogOut,
-    Activity
+    Activity,
+    FileText
 } from 'lucide-react';
 
 // Brand colors
@@ -35,6 +36,7 @@ export const AdminLayout: React.FC = () => {
     const navItems = [
         { path: '/admin', label: 'Dashboard', icon: BarChart3, exact: true },
         { path: '/admin/users', label: 'Users', icon: Users },
+        { path: '/admin?tab=requests', label: 'Pending IPOs', icon: FileText },
         { path: '/admin/transactions', label: 'Global Ledger', icon: Activity },
     ];
 

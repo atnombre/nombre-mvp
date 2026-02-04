@@ -32,9 +32,7 @@ export function useCreators(initialParams: CreatorListParams = {}): UseCreatorsR
                 setIsLoading(true);
             }
             setError(null);
-            console.log('Fetching creators with params:', params);
             const data = await api.getCreators(params);
-            console.log('Creators fetched:', data.creators?.length || 0);
 
             if (append) {
                 setCreators(prev => [...prev, ...data.creators]);

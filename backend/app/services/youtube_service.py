@@ -123,7 +123,7 @@ class YouTubeService:
             if data.get("items"):
                 return self._parse_channel_data(data["items"][0])
         except Exception as e:
-            print(f"Error fetching channel {channel_id}: {e}")
+
         
         return None
     
@@ -194,7 +194,7 @@ class YouTubeService:
             
             return videos
         except Exception as e:
-            print(f"Error fetching videos for {channel_id}: {e}")
+
             return []
     
     async def calculate_30d_views(self, channel_id: str) -> int:
@@ -252,98 +252,46 @@ class YouTubeService:
     def calculate_cpi_score(
         self,
         subscriber_count: int,
-        view_count_30d: int,
+        view_count_30d: int = 0,  # Not used in new formula
         view_count_lifetime: int = 0
     ) -> float:
         """
         Calculate Creator Performance Index (CPI) score.
         
-        IMPROVED FORMULA v2:
-        - Uses logarithmic scaling for all components for fairness
-        - Has a minimum floor based on subscribers (channels always have value)
-        - More balanced weights when 30-day views unavailable
+        SIMPLE FORMULA v3 (Deep Liquidity):
+        CPI = BASE + (subs / SUB_WEIGHT) + (lifetime_views / VIEW_WEIGHT)
         
-        Components:
-        - Subscribers: Base value floor (logarithmic)
-        - 30-day views: Engagement/momentum indicator
-        - Lifetime views: Legacy/credibility
-        - Engagement ratio: Views per subscriber (efficiency)
+        This ensures all pools have enough depth that a 10K NMBR buy
+        causes less than 10% price impact.
         
-        Output is used for: Initial_Market_Cap = CPI × $100
+        CPI directly equals Market Cap in NMBR.
         """
-        import math
+        # Constants for deep liquidity
+        BASE_LIQUIDITY = 100_000      # Minimum pool depth for all creators
+        SUB_WEIGHT = 100              # 1 NMBR per 100 subscribers
+        VIEW_WEIGHT = 100_000         # 1 NMBR per 100K lifetime views
         
-        if subscriber_count == 0:
-            return 10.0  # Minimum CPI for any channel
+        # Simple formula
+        cpi = (
+            BASE_LIQUIDITY +
+            (subscriber_count / SUB_WEIGHT) +
+            (view_count_lifetime / VIEW_WEIGHT)
+        )
         
-        # === COMPONENT 1: Subscriber Base (40% weight when views available, 70% as fallback) ===
-        # Logarithmic scale: ln(1K)=6.9, ln(10K)=9.2, ln(100K)=11.5, ln(1M)=13.8, ln(10M)=16.1, ln(100M)=18.4
-        # Scale to 0-100 range: divide by 20 (max ~18.4 for 100M subs) then multiply by 100
-        subscriber_score = (math.log(max(subscriber_count, 1)) / 20) * 100
-        
-        # === COMPONENT 2: 30-day Views Momentum ===
-        # If we have 30-day views, use them; otherwise estimate from lifetime
-        if view_count_30d > 0:
-            # Logarithmic scale for views too
-            # ln(1M)=13.8, ln(10M)=16.1, ln(100M)=18.4, ln(1B)=20.7
-            views_30d_score = (math.log(max(view_count_30d, 1)) / 25) * 100
-            has_recent_data = True
-        else:
-            # Fallback: estimate 30-day views as ~2% of lifetime views (rough approximation)
-            estimated_30d = max(view_count_lifetime * 0.02, 1)
-            views_30d_score = (math.log(estimated_30d) / 25) * 100 * 0.5  # Discount by 50% for estimation
-            has_recent_data = False
-        
-        # === COMPONENT 3: Lifetime Legacy ===
-        # ln(1B)=20.7, ln(10B)=23, ln(50B)=24.6
-        lifetime_score = (math.log(max(view_count_lifetime, 1)) / 25) * 100 if view_count_lifetime > 0 else 0
-        
-        # === COMPONENT 4: Engagement Ratio (views per subscriber) ===
-        # High ratio = engaged audience, low ratio = inactive subscribers
-        if view_count_lifetime > 0 and subscriber_count > 0:
-            views_per_sub = view_count_lifetime / subscriber_count
-            # Expected range: 100-5000 views per sub
-            # ln(100)=4.6, ln(1000)=6.9, ln(5000)=8.5
-            engagement_score = min((math.log(max(views_per_sub, 1)) / 10) * 100, 100)
-        else:
-            engagement_score = 50  # Neutral default
-        
-        # === FINAL CPI CALCULATION ===
-        if has_recent_data:
-            # Full formula with recent data
-            cpi = (
-                0.35 * subscriber_score +    # 35% - Base stability
-                0.40 * views_30d_score +     # 40% - Recent momentum (key driver)
-                0.15 * lifetime_score +       # 15% - Legacy
-                0.10 * engagement_score       # 10% - Efficiency bonus
-            )
-        else:
-            # Fallback formula when 30-day data unavailable
-            cpi = (
-                0.55 * subscriber_score +    # 55% - Rely more on subs
-                0.20 * views_30d_score +     # 20% - Estimated views (discounted)
-                0.15 * lifetime_score +       # 15% - Legacy
-                0.10 * engagement_score       # 10% - Efficiency bonus
-            )
-        
-        # Scale to target range: ~100-1000 for typical creators
-        # Raw CPI is typically 20-80, multiply by 12 to get 240-960 range
-        cpi_scaled = cpi * 12
-        
-        # Minimum floor of 50 CPI (ensures $5,000 minimum market cap)
-        return round(max(cpi_scaled, 50.0), 1)
+        return round(cpi, 1)
     
     def calculate_initial_market_cap(self, cpi_score: float) -> float:
         """
         Calculate initial market cap from CPI score.
-        Formula: Initial_Market_Cap = CPI × $100
+        With new formula, CPI directly equals Market Cap (in NMBR).
         """
-        return cpi_score * 100
+        return cpi_score  # CPI = Market Cap with new formula
     
-    def calculate_initial_price(self, cpi_score: float, token_supply: int = 9_000_000) -> float:
+    def calculate_initial_price(self, cpi_score: float, token_supply: int = 100_000_000) -> float:
         """
         Calculate initial token price from CPI score.
         Price = Market_Cap / Token_Supply
+        Now using 100M token supply for deep liquidity.
         """
         market_cap = self.calculate_initial_market_cap(cpi_score)
         return market_cap / token_supply

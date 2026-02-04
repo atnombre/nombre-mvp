@@ -28,9 +28,7 @@ export function useLeaderboard(limit: number = 100): UseLeaderboardReturn {
                 setIsLoading(true);
             }
             setError(null);
-            console.log('Fetching leaderboard...');
             const data = await api.getLeaderboard({ limit, offset: append ? offset : 0 });
-            console.log('Leaderboard fetched:', data.leaderboard?.length || 0);
 
             if (append) {
                 setLeaderboard(prev => [...prev, ...data.leaderboard]);

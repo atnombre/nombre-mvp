@@ -25,20 +25,20 @@ export function useRealtimeSubscription(
         if (!enabled) return;
 
         const { table, event = '*', filter, schema = 'public' } = config;
-        
+
         const channelName = `realtime:${table}:${filter || 'all'}`;
-        
+
         // Build filter config
         const filterConfig: any = {
             event,
             schema,
             table,
         };
-        
+
         if (filter) {
             filterConfig.filter = filter;
         }
-        
+
         // Create subscription
         const channel = supabase
             .channel(channelName)
@@ -46,12 +46,11 @@ export function useRealtimeSubscription(
                 'postgres_changes' as any,
                 filterConfig,
                 (payload: RealtimePostgresChangesPayload<any>) => {
-                    console.log('Real-time update:', table, payload);
                     callback(payload);
                 }
             )
-            .subscribe((status) => {
-                console.log(`Subscription to ${table}:`, status);
+            .subscribe(() => {
+                // Subscription status
             });
 
         channelRef.current = channel;

@@ -16,7 +16,6 @@ import { Avatar } from '../components/ui';
 import { useCreator } from '../hooks/useCreators';
 import { useAuthStore } from '../stores/authStore';
 import { usePoolPriceSubscription } from '../hooks/useRealtime';
-import { BuySellPanel } from '../components/trading/BuySellPanel';
 import { PriceChart } from '../components/trading/PriceChart';
 import { FinancialChart } from '../components/trading/FinancialChart';
 import { formatNumber, formatPrice } from '../components/trading';
@@ -41,7 +40,7 @@ const useIsMobile = () => {
 export const CreatorProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, refreshUser } = useAuthStore();
+  const { refreshUser } = useAuthStore();
   const { creator, priceHistory, isLoading, fetchPriceHistory, refresh: refreshCreator } = useCreator(id);
   const [chartPeriod, setChartPeriod] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
   const isMobile = useIsMobile();
@@ -66,16 +65,6 @@ export const CreatorProfile: React.FC = () => {
   }, []);
 
   usePoolPriceSubscription(creator?.pool?.id, handlePriceUpdate);
-
-  // Find user's holding for this creator
-  const userHolding = user?.holdings?.find(h => h.creator_id === id) || null;
-
-  // Callback after trade completes
-  const handleTradeComplete = useCallback(() => {
-    refreshUser();
-    refreshCreator(true); // Silent refresh
-    fetchPriceHistory(chartPeriod);
-  }, [refreshUser, refreshCreator, fetchPriceHistory, chartPeriod]);
 
   // Handle refresh stats
   const handleRefreshStats = useCallback(async () => {
@@ -294,14 +283,46 @@ export const CreatorProfile: React.FC = () => {
           <MobileStat icon={<Users size={12} />} label="Subs" value={formatNumber(creator.subscriber_count)} isLast />
         </div>
 
-        {/* Buy/Sell Panel - First on Mobile */}
-        <BuySellPanel
-          creator={creator}
-          userBalance={user?.nmbr_balance || 0}
-          userHolding={userHolding}
-          onTradeComplete={handleTradeComplete}
-          isAdmin={user?.is_admin}
-        />
+        {/* Trade Buttons */}
+        <div style={{
+          display: 'flex',
+          gap: '12px',
+        }}>
+          <button
+            onClick={() => navigate(`/trade/${id}?mode=buy`)}
+            style={{
+              flex: 1,
+              padding: '16px 24px',
+              background: 'linear-gradient(135deg, rgba(74, 222, 128, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%)',
+              border: '1px solid rgba(74, 222, 128, 0.3)',
+              borderRadius: '14px',
+              color: '#4ade80',
+              fontSize: '1rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            BUY
+          </button>
+          <button
+            onClick={() => navigate(`/trade/${id}?mode=sell`)}
+            style={{
+              flex: 1,
+              padding: '16px 24px',
+              background: 'linear-gradient(135deg, rgba(248, 113, 113, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%)',
+              border: '1px solid rgba(248, 113, 113, 0.3)',
+              borderRadius: '14px',
+              color: '#f87171',
+              fontSize: '1rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            SELL
+          </button>
+        </div>
 
         {/* Chart - Below on Mobile */}
         <div style={{
@@ -647,15 +668,64 @@ export const CreatorProfile: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column - Transaction Panel */}
+        {/* Right Column - Trade Buttons */}
         <div style={{ position: 'sticky', top: '20px' }}>
-          <BuySellPanel
-            creator={creator}
-            userBalance={user?.nmbr_balance || 0}
-            userHolding={userHolding}
-            onTradeComplete={handleTradeComplete}
-            isAdmin={user?.is_admin}
-          />
+          <div style={{
+            background: 'rgba(20, 20, 20, 0.85)',
+            backdropFilter: 'blur(20px)',
+            borderRadius: '20px',
+            padding: '24px',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}>
+            <h3 style={{
+              margin: '0 0 20px 0',
+              fontSize: '1rem',
+              fontWeight: 600,
+              color: 'rgba(255, 255, 255, 0.6)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              Trade ${creator.token_symbol}
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button
+                onClick={() => navigate(`/trade/${id}?mode=buy`)}
+                style={{
+                  width: '100%',
+                  padding: '18px 24px',
+                  background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
+                  border: 'none',
+                  borderRadius: '14px',
+                  color: '#000',
+                  fontSize: '1.1rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 20px rgba(74, 222, 128, 0.3)',
+                }}
+              >
+                BUY
+              </button>
+              <button
+                onClick={() => navigate(`/trade/${id}?mode=sell`)}
+                style={{
+                  width: '100%',
+                  padding: '18px 24px',
+                  background: 'linear-gradient(135deg, #f87171 0%, #ef4444 100%)',
+                  border: 'none',
+                  borderRadius: '14px',
+                  color: '#000',
+                  fontSize: '1.1rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 20px rgba(248, 113, 113, 0.3)',
+                }}
+              >
+                SELL
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -3,7 +3,7 @@ import { api } from '../services/api';
 // @ts-ignore
 import Lenis from 'lenis';
 import '../App.css';
-// import InteractiveGrid from '../components/InteractiveGrid';
+
 import InfiniteTicker from '../components/InfiniteTicker';
 import Header from '../components/Header';
 import FeatureSection from '../components/FeatureSection';
@@ -25,22 +25,21 @@ function LandingPage() {
                 // Fetch top creators by volume
                 const response = await api.getCreators({ limit: 15, sortBy: 'volume_24h' });
                 const items = response.creators.map(c => {
-                    // Calculate percentage change
-                    // change is absolute. previous_price = current - change
-                    // pct = (change / previous) * 100
-                    const change = c.price_change_24h;
+                    // c.price_change_24h is the PERCENTAGE change from backend
+                    // We need to back-calculate the absolute change
                     const price = c.current_price;
-                    const prevPrice = price - change;
-                    let pct = 0;
-                    if (prevPrice !== 0) {
-                        pct = (change / prevPrice) * 100;
-                    }
+                    const pct = c.price_change_24h || 0; // It's already a percentage (e.g. 5.5 for 5.5%)
+
+                    // Formula: PrevPrice = Price / (1 + pct/100)
+                    const prevPrice = price / (1 + (pct / 100));
+                    const absChange = price - prevPrice;
 
                     return {
                         symbol: c.token_symbol,
-                        price: `$${price.toFixed(3)}`,
-                        change: change > 0 ? `+${change.toFixed(2)}` : change.toFixed(2),
-                        pctChange: change > 0 ? `+${pct.toFixed(2)}%` : `${pct.toFixed(2)}%`
+                        price: `$${price < 1 ? price.toFixed(4) : price.toFixed(2)}`,
+                        // Strict 2 decimal places for changes
+                        change: absChange > 0 ? `+${absChange.toFixed(4)}` : absChange.toFixed(4),
+                        pctChange: pct > 0 ? `+${pct.toFixed(2)}%` : `${pct.toFixed(2)}%`
                     };
                 });
                 setTickerItems(items);

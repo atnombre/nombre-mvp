@@ -18,14 +18,10 @@ class Settings(BaseSettings):
     # App Settings
     debug: bool = False
     faucet_amount: float = 10000.0
-    protocol_fee_pct: float = 1.0  # Base fee (used after decay)
+    protocol_fee_pct: float = 1.0  # Flat 1% fee on all trades
     
-    # Dynamic Fee Settings (Early Entry Mitigation)
-    # Fee starts at max_fee_pct and decays to protocol_fee_pct
-    # as more tokens are bought from the initial supply.
-    max_fee_pct: float = 10.0  # Starting fee for very early trades
-    fee_decay_threshold: float = 500_000  # Fee normalizes after this many tokens are bought
-    initial_token_supply: float = 9_000_000  # Initial pool token supply
+    # Pool Settings (Deep Liquidity)
+    initial_token_supply: float = 100_000_000  # 100M tokens per creator
     
     # Security
     cron_secret: str = ""
@@ -33,6 +29,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 @lru_cache()

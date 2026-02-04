@@ -19,7 +19,7 @@ export function usePortfolio(): UsePortfolioReturn {
 
     const fetchPortfolio = useCallback(async (showLoading = false) => {
         if (!isAuthenticated) {
-            console.log('Portfolio: Not authenticated, skipping fetch');
+            // Portfolio: Not authenticated, skipping fetch
             setPortfolio(null);
             setIsLoading(false);
             return;
@@ -31,9 +31,7 @@ export function usePortfolio(): UsePortfolioReturn {
                 setIsLoading(true);
             }
             setError(null);
-            console.log('Fetching portfolio...');
             const data = await api.getPortfolio();
-            console.log('Portfolio fetched:', data);
             setPortfolio(data);
             hasFetched.current = true;
         } catch (err) {

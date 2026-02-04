@@ -45,7 +45,8 @@ def update_avg_buy_price(
     return total_cost / total_amount if total_amount > 0 else 0
 
 
-async def get_user_holdings(user_id: str) -> List[Dict]:
+
+def get_user_holdings(user_id: str) -> List[Dict]:
     """
     Get all holdings for a user with current values.
     """
@@ -89,22 +90,22 @@ async def get_user_holdings(user_id: str) -> List[Dict]:
     return holdings
 
 
-async def calculate_portfolio_value(user_id: str) -> float:
+def calculate_portfolio_value(user_id: str) -> float:
     """
     Calculate total portfolio value for a user.
     """
-    holdings = await get_user_holdings(user_id)
+    holdings = get_user_holdings(user_id)
     return sum(h["current_value"] for h in holdings)
 
 
-async def update_user_portfolio_stats(user_id: str) -> None:
+def update_user_portfolio_stats(user_id: str) -> None:
     """
     Recalculate and update user's portfolio stats in database.
     """
     supabase = get_supabase()
     
     # Get holdings and calculate total value
-    holdings = await get_user_holdings(user_id)
+    holdings = get_user_holdings(user_id)
     portfolio_value = sum(h["current_value"] for h in holdings)
     
     # Update user record

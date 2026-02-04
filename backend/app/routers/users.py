@@ -18,15 +18,16 @@ from .auth import get_current_user
 router = APIRouter()
 
 
+
 @router.get("/me", response_model=UserWithHoldings)
-async def get_current_user_profile(current_user: dict = Depends(get_current_user)):
+def get_current_user_profile(current_user: dict = Depends(get_current_user)):
     """
     Get current user's profile with holdings.
     """
     supabase = get_supabase()
     
     # Get holdings
-    holdings = await get_user_holdings(current_user["id"])
+    holdings = get_user_holdings(current_user["id"])
     
     # Calculate ROI based on actual cost basis of holdings
     holdings_value = sum(h["current_value"] for h in holdings)
@@ -60,14 +61,14 @@ async def get_current_user_profile(current_user: dict = Depends(get_current_user
 
 
 @router.post("/faucet", response_model=FaucetResponse)
-async def claim_faucet_tokens(
+def claim_faucet_tokens(
     request: FaucetRequest,
     current_user: dict = Depends(get_current_user)
 ):
     """
     Claim initial $NMBR tokens (once per user).
     """
-    success, new_balance, error_code = await claim_faucet(
+    success, new_balance, error_code = claim_faucet(
         current_user["id"],
         request.device_fingerprint
     )
@@ -100,7 +101,7 @@ async def claim_faucet_tokens(
 
 
 @router.put("/username", response_model=UsernameResponse)
-async def update_username(
+def update_username(
     request: UsernameRequest,
     current_user: dict = Depends(get_current_user)
 ):
@@ -159,3 +160,4 @@ async def update_username(
         success=True,
         username=username
     )
+

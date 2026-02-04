@@ -31,12 +31,16 @@ const getDeviceFingerprint = (): string => {
 
 export const ClaimModal: React.FC = () => {
     const navigate = useNavigate();
-    const { user, refreshUser } = useAuthStore();
+    const { user, refreshUser, signOut } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Don't render if user has already claimed or not logged in
-    if (!user || user.faucet_claimed) {
+    // Only show if:
+    // 1. User is logged in
+    // 2. User has set a username (username modal comes first)
+    // 3. User hasn't claimed faucet yet
+    const hasUsername = user?.username && user.username.trim() !== '';
+    if (!user || !hasUsername || user.faucet_claimed) {
         return null;
     }
 
@@ -79,7 +83,7 @@ export const ClaimModal: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'rgba(3, 3, 3, 0.9)',
+                background: 'rgba(3, 3, 3, 0.4)',
                 backdropFilter: 'blur(12px)',
                 WebkitBackdropFilter: 'blur(12px)',
                 fontFamily: '"Instrument Sans", sans-serif',
@@ -93,7 +97,7 @@ export const ClaimModal: React.FC = () => {
                     width: '100vw',
                     height: '100vh',
                     pointerEvents: 'none',
-                    background: 'radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 50%)',
+                    background: 'radial-gradient(circle, rgba(234, 153, 153, 0.1) 0%, transparent 50%)',
                     zIndex: -1,
                 }} />
 
@@ -109,7 +113,7 @@ export const ClaimModal: React.FC = () => {
                     outline: 'none',
                     background: `
                         linear-gradient(#050505, #050505) padding-box,
-                        conic-gradient(from var(--angle), transparent 25%, white 50%, transparent 75%) border-box
+                        conic-gradient(from var(--angle), transparent 25%, #EA9999 50%, transparent 75%) border-box
                     `,
                     animation: 'rotate 4s linear infinite',
 
@@ -117,7 +121,7 @@ export const ClaimModal: React.FC = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     textAlign: 'center',
-                    boxShadow: '0 20px 50px -10px rgba(0, 0, 0, 0.5)',
+                    boxShadow: '0 20px 50px -10px rgba(234, 153, 153, 0.15)',
                 }}>
 
                     {/* Back Button (Visible only on error) */}
@@ -166,7 +170,7 @@ export const ClaimModal: React.FC = () => {
                         marginBottom: '8px',
                         letterSpacing: '-0.02em',
                     }}>
-                        Welcome Bonus
+                        Welcome, @{user.username}!
                     </h1>
 
                     <p style={{
@@ -175,7 +179,7 @@ export const ClaimModal: React.FC = () => {
                         marginBottom: '48px',
                         lineHeight: '1.5',
                     }}>
-                        Your journey begins here.
+                        Here's your starter bonus to begin trading.
                     </p>
 
                     {/* Hero Number */}
@@ -274,6 +278,35 @@ export const ClaimModal: React.FC = () => {
                     }}>
                         Valid for new wallet connections only.
                     </p>
+
+                    {/* Logout button - shown when error occurs */}
+                    {error && (
+                        <button
+                            onClick={() => signOut()}
+                            style={{
+                                marginTop: '16px',
+                                padding: '12px 24px',
+                                background: 'transparent',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                borderRadius: '12px',
+                                color: 'rgba(255, 255, 255, 0.6)',
+                                fontSize: '0.85rem',
+                                fontWeight: 500,
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
+                                e.currentTarget.style.color = '#fff';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)';
+                            }}
+                        >
+                            Log out & try different account
+                        </button>
+                    )}
                 </div>
             </div>
         </>

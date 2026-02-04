@@ -56,7 +56,7 @@ async def list_creators(
         
         # Build query
         query = supabase.table("creators").select(
-            "id, username, display_name, avatar_url, subscriber_count, token_symbol, "
+            "id, youtube_channel_id, username, display_name, avatar_url, subscriber_count, token_symbol, "
             "pools(current_price, price_change_24h, market_cap, volume_24h)",
             count="exact"
         )
@@ -77,6 +77,7 @@ async def list_creators(
             
             creators.append(CreatorListItem(
                 id=row["id"],
+                youtube_channel_id=row["youtube_channel_id"],
                 username=row["username"],
                 display_name=row["display_name"],
                 avatar_url=row.get("avatar_url"),
@@ -106,7 +107,7 @@ async def list_creators(
         }
     except Exception as e:
         import traceback
-        print(f"ERROR in list_creators: {e}")
+
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
@@ -268,9 +269,8 @@ async def add_creator_from_youtube(
         channel_data["view_count_lifetime"]
     )
     
-    # Calculate initial price based on CPI
-    # Formula: Market_Cap = CPI × $100, Price = Market_Cap / Supply
-    token_supply = 9_000_000
+    # Calculate initial price based on CPI (CPI = Market Cap with new formula)
+    token_supply = 100_000_000  # Fixed 100M tokens for deep liquidity
     initial_market_cap = youtube_service.calculate_initial_market_cap(cpi_score)
     initial_price = youtube_service.calculate_initial_price(cpi_score, token_supply)
     

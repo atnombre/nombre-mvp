@@ -10,8 +10,9 @@ export const UsernameModal: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Don't render if user not logged in, no faucet claimed, or already has username
-    if (!user || !user.faucet_claimed || (user.username && user.username.trim() !== '')) {
+    // Show username modal FIRST - before faucet claim
+    // This way we can personalize the welcome bonus message
+    if (!user || (user.username && user.username.trim() !== '')) {
         return null;
     }
 

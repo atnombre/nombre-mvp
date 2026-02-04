@@ -9,7 +9,8 @@ from ..database import get_supabase
 from ..config import get_settings
 
 
-async def can_claim_faucet(
+
+def can_claim_faucet(
     user_id: str,
     device_fingerprint: str
 ) -> Tuple[bool, str]:
@@ -44,7 +45,7 @@ async def can_claim_faucet(
     return True, "OK"
 
 
-async def claim_faucet(
+def claim_faucet(
     user_id: str,
     device_fingerprint: str
 ) -> Tuple[bool, float, str]:
@@ -58,7 +59,7 @@ async def claim_faucet(
     supabase = get_supabase()
     
     # Check if can claim
-    can_claim, reason = await can_claim_faucet(user_id, device_fingerprint)
+    can_claim, reason = can_claim_faucet(user_id, device_fingerprint)
     
     if not can_claim:
         return False, 0.0, reason
@@ -79,3 +80,4 @@ async def claim_faucet(
     }).eq("id", user_id).execute()
     
     return True, new_balance, "OK"
+
