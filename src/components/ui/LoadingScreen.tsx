@@ -47,6 +47,29 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, autoHide = tr
         return () => cancelAnimationFrame(animationFrame);
     }, [onComplete]);
 
+    // Disable scrolling while loading screen is visible
+    useEffect(() => {
+        // Save original body styles
+        const originalOverflow = document.body.style.overflow;
+        const originalHeight = document.body.style.height;
+
+        // Lock scrolling
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100vh';
+
+        // Re-enable scrolling when exiting
+        if (isExiting) {
+            document.body.style.overflow = originalOverflow || '';
+            document.body.style.height = originalHeight || '';
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = originalOverflow || '';
+            document.body.style.height = originalHeight || '';
+        };
+    }, [isExiting]);
+
     return (
         <div style={{
             position: 'fixed',
