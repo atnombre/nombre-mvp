@@ -1,83 +1,60 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-// Static placeholder - loads immediately with high priority
-import coinPlaceholder from '../assets/coin_frames/frame_000_delay-0.033s.webp';
-
-// Lazy-loaded frame modules - only fetched when needed
-const frameModules = import.meta.glob('../assets/coin_frames/*.webp', { eager: false });
-const frameKeys = Object.keys(frameModules).sort();
+// Eager load all frames - they're small webp files and needed for animation
+const frameModules = import.meta.glob('../assets/coin_frames/*.webp', { eager: true });
+const framePaths = Object.keys(frameModules)
+    .sort()
+    .map((key) => (frameModules[key] as any).default);
 
 const ScrollCoin: React.FC = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const imagesRef = useRef<HTMLImageElement[]>([]);
     const [isReady, setIsReady] = useState(false);
-    const [totalFrames, setTotalFrames] = useState(0);
 
-    // Step 1: Load frames shortly after mount (small delay to not block LCP)
+    // Load all frame images on mount
     useEffect(() => {
-        const loadFrames = async () => {
-            try {
-                // Import all modules lazily
-                const modules = await Promise.all(
-                    frameKeys.map(key => frameModules[key]())
-                );
+        const images = framePaths.map((src: string) => {
+            const img = new Image();
+            img.src = src;
+            return img;
+        });
 
-                // Extract paths and create Image elements
-                const paths = modules.map((mod: any) => mod.default);
+        imagesRef.current = images;
 
-                const images = paths.map((src: string) => {
-                    const img = new Image();
-                    img.src = src;
-                    return img;
-                });
-
-                imagesRef.current = images;
-                setTotalFrames(images.length);
-
-                // Wait for first image to load before marking ready
+        // Wait for first few images to load before starting animation
+        const checkReady = () => {
+            const loadedCount = images.filter(img => img.complete).length;
+            if (loadedCount >= 5) {
+                // Initialize canvas with first image
+                const canvas = canvasRef.current;
                 const firstImg = images[0];
-                if (firstImg) {
-                    if (firstImg.complete) {
-                        initCanvas(firstImg);
-                        setIsReady(true);
-                    } else {
-                        firstImg.onload = () => {
-                            initCanvas(firstImg);
-                            setIsReady(true);
-                        };
+                if (canvas && firstImg && firstImg.complete) {
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        canvas.width = firstImg.naturalWidth || 500;
+                        canvas.height = firstImg.naturalHeight || 500;
+                        ctx.drawImage(firstImg, 0, 0);
                     }
                 }
-            } catch (error) {
-                console.error('Failed to load coin frames:', error);
+                setIsReady(true);
+            } else {
+                requestAnimationFrame(checkReady);
             }
         };
 
-        const initCanvas = (img: HTMLImageElement) => {
-            const canvas = canvasRef.current;
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (!ctx) return;
-
-            canvas.width = img.naturalWidth || 500;
-            canvas.height = img.naturalHeight || 500;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0);
-        };
-
-        // Load frames after a small delay (100ms) to not block initial render
-        const timer = setTimeout(loadFrames, 100);
-        return () => clearTimeout(timer);
+        checkReady();
     }, []);
 
-    // Step 2: Scroll animation loop (only when ready)
+    // Animation loop
     useEffect(() => {
-        if (!isReady || totalFrames === 0) return;
+        if (!isReady) return;
 
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
+        const totalFrames = imagesRef.current.length;
         let requestId: number;
         let autoFrameIndex = 0;
         let lastScrollY = window.scrollY;
@@ -88,8 +65,7 @@ const ScrollCoin: React.FC = () => {
             const now = Date.now();
 
             // Check if user is actively scrolling
-            const isScrolling = scrollY !== lastScrollY;
-            if (isScrolling) {
+            if (scrollY !== lastScrollY) {
                 lastScrollY = scrollY;
                 lastScrollTime = now;
             }
@@ -100,24 +76,19 @@ const ScrollCoin: React.FC = () => {
 
             let frameIndex: number;
             if (shouldAutoSpin) {
-                // Auto-spin animation - ~30fps
                 autoFrameIndex = (autoFrameIndex + 0.5) % totalFrames;
                 frameIndex = Math.floor(autoFrameIndex);
             } else {
-                // Scroll-based animation
                 const speedFactor = 0.5;
                 frameIndex = Math.floor(scrollY * speedFactor) % totalFrames;
-                autoFrameIndex = frameIndex; // Sync auto-spin with scroll position
+                autoFrameIndex = frameIndex;
             }
 
-            // Fade logic
+            // Fade logic based on scroll
             const fadeStart = 200;
             const fadeEnd = 600;
             const opacity = Math.max(0, Math.min(1, 1 - (scrollY - fadeStart) / (fadeEnd - fadeStart)));
-
-            if (canvas) {
-                canvas.style.opacity = (opacity * 0.9).toString();
-            }
+            canvas.style.opacity = (opacity * 0.9).toString();
 
             const img = imagesRef.current[frameIndex];
             if (img && img.complete) {
@@ -130,7 +101,7 @@ const ScrollCoin: React.FC = () => {
 
         requestId = requestAnimationFrame(render);
         return () => cancelAnimationFrame(requestId);
-    }, [isReady, totalFrames]);
+    }, [isReady]);
 
     return (
         <div
@@ -170,26 +141,6 @@ const ScrollCoin: React.FC = () => {
                 }
             `}</style>
 
-            {/* Static placeholder - shown until frames are ready */}
-            <img
-                src={coinPlaceholder}
-                alt=""
-                fetchPriority="high"
-                style={{
-                    position: 'absolute',
-                    width: '750px',
-                    maxWidth: '100vw',
-                    height: 'auto',
-                    objectFit: 'contain',
-                    mixBlendMode: 'screen',
-                    opacity: isReady ? 0 : 0.9,
-                    transition: 'opacity 0.5s ease-out',
-                    filter: 'drop-shadow(0 0 40px rgba(234, 153, 153, 0.4)) contrast(1.2) brightness(1.2)',
-                    pointerEvents: 'none',
-                }}
-            />
-
-            {/* Canvas - fades in when ready */}
             <canvas
                 ref={canvasRef}
                 className="no-blend"
@@ -200,7 +151,7 @@ const ScrollCoin: React.FC = () => {
                     objectFit: 'contain',
                     mixBlendMode: 'screen',
                     opacity: isReady ? 0.9 : 0,
-                    transition: 'opacity 0.5s ease-in',
+                    transition: 'opacity 0.3s ease-in',
                     filter: 'drop-shadow(0 0 40px rgba(234, 153, 153, 0.4)) contrast(1.2) brightness(1.2)',
                 }}
             />
