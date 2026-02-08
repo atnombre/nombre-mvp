@@ -23,7 +23,7 @@ const CTASection: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '4rem 2rem',
+            padding: '4rem 1.5rem',
             position: 'relative',
             zIndex: 10,
             textAlign: 'center',
@@ -53,7 +53,7 @@ const CTASection: React.FC = () => {
                 alignItems: 'center',
             }}>
                 <h2 style={{
-                    fontSize: '5rem',
+                    fontSize: 'clamp(2rem, 8vw, 5rem)',
                     fontWeight: 800,
                     color: 'white',
                     marginBottom: '1.5rem',

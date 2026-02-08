@@ -15,7 +15,7 @@ const TradingSteps: React.FC = () => {
         <section style={{
             position: 'relative',
             zIndex: 10,
-            padding: '2rem 2rem 8rem 2rem',
+            padding: '2rem 1.5rem 8rem 1.5rem',
             display: 'flex',
             justifyContent: 'center',
             width: '100%',
@@ -30,7 +30,7 @@ const TradingSteps: React.FC = () => {
             }} className="responsive-gap">
                 <style>{`
                     @media (max-width: 768px) {
-                        .responsive-gap { gap: 4rem !important; }
+                        .responsive-gap { gap: 2rem !important; }
                     }
                 `}</style>
                 {cards.map((card, index) => (

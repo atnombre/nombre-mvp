@@ -1,6 +1,15 @@
 /* App-specific styles */
 #root {
     min-height: 100vh;
+    overflow-x: hidden;
+    /* Prevent horizontal scrolling */
+}
+
+/* Global overflow prevention */
+html,
+body {
+    overflow-x: hidden;
+    max-width: 100vw;
 }
 
 /* Responsive Grid Utilities */
@@ -70,11 +79,13 @@
 /* Landing Page Styles */
 
 #root {
-    max-width: 1280px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 0;
     /* Override default padding */
     text-align: center;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
 }
 
 @property --angle {
@@ -209,6 +220,8 @@
         font-size: clamp(2.5rem, 9vw, 3.5rem) !important;
         /* Slightly smaller for safety */
         line-height: 1.1 !important;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
 
     h2,
@@ -229,16 +242,30 @@
     }
 
     .responsive-padding {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
     }
 
     .responsive-gap {
-        gap: 2rem !important;
+        gap: 1.5rem !important;
     }
 
     /* Hide decorative elements on small mobile if needed */
     .hide-mobile {
         display: none !important;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+
+    h1,
+    .hero-title {
+        font-size: clamp(2rem, 8vw, 2.5rem) !important;
+    }
+
+    .responsive-padding {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
 }

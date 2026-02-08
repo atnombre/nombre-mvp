@@ -56,7 +56,20 @@ const StickyScrollSection: React.FC = () => {
             height: '130vh',
             width: '100%',
             position: 'relative',
-        }}>
+        }} className="sticky-track">
+            <style>{`
+                @media (max-width: 768px) {
+                    .sticky-track { 
+                        height: auto !important;
+                        min-height: 50vh !important;
+                    }
+                    .sticky-viewport {
+                        position: relative !important;
+                        height: auto !important;
+                        min-height: 50vh !important;
+                    }
+                }
+            `}</style>
             {/* Sticky Viewport */}
             <div style={{
                 position: 'sticky',
@@ -64,7 +77,7 @@ const StickyScrollSection: React.FC = () => {
                 height: '100vh',
                 width: '100%',
                 overflow: 'hidden',
-            }}>
+            }} className="sticky-viewport">
 
                 {/* --- LAYER 1: TEXT (Blurs Out) --- */}
                 <div ref={textRef} style={{
@@ -80,6 +93,8 @@ const StickyScrollSection: React.FC = () => {
                     flexDirection: 'column',
                     alignItems: 'center',
                     willChange: 'opacity, filter, transform',
+                    padding: '0 1.5rem',
+                    boxSizing: 'border-box',
                 }}>
                     {/* Minimal Vertical Design */}
                     <div style={{

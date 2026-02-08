@@ -14,7 +14,7 @@ const FooterSection: React.FC = () => {
                 width: '100%',
                 maxWidth: '1150px',
                 margin: '0 auto',
-                padding: '2rem 2rem 1rem 2rem',
+                padding: '2rem 1.5rem 1rem 1.5rem',
                 borderTop: '1px solid rgba(255, 255, 255, 0.09)',
                 boxSizing: 'border-box',
             }}>

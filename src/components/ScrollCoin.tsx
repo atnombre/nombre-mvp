@@ -117,8 +117,15 @@ const ScrollCoin: React.FC = () => {
             <style>{`
                 @media (max-width: 768px) {
                     .scroll-coin-container {
-                        transform: translateX(-50%) scale(0.6) !important;
-                        bottom: -35% !important; /* Adjust position for scaled down version */
+                        position: fixed !important;
+                        left: 50% !important;
+                        right: auto !important;
+                        bottom: 3% !important;
+                        top: auto !important;
+                        transform: translateX(-50%) scale(0.5) !important;
+                        transform-origin: center center !important;
+                        z-index: 1 !important;
+                        opacity: 0.85 !important;
                     }
                 }
             `}</style>
