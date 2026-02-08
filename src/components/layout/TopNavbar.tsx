@@ -9,7 +9,7 @@ import {
   LogOut,
   ChevronDown,
 } from 'lucide-react';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.webp';
 import { useAuthStore } from '../../stores/authStore';
 import { formatNumber } from '../trading/PriceDisplay';
 

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { api } from '../services/api';
 // @ts-ignore
 import Lenis from 'lenis';
 import '../App.css';
@@ -15,6 +14,9 @@ import CustomCursor from '../components/ui/CustomCursor';
 import TradingSteps from '../components/TradingSteps';
 import HeroSection from '../components/HeroSection';
 
+// Lightweight fetch for ticker - avoids importing full API (which pulls supabase)
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
 function LandingPage() {
     const [tickerItems, setTickerItems] = useState<any[]>([]);
     const [tickerVisible, setTickerVisible] = useState(false);
@@ -22,22 +24,20 @@ function LandingPage() {
     useEffect(() => {
         const fetchTickerData = async () => {
             try {
-                // Fetch top creators by volume
-                const response = await api.getCreators({ limit: 15, sortBy: 'volume_24h' });
-                const items = response.creators.map(c => {
-                    // c.price_change_24h is the PERCENTAGE change from backend
-                    // We need to back-calculate the absolute change
-                    const price = c.current_price;
-                    const pct = c.price_change_24h || 0; // It's already a percentage (e.g. 5.5 for 5.5%)
+                // Direct fetch instead of api.getCreators() to avoid supabase bundle
+                const response = await fetch(`${API_URL}/creators?limit=15&sort_by=volume_24h`);
+                if (!response.ok) throw new Error('Failed to fetch');
+                const data = await response.json();
 
-                    // Formula: PrevPrice = Price / (1 + pct/100)
+                const items = data.creators.map((c: any) => {
+                    const price = c.current_price;
+                    const pct = c.price_change_24h || 0;
                     const prevPrice = price / (1 + (pct / 100));
                     const absChange = price - prevPrice;
 
                     return {
                         symbol: c.token_symbol,
                         price: `$${price < 1 ? price.toFixed(4) : price.toFixed(2)}`,
-                        // Strict 2 decimal places for changes
                         change: absChange > 0 ? `+${absChange.toFixed(4)}` : absChange.toFixed(4),
                         pctChange: pct > 0 ? `+${pct.toFixed(2)}%` : `${pct.toFixed(2)}%`
                     };

@@ -3,7 +3,7 @@ import React from 'react';
 import RevealElement from './ui/RevealElement';
 import StickyScrollSection from './StickyScrollSection';
 import ScrollScaleImage from './ui/ScrollScaleImage';
-import portfolioPreview from '../assets/portfolio-preview.png'; // Adjusted import
+import portfolioPreview from '../assets/portfolio-preview.webp';
 
 const FeatureSection: React.FC = () => {
     return (

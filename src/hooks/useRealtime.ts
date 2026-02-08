@@ -20,12 +20,17 @@ export function useRealtimeSubscription(
     enabled: boolean = true
 ) {
     const channelRef = useRef<RealtimeChannel | null>(null);
+    const configRef = useRef(config);
+    const callbackRef = useRef(callback);
+
+    // Keep refs updated
+    configRef.current = config;
+    callbackRef.current = callback;
 
     useEffect(() => {
         if (!enabled) return;
 
         const { table, event = '*', filter, schema = 'public' } = config;
-
         const channelName = `realtime:${table}:${filter || 'all'}`;
 
         // Build filter config
@@ -46,23 +51,41 @@ export function useRealtimeSubscription(
                 'postgres_changes' as any,
                 filterConfig,
                 (payload: RealtimePostgresChangesPayload<any>) => {
-                    callback(payload);
+                    callbackRef.current(payload);
                 }
             )
-            .subscribe(() => {
-                // Subscription status
-            });
+            .subscribe();
 
         channelRef.current = channel;
 
+        // Handle page visibility for bfcache compatibility
+        const handlePageHide = (e: PageTransitionEvent) => {
+            if (e.persisted && channelRef.current) {
+                // Page going to bfcache - pause the channel
+                channelRef.current.unsubscribe();
+            }
+        };
+
+        const handlePageShow = (e: PageTransitionEvent) => {
+            if (e.persisted && channelRef.current) {
+                // Page restored from bfcache - resume the channel
+                channelRef.current.subscribe();
+            }
+        };
+
+        window.addEventListener('pagehide', handlePageHide);
+        window.addEventListener('pageshow', handlePageShow);
+
         // Cleanup on unmount or config change
         return () => {
+            window.removeEventListener('pagehide', handlePageHide);
+            window.removeEventListener('pageshow', handlePageShow);
             if (channelRef.current) {
                 supabase.removeChannel(channelRef.current);
                 channelRef.current = null;
             }
         };
-    }, [config.table, config.event, config.filter, enabled, callback]);
+    }, [config.table, config.event, config.filter, enabled]);
 
     return channelRef.current;
 }

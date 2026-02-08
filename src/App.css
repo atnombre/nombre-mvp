@@ -10,6 +10,8 @@ html,
 body {
     overflow-x: hidden;
     max-width: 100vw;
+    touch-action: pan-y pan-x;
+    /* Enable touch scrolling */
 }
 
 /* Responsive Grid Utilities */

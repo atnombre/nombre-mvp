@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.webp'
 
 const Header: React.FC = () => {
     const navigate = useNavigate()
@@ -95,6 +95,8 @@ const Header: React.FC = () => {
                         src={logo}
                         alt="Nombre Logo"
                         className="nav-logo no-blend"
+                        width={42}
+                        height={42}
                         style={{ height: '42px', width: 'auto' }}
                         onError={(e) => {
                             e.currentTarget.style.display = 'none';
