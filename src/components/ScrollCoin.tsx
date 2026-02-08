@@ -13,7 +13,7 @@ const ScrollCoin: React.FC = () => {
     const [isReady, setIsReady] = useState(false);
     const [totalFrames, setTotalFrames] = useState(0);
 
-    // Step 1: Load frames AFTER window.load to not block LCP
+    // Step 1: Load frames shortly after mount (small delay to not block LCP)
     useEffect(() => {
         const loadFrames = async () => {
             try {
@@ -64,23 +64,9 @@ const ScrollCoin: React.FC = () => {
             ctx.drawImage(img, 0, 0);
         };
 
-        // Defer loading until after page is fully loaded
-        if (document.readyState === 'complete') {
-            // Use requestIdleCallback if available, else setTimeout
-            if ('requestIdleCallback' in window) {
-                (window as any).requestIdleCallback(loadFrames);
-            } else {
-                setTimeout(loadFrames, 100);
-            }
-        } else {
-            window.addEventListener('load', () => {
-                if ('requestIdleCallback' in window) {
-                    (window as any).requestIdleCallback(loadFrames);
-                } else {
-                    setTimeout(loadFrames, 100);
-                }
-            });
-        }
+        // Load frames after a small delay (100ms) to not block initial render
+        const timer = setTimeout(loadFrames, 100);
+        return () => clearTimeout(timer);
     }, []);
 
     // Step 2: Scroll animation loop (only when ready)
@@ -93,11 +79,36 @@ const ScrollCoin: React.FC = () => {
         if (!ctx) return;
 
         let requestId: number;
+        let autoFrameIndex = 0;
+        let lastScrollY = window.scrollY;
+        let lastScrollTime = Date.now();
 
         const render = () => {
             const scrollY = window.scrollY;
-            const speedFactor = 0.5;
-            const frameIndex = Math.floor(scrollY * speedFactor) % totalFrames;
+            const now = Date.now();
+
+            // Check if user is actively scrolling
+            const isScrolling = scrollY !== lastScrollY;
+            if (isScrolling) {
+                lastScrollY = scrollY;
+                lastScrollTime = now;
+            }
+
+            // If not scrolled recently (500ms), auto-spin
+            const timeSinceScroll = now - lastScrollTime;
+            const shouldAutoSpin = timeSinceScroll > 500;
+
+            let frameIndex: number;
+            if (shouldAutoSpin) {
+                // Auto-spin animation - ~30fps
+                autoFrameIndex = (autoFrameIndex + 0.5) % totalFrames;
+                frameIndex = Math.floor(autoFrameIndex);
+            } else {
+                // Scroll-based animation
+                const speedFactor = 0.5;
+                frameIndex = Math.floor(scrollY * speedFactor) % totalFrames;
+                autoFrameIndex = frameIndex; // Sync auto-spin with scroll position
+            }
 
             // Fade logic
             const fadeStart = 200;
