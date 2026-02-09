@@ -3,7 +3,7 @@ import React from 'react';
 import RevealElement from './ui/RevealElement';
 import StickyScrollSection from './StickyScrollSection';
 import ScrollScaleImage from './ui/ScrollScaleImage';
-import portfolioPreview from '../assets/portfolio-preview.webp';
+import portfolioPreview from '../assets/portfolio-preview.png'; // Adjusted import
 
 const FeatureSection: React.FC = () => {
     return (
@@ -15,25 +15,18 @@ const FeatureSection: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            padding: '1rem 1.5rem 0rem 1.5rem',
+            padding: '1rem 2rem 0rem 2rem',
             position: 'relative',
             zIndex: 10,
             boxSizing: 'border-box',
         }}>
-            {/* Mobile margin reduction - handled via CSS */}
-            <style>{`
-                @media (max-width: 768px) {
-                    .feature-header { margin-top: 4rem !important; }
-                }
-            `}</style>
             {/* Top Header Content */}
             <div style={{
                 textAlign: 'center',
                 marginBottom: '4rem',
                 marginTop: '20rem',
                 maxWidth: '1150px',
-                padding: '0 1rem',
-            }} className="feature-header">
+            }}>
                 <RevealElement delay={0}>
                     <h2 style={{
                         fontSize: 'clamp(2.5rem, 6vw, 3.5rem)', // Responsive clamp
@@ -54,8 +47,8 @@ const FeatureSection: React.FC = () => {
                     alignItems: 'baseline',
                     justifyContent: 'center',
                     gap: '1.5rem',
-                    flexWrap: 'wrap',
-                }} className="responsive-col">
+                    flexWrap: 'wrap', // Ensure wrapping on mobile
+                }}>
                     <RevealElement delay={200}>
                         <h2 style={{
                             fontSize: 'clamp(2.5rem, 6vw, 3.5rem)', // Responsive clamp

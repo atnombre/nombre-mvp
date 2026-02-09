@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/authStore'
-import logo from '../assets/logo.webp'
+import logo from '../assets/logo.png'
 
 const Header: React.FC = () => {
     const navigate = useNavigate()
@@ -67,24 +67,8 @@ const Header: React.FC = () => {
                     border: '1px solid rgba(255, 255, 255, 0.08)',
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
                 }}
-                className="responsive-pill"
+                className="responsive-pill" // Hook for media queries if needed
             >
-                {/* Mobile header fix */}
-                <style>{`
-                    @media (max-width: 768px) {
-                        .responsive-pill {
-                            width: calc(100vw - 40px) !important;
-                            padding: 0.5rem 0.75rem !important;
-                        }
-                        .responsive-pill .shimmer-button {
-                            padding: 0.5rem 1rem !important;
-                            font-size: 0.8rem !important;
-                        }
-                        .auth-actions {
-                            gap: 0.75rem !important;
-                        }
-                    }
-                `}</style>
                 {/* Logo */}
                 <div
                     style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
@@ -95,8 +79,6 @@ const Header: React.FC = () => {
                         src={logo}
                         alt="Nombre Logo"
                         className="nav-logo no-blend"
-                        width={42}
-                        height={42}
                         style={{ height: '42px', width: 'auto' }}
                         onError={(e) => {
                             e.currentTarget.style.display = 'none';
@@ -112,7 +94,6 @@ const Header: React.FC = () => {
                         alignItems: 'center',
                         gap: '1.5rem',
                     }}
-                    className="auth-actions"
                 >
                     {isAuthenticated ? (
                         <button

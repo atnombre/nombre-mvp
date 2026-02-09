@@ -190,36 +190,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     },
 }));
 
-// Auth state listener - managed with proper cleanup for bfcache
-let authSubscription: { data: { subscription: { unsubscribe: () => void } } } | null = null;
+// Set up auth state listener once
+supabase.auth.onAuthStateChange((event) => {
+    const store = useAuthStore.getState();
 
-function setupAuthListener() {
-    if (authSubscription) return; // Already set up
-
-    authSubscription = supabase.auth.onAuthStateChange((event) => {
-        const store = useAuthStore.getState();
-
-        if (event === 'SIGNED_OUT') {
-            store.clearAuth();
-        } else if (event === 'TOKEN_REFRESHED') {
-            store.refreshUser();
-        }
-    });
-}
-
-// Set up listener initially
-setupAuthListener();
-
-// Handle page visibility for bfcache compatibility
-if (typeof window !== 'undefined') {
-    // Reconnect when page is restored from bfcache
-    window.addEventListener('pageshow', (event) => {
-        if (event.persisted) {
-            // Page was restored from bfcache, re-establish listeners
-            setupAuthListener();
-        }
-    });
-
-    // Note: We don't disconnect on pagehide to maintain session
-    // The auth listener is lightweight and shouldn't block bfcache
-}
+    if (event === 'SIGNED_OUT') {
+        store.clearAuth();
+    } else if (event === 'TOKEN_REFRESHED') {
+        // Session refreshed, re-fetch user data
+        store.refreshUser();
+    }
+});

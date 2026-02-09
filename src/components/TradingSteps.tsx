@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import card1 from '../assets/card-1.webp';
-import card2 from '../assets/card-2.webp';
-import card3 from '../assets/card-3.webp';
+import card1 from '../assets/card-1.png';
+import card2 from '../assets/card-2.png';
+import card3 from '../assets/card-3.png';
 
 const TradingSteps: React.FC = () => {
     const cards = [
@@ -15,7 +15,7 @@ const TradingSteps: React.FC = () => {
         <section style={{
             position: 'relative',
             zIndex: 10,
-            padding: '2rem 1.5rem 8rem 1.5rem',
+            padding: '2rem 2rem 8rem 2rem',
             display: 'flex',
             justifyContent: 'center',
             width: '100%',
@@ -30,7 +30,7 @@ const TradingSteps: React.FC = () => {
             }} className="responsive-gap">
                 <style>{`
                     @media (max-width: 768px) {
-                        .responsive-gap { gap: 2rem !important; }
+                        .responsive-gap { gap: 4rem !important; }
                     }
                 `}</style>
                 {cards.map((card, index) => (
@@ -67,13 +67,9 @@ const TradingSteps: React.FC = () => {
                             src={card.src}
                             alt={card.alt}
                             className="no-blend"
-                            width={724}
-                            height={439}
-                            loading="lazy"
                             style={{
                                 width: '100%',
                                 height: 'auto',
-                                aspectRatio: '724 / 439',
                                 borderRadius: '24px',
                                 boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
                                 border: '1px solid rgba(255,255,255,0.1)',

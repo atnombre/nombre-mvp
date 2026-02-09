@@ -14,14 +14,6 @@ const CustomCursor: React.FC = () => {
     const [isHovering, setIsHovering] = useState(false);
 
     useEffect(() => {
-        // Skip entirely on touch devices
-        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (isTouchDevice) {
-            // Ensure normal cursor is shown on touch devices
-            document.body.style.cursor = 'auto';
-            return;
-        }
-
         const handleMouseMove = (e: MouseEvent) => {
             mousePos.current = { x: e.clientX, y: e.clientY };
 

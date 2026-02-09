@@ -83,12 +83,11 @@ const HeroSection: React.FC = () => {
                             textAlign: 'center',
                         }}
                         className="responsive-padding"
-                        id="hero-content"
                     >
                         <motion.h1
                             variants={itemVariants}
                             style={{
-                                fontSize: 'clamp(2.5rem, 10vw, 6.6rem)',
+                                fontSize: '6.6rem',
                                 fontWeight: 700,
                                 lineHeight: '1.1',
                                 letterSpacing: '-0.03em',
