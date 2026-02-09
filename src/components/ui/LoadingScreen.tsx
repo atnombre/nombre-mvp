@@ -10,6 +10,16 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete, autoHide = tr
     const [progress, setProgress] = useState(0);
     const [isExiting, setIsExiting] = useState(false);
 
+    // Lock scrolling while loading screen is visible
+    useEffect(() => {
+        const originalOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = originalOverflow;
+        };
+    }, []);
+
     useEffect(() => {
         const duration = 2000;
         const startTime = Date.now();
