@@ -53,7 +53,8 @@ const Header: React.FC = () => {
                 style={{
                     pointerEvents: 'auto',
                     minWidth: 'unset',
-                    width: 'min(95vw, 1150px)', // Robust width capping
+                    width: '94%',
+                    maxWidth: '1150px',
                     margin: '0 auto', // Centering strategy part 1
 
                     padding: '0.6rem 1rem', // Base padding

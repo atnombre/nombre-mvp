@@ -12,6 +12,7 @@ const StickyScrollSection: React.FC = () => {
 
             const rect = trackRef.current.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
+            const isMobile = window.innerWidth <= 768;
 
             // Calculate progress through the "sticky" track (300vh total)
             const scrollDistance = rect.height - viewportHeight;
@@ -20,11 +21,18 @@ const StickyScrollSection: React.FC = () => {
 
             // 1. Text Animation: Fade out & Blur faster (0% -> 95%)
             const textPhase = Math.min(1, progress / 0.95);
-            const blurVal = textPhase * 20;
+
+            // Optimization: Disable blur on mobile for performance
+            const blurVal = isMobile ? 0 : textPhase * 20;
             const opacityVal = 1 - textPhase;
             const scaleVal = 1 - (textPhase * 0.1);
 
-            textRef.current.style.filter = `blur(${blurVal}px)`;
+            if (isMobile) {
+                textRef.current.style.filter = 'none';
+            } else {
+                textRef.current.style.filter = `blur(${blurVal}px)`;
+            }
+
             textRef.current.style.opacity = `${opacityVal}`;
             textRef.current.style.transform = `translate(-50%, -50%) scale(${scaleVal})`;
             textRef.current.style.pointerEvents = opacityVal < 0.1 ? 'none' : 'auto';
@@ -46,7 +54,8 @@ const StickyScrollSection: React.FC = () => {
             }
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        // Initial check
         handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -128,7 +137,7 @@ const StickyScrollSection: React.FC = () => {
                     </div>
                     <h2 style={{
                         fontFamily: 'Geist, sans-serif',
-                        fontSize: 'clamp(3rem, 5vw, 3.5rem)',
+                        fontSize: 'clamp(2rem, 8vw, 3.5rem)',
                         fontWeight: 400,
                         lineHeight: '1.1',
                         color: '#EDEDED',
@@ -136,6 +145,7 @@ const StickyScrollSection: React.FC = () => {
                         maxWidth: '1500px',
                         width: '100%',
                         margin: '0 auto',
+                        padding: '0 1rem', // Add padding for safety
                     }}>
                         3 simple steps – everything you need <br />
                         <span style={{ color: 'rgba(255,255,255,0.7)' }}>to know about our work</span>

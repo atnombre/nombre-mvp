@@ -87,7 +87,7 @@ const HeroSection: React.FC = () => {
                         <motion.h1
                             variants={itemVariants}
                             style={{
-                                fontSize: '6.6rem',
+                                fontSize: 'clamp(3rem, 11vw, 6.6rem)', // Responsive clamp
                                 fontWeight: 700,
                                 lineHeight: '1.1',
                                 letterSpacing: '-0.03em',
@@ -95,18 +95,20 @@ const HeroSection: React.FC = () => {
                                 margin: 0,
                                 whiteSpace: 'normal',
                                 wordWrap: 'break-word',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
                             }}
                             className="hero-title"
                         >
-                            <span style={{ display: 'inline-flex', alignItems: 'baseline', flexWrap: 'wrap', justifyContent: 'center' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'baseline', flexWrap: 'wrap', justifyContent: 'center', gap: '0.2em' }}>
                                 Stop
-                                <span style={{ width: '0.3em' }} /> {/* Gap */}
                                 <TextRotator
                                     words={["Scrolling", "Watching", "Binging", "Spectating"]}
                                     style={{ display: 'block' }}
                                 />
-                                <span style={{ marginLeft: '0.05em' }}>,</span> {/* Comma */}
-                            </span> <br />
+                                <span style={{ marginLeft: '-0.1em' }}>,</span> {/* Comma */}
+                            </span>
                             <span style={{
                                 background: 'linear-gradient(to right, #EA9999, #FFD1C1)',
                                 WebkitBackgroundClip: 'text',
